@@ -17,7 +17,7 @@ one seeded, invented software project into a memory system through a
 ten-operation protocol, then questions, re-decides, contradicts, deletes
 and re-asks it, grading every probe by a rule fixed before the question.
 Measured on the official 500/1500 ladder with the same local embedder
-everywhere, the reference system (engram 0.9.4) scores 85% / 80% success
+everywhere, the reference system (Engram Alpha 0.9.4, arm `engram`) scores 85% / 80% success
 (score 511 / 459) against 63% / 57% for LangMem's store, 58% / 55% for
 Mem0 as a raw store, and 53% / 51% for keyword overlap — and the three
 flat stores, given the same vectors, are one system: they fail the same
@@ -32,7 +32,7 @@ eighth of the tokens per answer.
 
 | arm | success @500 | score @500 | success @1500 | score @1500 | tok/query |
 |---|---|---|---|---|---|
-| engram 0.9.4 | **85%** | **511** | **80%** | **459** | 263–289 |
+| Engram Alpha 0.9.4 | **85%** | **511** | **80%** | **459** | 263–289 |
 | langmem 0.0.30 | 63% | 51 | 57% | 52 | ~2,200 |
 | rag | 63% | 51 | 57% | 52 | ~2,200 |
 | mem0 2.0.20 | 58% | 45 | 55% | 47 | ~2,500 |

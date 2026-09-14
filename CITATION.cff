@@ -22,6 +22,6 @@ references:
     year: 2026
     notes: "The judge-free forgetting benchmark whose families and two design rules KnowledgeDrift adopts."
   - type: software
-    title: "engram"
+    title: "Engram Alpha"
     url: "https://github.com/techtheist/engram"
     notes: "The reference system and the evaluation harness KnowledgeDrift grew out of."

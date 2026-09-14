@@ -10,15 +10,15 @@ headline is the **mean success over every task**, beside a macro-averaged
 **composite** and an attention-multiplied **score**. Nothing in the loop is
 a language model, and nothing asks a model whether a model did well.
 
-| system (v1, 500 tested facts, 3 seeds) | success | score | tok / answer |
-|---|---|---|---|
-| [engram](https://github.com/techtheist/engram) 0.9.4 | 85% (84–85) | 525 (511–543) | ~260 |
-| LangMem 0.0.30 (store + semantic index) | 63% (61–66) | 52 (51–54) | ~2,300 |
-| vector top-k (`rag`) | 63% (61–66) | 52 (51–54) | ~2,300 |
-| Mem0 2.0.20 (`infer=False`) | 59% (57–61) | 46 (45–48) | ~2,600 |
-| keyword overlap (`grep`) | 53% (51–55) | 43 (42–44) | ~2,600 |
-| the whole file in context | 71% (69–74) | 5 (5–5) | ~134,000 |
-| a curated 3,000-token file | 9% (9–9) | 4 (4–4) | ~2,900 |
+| system (v1, 500 tested facts, 3 seeds)                     | success | score | tok / answer |
+|------------------------------------------------------------|---|---|---|
+| [Engram Alpha](https://github.com/techtheist/engram) 0.9.4 | 85% (84–85) | 525 (511–543) | ~260 |
+| LangMem 0.0.30 (store + semantic index)                    | 63% (61–66) | 52 (51–54) | ~2,300 |
+| vector top-k (`rag`)                                       | 63% (61–66) | 52 (51–54) | ~2,300 |
+| Mem0 2.0.20 (`infer=False`)                                | 59% (57–61) | 46 (45–48) | ~2,600 |
+| keyword overlap (`grep`)                                   | 53% (51–55) | 43 (42–44) | ~2,600 |
+| the whole file in context                                  | 71% (69–74) | 5 (5–5) | ~134,000 |
+| a curated 3,000-token file                                 | 9% (9–9) | 4 (4–4) | ~2,900 |
 
 Full tables, the 1500 rung, per-family readings and receipts:
 [`results/v1/`](results/v1/README.md) and [`RESULTS.md`](RESULTS.md).
@@ -96,7 +96,7 @@ cargo run --release -- --grade my-transcript.json \
 python3 adapters/run.py --adapter mysystem \
     --script worlds/v1/knowledgedrift-500-seed1.json --out out/mysystem-500.json
 
-# run the reference arms in-process (engram + five baselines, real models)
+# run the reference arms in-process (Engram Alpha + five baselines, real models)
 cargo run --release --features fastembed -- --sizes 500,1500 --json ladder.json
 
 # look at what a world contains
@@ -193,7 +193,7 @@ never compared across versions.
 
 ## Related
 
-- [engram](https://github.com/techtheist/engram) — the reference system,
+- [Engram Alpha](https://github.com/techtheist/engram) — the reference system,
   and the evaluation harness this benchmark grew out of (its `eval/`
   directory holds the retrieval ladder, the supersession chains and the
   contradiction bench that became these families).
