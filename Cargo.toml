@@ -1,0 +1,33 @@
+[package]
+name = "knowledgedrift"
+version = "1.0.0"
+edition = "2024"
+rust-version = "1.88"
+license = "MIT"
+repository = "https://github.com/techtheist/knowledgedrift"
+description = "KnowledgeDrift — an offline, judge-free benchmark for AI memory in software development"
+publish = false
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+anyhow = "1"
+# The reference in-process arms (the engram engine and the flat baselines
+# built on its embedder trait) — optional, so grading a transcript and
+# exporting worlds need no model stack at all.
+engram-core = { git = "https://github.com/techtheist/engram", rev = "3f029d4cae42f8137be14fded9762346fb2dd410", optional = true }
+
+[features]
+default = []
+# In-process arms: engram and the five baselines (rag, grep, curated, whole,
+# chance). Pulls the engram-core crate.
+arms = ["dep:engram-core"]
+# Real embeddings, reranker and NLI for the in-process arms. Without it
+# every model is a deterministic fake: the harness runs and the lexical path
+# is exercised, but no semantic number is worth quoting — the receipt says
+# so at the top.
+fastembed = ["arms", "engram-core/fastembed"]
+
+[[bin]]
+name = "knowledgedrift"
+path = "src/main.rs"

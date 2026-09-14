@@ -1,0 +1,77 @@
+    Finished `release` profile [optimized] target(s) in 0.77s
+     Running `target/release/knowledgedrift --sizes 500 --seed 3 --json eval/results/2026-09-14-knowledgedrift-500-seed3.json`
+knowledgedrift 0.9.4 — embedder bge-small-en-v1.5, reranker jina-reranker-v1-turbo-en, nli deberta-v3-small-tasksource-nli, seed 3, pollution 10% (stale)
+world 500: 641 notes, 530 edges, 3620 ops, 2414 probes
+  engram: 2373 tasks, success 0.840, 793s
+    settle: auto-tune left the defaults; weak line 0.899; sweep queued 1
+  rag: 2373 tasks, success 0.611, 45s
+  grep: 2373 tasks, success 0.507, 2s
+  curated: 2373 tasks, success 0.088, 1s
+  whole: 2373 tasks, success 0.692, 1s
+  chance: 2373 tasks, success 0.041, 0s
+
+== 500 tested facts, 641 notes ==
+  arm       posed attempted passed  success   of att. composite     S  mult   score  standing    tok/q
+  engram     2373      2373   1994      84%       84%     0.898  0.58   5.8     522      3744      252
+  rag        2373      2074   1449      61%       70%     0.461  0.12   1.2      54         0     2175
+  grep       2373      2074   1203      51%       58%     0.414  0.11   1.1      44         0     2584
+  curated    2373      1949    209       9%       11%     0.156  0.03   0.3       4      3000     2959
+  whole      2373      1949   1641      69%       84%     0.483  0.00   0.1       5    141402   134202
+  chance     2373      2074     98       4%        5%     0.131  0.09   0.9      11         0     2255
+  engram   success  84% = 1994 passed of 2373 posed (attempted 2373/2373,  84% of those passed)   composite 0.898   S 0.58 ×5.8   score 522   standing 3744 tok   252 tok/query
+    retrieval      1500   80%  r@1 0.68  r@5 0.83  lexical_r@5 1.00  paraphrase_r@5 0.99  oblique_r@5 0.51  stale_above 0.26  hedge 0.41  noise 0.49
+    abstention      110  100%  fp 0.00  answered 1.00  declined 1.00  separation 0.77
+    currency        100   87%  head_r@1 0.69  head_r@5 0.83  pollution 0.00  lineage 1.00
+    contradiction   166   72%  t1_recall 0.88  t2_recall 0.87  t3_recall 0.03  t2_false_alarm 0.02  t3_false_alarm 0.37  queued 0.58  flagged 0.53  absorbed 0.04
+    drift            66   91%  noticed 0.91  flagged 0.70
+    deletion        125   90%  released_gone 1.00  purged_gone 1.00  trace 1.00  marker_leak 1.00  resurrection_warned 0.69  purged_rewrite_warned 0.02
+    rationale       181   99%  direct_r@5 0.01  assisted_r@5 0.99  structure_only 0.99
+    temporal        125  100%  in_window_r@5 1.00  leak 0.00
+  rag      success  61% = 1449 passed of 2373 posed (attempted 2074/2373,  70% of those passed)   composite 0.461   S 0.12 ×1.2   score 54   standing 0 tok   2175 tok/query
+    retrieval      1500   78%  r@1 0.61  r@5 0.83  lexical_r@5 0.99  paraphrase_r@5 0.96  oblique_r@5 0.54  stale_above 0.45  hedge 0.00  noise 0.91
+    abstention      110    0%  fp 1.00  answered 1.00  declined 0.00  separation 0.85
+    currency         75   87%  head_r@1 0.71  head_r@5 0.87  pollution 0.00
+    contradiction     -  n/a — no suspect nomination
+    drift             -  n/a — no suspect nomination
+    deletion         83  100%  released_gone 1.00  purged_gone 1.00  resurrection_warned 0.00  purged_rewrite_warned 0.00
+    rationale       181    4%  direct_r@5 0.04  assisted_r@5 0.04  structure_only 0.00
+    temporal        125  100%  in_window_r@5 1.00  leak 0.00
+  grep     success  51% = 1203 passed of 2373 posed (attempted 2074/2373,  58% of those passed)   composite 0.414   S 0.11 ×1.1   score 44   standing 0 tok   2584 tok/query
+    retrieval      1500   63%  r@1 0.59  r@5 0.71  lexical_r@5 1.00  paraphrase_r@5 1.00  oblique_r@5 0.13  stale_above 0.62  hedge 0.00  noise 0.92
+    abstention      110    0%  fp 1.00  answered 1.00  declined 0.00  separation 0.77
+    currency         75   68%  head_r@1 0.67  head_r@5 0.68  pollution 0.00
+    contradiction     -  n/a — no suspect nomination
+    drift             -  n/a — no suspect nomination
+    deletion         83  100%  released_gone 1.00  purged_gone 1.00  resurrection_warned 0.00  purged_rewrite_warned 0.00
+    rationale       181    0%  direct_r@5 0.00  assisted_r@5 0.00  structure_only 0.00
+    temporal        125  100%  in_window_r@5 1.00  leak 0.00
+  curated  success   9% = 209 passed of 2373 posed (attempted 1949/2373,  11% of those passed)   composite 0.156   S 0.03 ×0.3   score 4   standing 3000 tok   2959 tok/query
+    retrieval      1500    6%  r@1 0.07  r@5 0.07  lexical_r@5 0.07  paraphrase_r@5 0.07  oblique_r@5 0.07  stale_above 0.06  hedge 0.00  noise 1.00
+    abstention      110    0%  fp 1.00  answered 1.00  declined 0.00  separation 0.50
+    currency         75    0%  head_r@1 0.00  head_r@5 0.00  pollution 0.00
+    contradiction     -  n/a — no suspect nomination
+    drift             -  n/a — no suspect nomination
+    deletion         83  100%  released_gone 1.00  purged_gone 1.00  resurrection_warned 0.00  purged_rewrite_warned 0.00
+    rationale       181   18%  direct_r@5 0.18  assisted_r@5 0.18  structure_only 0.00
+    temporal          -  n/a — no capture-time scoping
+  whole    success  69% = 1641 passed of 2373 posed (attempted 1949/2373,  84% of those passed)   composite 0.483   S 0.00 ×0.1   score 5   standing 141402 tok   134202 tok/query
+    retrieval      1500   87%  r@1 1.00  r@5 1.00  lexical_r@5 1.00  paraphrase_r@5 1.00  oblique_r@5 1.00  stale_above 1.00  hedge 0.00  noise 1.00
+    abstention      110    0%  fp 1.00  answered 1.00  declined 0.00  separation 0.50
+    currency         75  100%  head_r@1 1.00  head_r@5 1.00  pollution 0.00
+    contradiction     -  n/a — no suspect nomination
+    drift             -  n/a — no suspect nomination
+    deletion         83  100%  released_gone 1.00  purged_gone 1.00  resurrection_warned 0.00  purged_rewrite_warned 0.00
+    rationale       181  100%  direct_r@5 1.00  assisted_r@5 1.00  structure_only 0.00
+    temporal          -  n/a — no capture-time scoping
+  chance   success   4% = 98 passed of 2373 posed (attempted 2074/2373,   5% of those passed)   composite 0.131   S 0.09 ×0.9   score 11   standing 0 tok   2255 tok/query
+    retrieval      1500    1%  r@1 0.00  r@5 0.01  lexical_r@5 0.01  paraphrase_r@5 0.01  oblique_r@5 0.00  stale_above 0.01  hedge 0.00  noise 1.00
+    abstention      110    0%  fp 1.00  answered 1.00  declined 0.00  separation 0.50
+    currency         75    0%  head_r@1 0.00  head_r@5 0.00  pollution 0.00
+    contradiction     -  n/a — no suspect nomination
+    drift             -  n/a — no suspect nomination
+    deletion         83  100%  released_gone 1.00  purged_gone 1.00  resurrection_warned 0.00  purged_rewrite_warned 0.00
+    rationale       181    0%  direct_r@5 0.00  assisted_r@5 0.00  structure_only 0.00
+    temporal        125    4%  in_window_r@5 0.04  leak 0.00
+
+wrote eval/results/2026-09-14-knowledgedrift-500-seed3.json
+exit 0

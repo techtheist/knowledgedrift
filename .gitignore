@@ -1,0 +1,8 @@
+/target
+/.cargo/config.toml
+/.idea
+/.engram
+__pycache__/
+.pytest_cache/
+adapters/.venv-*
+adapters/out/

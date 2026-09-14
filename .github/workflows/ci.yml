@@ -1,0 +1,49 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  grader:
+    name: grader, generator, golden worlds (no models)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo fmt --check
+      - run: cargo clippy --all-targets -- -D warnings
+      - run: cargo test
+
+  adapters:
+    name: adapter protocol compiles
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python3 -m py_compile adapters/*.py
+
+  receipts:
+    name: every v1 receipt answers a v1 world
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          python3 - <<'EOF'
+          import json, glob, sys
+          digests = {json.load(open(p))["digest"] for p in glob.glob("worlds/v1/*.json")}
+          bad = []
+          for p in glob.glob("results/v1/**/*.json", recursive=True):
+              d = json.load(open(p))
+              found = [s["digest"] for s in d["sizes"]] if "sizes" in d else [d["script_digest"]]
+              bad += [(p, x) for x in found if x not in digests]
+          for p, x in bad:
+              print(f"{p}: digest {x} is not a v1 world", file=sys.stderr)
+          sys.exit(1 if bad else 0)
+          EOF

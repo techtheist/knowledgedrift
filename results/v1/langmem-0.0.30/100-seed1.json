@@ -1,0 +1,257 @@
+{
+  "arm": "langmem",
+  "capabilities": {
+    "link": false,
+    "history": false,
+    "trace": false,
+    "suspects": false,
+    "temporal": true,
+    "verdict": false,
+    "write_check": false
+  },
+  "script_digest": "280739585b56cf43",
+  "tasks": 474,
+  "attempted": 418,
+  "passed": 335,
+  "success": 0.7067510548523207,
+  "attempted_success": 0.8014354066985646,
+  "composite": 0.515625,
+  "signal_share": 0.10424531001932605,
+  "multiplier": 1.0424531001932604,
+  "score": 53.751487978715,
+  "families": [
+    {
+      "family": "retrieval",
+      "tasks": 300,
+      "passed": 270,
+      "pass_rate": 0.9,
+      "columns": {
+        "hedge": 0.0,
+        "lexical_r@5": 1.0,
+        "mrr": 0.8418505291005289,
+        "noise": 0.9016666666666692,
+        "oblique_r@5": 0.82,
+        "paraphrase_r@5": 0.99,
+        "r@1": 0.77,
+        "r@5": 0.9366666666666666,
+        "stale_above": 0.36666666666666664,
+        "tokens": 2439.78,
+        "weighted_r@5": 0.9774999999999999
+      }
+    },
+    {
+      "family": "abstention",
+      "tasks": 22,
+      "passed": 0,
+      "pass_rate": 0.0,
+      "columns": {
+        "answered": 1.0,
+        "declined": 0.0,
+        "fp": 1.0,
+        "separation": 0.8890909090909092
+      }
+    },
+    {
+      "family": "currency",
+      "tasks": 15,
+      "passed": 15,
+      "pass_rate": 1.0,
+      "columns": {
+        "head_r@1": 0.9333333333333333,
+        "head_r@5": 1.0,
+        "lineage_na": 1.0,
+        "pollution": 0.0
+      }
+    },
+    {
+      "family": "contradiction",
+      "tasks": 0,
+      "passed": 0,
+      "pass_rate": null,
+      "na": "no suspect nomination",
+      "columns": {}
+    },
+    {
+      "family": "deletion",
+      "tasks": 16,
+      "passed": 16,
+      "pass_rate": 1.0,
+      "columns": {
+        "purged_gone": 1.0,
+        "purged_rewrite_warned": 0.0,
+        "released_gone": 1.0,
+        "resurrection_warned": 0.0
+      }
+    },
+    {
+      "family": "rationale",
+      "tasks": 40,
+      "passed": 9,
+      "pass_rate": 0.225,
+      "columns": {
+        "assisted_r@5": 0.225,
+        "direct_r@5": 0.225,
+        "structure_only": 0.0
+      }
+    },
+    {
+      "family": "temporal",
+      "tasks": 25,
+      "passed": 25,
+      "pass_rate": 1.0,
+      "columns": {
+        "in_window_r@5": 1.0,
+        "leak": 0.0
+      }
+    },
+    {
+      "family": "drift",
+      "tasks": 0,
+      "passed": 0,
+      "pass_rate": null,
+      "na": "no suspect nomination",
+      "columns": {}
+    }
+  ],
+  "attention": {
+    "focus": 0.10424531001932605,
+    "noise": 0.9016666666666692,
+    "tokens_per_query": 2439.78
+  },
+  "cost": {
+    "inscribe_ms": 24.847751522358664,
+    "lineage_ms": 0.002616620622575283,
+    "link_ms": 0.0005059113357005254,
+    "purge_ms": 0.013166762073524295,
+    "recall_ms": 6.368185798737831,
+    "release_ms": 0.013140510418452322,
+    "settle_ms": 0.0026869820430874825,
+    "standing_tokens": 0.0,
+    "supersede_ms": 31.681129289790988,
+    "suspects_ms": 0.008958042599260807,
+    "tokens_per_query": 2439.78
+  },
+  "timing": {
+    "inscribe": {
+      "count": 167,
+      "total_ms": 4149.574504233897
+    },
+    "lineage": {
+      "count": 5,
+      "total_ms": 0.013083103112876415
+    },
+    "link": {
+      "count": 106,
+      "total_ms": 0.053626601584255695
+    },
+    "purge": {
+      "count": 8,
+      "total_ms": 0.10533409658819436
+    },
+    "recall": {
+      "count": 418,
+      "total_ms": 2661.9016638724133
+    },
+    "release": {
+      "count": 8,
+      "total_ms": 0.10512408334761858
+    },
+    "settle": {
+      "count": 2,
+      "total_ms": 0.005373964086174965
+    },
+    "supersede": {
+      "count": 10,
+      "total_ms": 316.8112928979099
+    },
+    "suspects": {
+      "count": 1,
+      "total_ms": 0.008958042599260807
+    }
+  },
+  "failed": [
+    "R7",
+    "R12",
+    "R42",
+    "R51",
+    "R57",
+    "R60",
+    "R64",
+    "R65",
+    "R66",
+    "R69",
+    "R72",
+    "R86",
+    "R87",
+    "R126",
+    "R130",
+    "R153",
+    "R165",
+    "R171",
+    "R184",
+    "R185",
+    "R186",
+    "R192",
+    "R193",
+    "R194",
+    "R199",
+    "R201",
+    "R246",
+    "R252",
+    "R255",
+    "R267",
+    "R301",
+    "R302",
+    "R303",
+    "R304",
+    "R305",
+    "R306",
+    "R307",
+    "R308",
+    "R309",
+    "R310",
+    "R311",
+    "R312",
+    "R313",
+    "R314",
+    "R315",
+    "R316",
+    "R317",
+    "R318",
+    "R319",
+    "R320",
+    "R321",
+    "R322",
+    "R338",
+    "R339",
+    "R340",
+    "R341",
+    "R342",
+    "R343",
+    "R344",
+    "R345",
+    "R346",
+    "R347",
+    "R348",
+    "R350",
+    "R351",
+    "R352",
+    "R353",
+    "R354",
+    "R355",
+    "R356",
+    "R358",
+    "R359",
+    "R363",
+    "R364",
+    "R366",
+    "R367",
+    "R368",
+    "R370",
+    "R371",
+    "R372",
+    "R374",
+    "R376",
+    "R377"
+  ]
+}

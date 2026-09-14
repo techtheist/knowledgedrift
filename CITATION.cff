@@ -1,0 +1,27 @@
+cff-version: 1.2.0
+message: "If you use KnowledgeDrift, please cite this repository."
+title: "KnowledgeDrift: an offline, judge-free benchmark for AI memory in software development"
+version: "1.0.0"
+date-released: 2026-09-14
+license: MIT
+repository-code: "https://github.com/techtheist/knowledgedrift"
+type: software
+authors:
+  - name: "techtheist"
+keywords:
+  - benchmark
+  - memory
+  - retrieval
+  - knowledge drift
+  - contradiction detection
+  - software engineering agents
+references:
+  - type: article
+    title: "ForgetEval"
+    url: "https://arxiv.org/abs/2606.15903"
+    year: 2026
+    notes: "The judge-free forgetting benchmark whose families and two design rules KnowledgeDrift adopts."
+  - type: software
+    title: "engram"
+    url: "https://github.com/techtheist/engram"
+    notes: "The reference system and the evaluation harness KnowledgeDrift grew out of."

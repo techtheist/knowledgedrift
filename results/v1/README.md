@@ -1,0 +1,144 @@
+# v1 results
+
+Every graded receipt behind the tables in `RESULTS.md` and the README, and
+how each was produced. A receipt is what `knowledgedrift --json` (the
+in-process ladder, every arm per size) or `knowledgedrift --grade … --json`
+(one external transcript) writes: the world spec, the script digest, the
+capabilities, every family's pass rate and columns, the attention and cost
+numbers, and the ids of every failed task, so a number can be read back
+to the case that produced it. CI checks that every receipt's digest is one
+of the v1 worlds.
+
+## Environment
+
+All receipts: one Apple-silicon laptop (macOS), CPU only, 2026-09-14.
+Models: `BAAI/bge-small-en-v1.5` (fp32) as the embedder for every arm;
+the engram arm additionally loads `jina-reranker-v1-turbo-en` and
+`deberta-v3-small-tasksource-nli`, its shipped stack. Harness: this
+repository at v1.0.0; the in-process receipts were produced by the same
+sources inside the engram repository at the revision `Cargo.toml` pins,
+and a re-run from this repository reproduces them to the digit (the 100
+world was re-run as the check).
+
+## Directories
+
+### `reference-arms/` — the six in-process arms
+
+`cargo run --release --features fastembed -- <flags> --json <file>`;
+the `.log` beside each receipt is the terminal report.
+
+| file | flags | worlds |
+|---|---|---|
+| `ladder-500-1500-seed1.json` | `--sizes 500,1500` | the official ladder, seed 1 |
+| `500-seed2.json` | `--sizes 500 --seed 2` | seed ladder |
+| `500-seed3.json` | `--sizes 500 --seed 3` | seed ladder |
+| `500-seed1-twin.json` | `--sizes 500 --pollution-shape twin` | pollution shape |
+| `500-seed1-late.json` | `--sizes 500 --pollution-shape late` | pollution shape |
+
+Arms in every file: `engram` (engram-core 0.9.4, in-memory store, driven
+the way its daemon drives it), `rag` (vector top-k, same embedder, nothing
+else), `grep` (keyword overlap, whole records), `curated` (a 3,000-token
+memory file, always in context), `whole` (every record in context), `chance`.
+
+### `langmem-0.0.30/` — LangMem's memory layer
+
+`adapters/langmem_adapter.py`, notes and every shim in
+`adapters/langmem.md`: the LangGraph `InMemoryStore` with LangMem's semantic
+index, through the three store calls LangMem's tools make; bge-small via
+fastembed; temporal native, every other capability false. Files
+`<size>-seed<N>.json` for 100/500/1500 seed 1 and 500 seeds 2, 3.
+
+### `mem0-2.0.20/` — Mem0 OSS as a raw store
+
+`adapters/mem0_adapter.py`, notes in `adapters/mem0.md`: `add(infer=False)`
+(no LLM anywhere; the run is socket-guarded), embedded Qdrant, Mem0's
+hybrid dense + BM25 scoring on, bge-small fp32 via sentence-transformers;
+temporal native via a stored capture time, every other capability false.
+Same five files.
+
+## The tables
+
+`python3 adapters/table.py --receipt results/v1/reference-arms/ladder-500-1500-seed1.json --size 500`
+prints a size's rows; `--seeds <files…> --size 500` pools receipts by arm
+into the three-seed table.
+
+### The official ladder, seed 1
+
+**500 tested facts** (630 notes, 2,346 tasks):
+
+| arm | success | passed / attempted | composite | S | mult | score | standing tok | tok/query |
+|---|---|---|---|---|---|---|---|---|
+| **engram** | **85%** | 2,005 / 2,346 | **0.905** | 0.57 | ×5.7 | **511** | 3,875 | 263 |
+| langmem | 63% | 1,477 / 2,058 | 0.469 | 0.11 | ×1.1 | 51 | 0 | 2,328 |
+| rag | 63% | 1,478 / 2,058 | 0.469 | 0.11 | ×1.1 | 51 | 0 | 2,335 |
+| mem0 | 58% | 1,361 / 2,058 | 0.438 | 0.10 | ×1.0 | 45 | 0 | 2,581 |
+| grep | 53% | 1,241 / 2,058 | 0.418 | 0.10 | ×1.0 | 44 | 0 | 2,606 |
+| whole file | 71% | 1,658 / 1,933 | 0.486 | 0.00 | ×0.1 | 5 | 141,258 | 134,043 |
+| curated (3k) | 9% | 203 / 1,933 | 0.151 | 0.03 | ×0.3 | 4 | 2,988 | 2,950 |
+| chance | 4% | 99 / 2,058 | 0.132 | 0.11 | ×1.1 | 15 | 0 | 2,311 |
+
+**1500 tested facts** (1,883 notes, 7,078 tasks):
+
+| arm | success | passed / attempted | composite | S | mult | score | standing tok | tok/query |
+|---|---|---|---|---|---|---|---|---|
+| **engram** | **80%** | 5,694 / 7,078 | **0.877** | 0.52 | ×5.2 | **459** | 3,769 | 289 |
+| langmem | 57% | 4,066 / 6,220 | 0.442 | 0.12 | ×1.2 | 52 | 0 | 2,147 |
+| rag | 57% | 4,064 / 6,220 | 0.442 | 0.12 | ×1.2 | 52 | 0 | 2,153 |
+| mem0 | 55% | 3,880 / 6,220 | 0.430 | 0.11 | ×1.1 | 47 | 0 | 2,452 |
+| grep | 51% | 3,575 / 6,220 | 0.412 | 0.10 | ×1.0 | 43 | 0 | 2,620 |
+| whole file | 71% | 5,041 / 5,845 | 0.487 | 0.00 | ×0.1 | 5 | 423,672 | 401,934 |
+| curated (3k) | 5% | 376 / 5,845 | 0.134 | 0.03 | ×0.3 | 4 | 2,982 | 2,932 |
+| chance | 4% | 273 / 6,220 | 0.129 | 0.10 | ×1.0 | 13 | 0 | 2,322 |
+
+### Three seeds at 500 (mean, min–max)
+
+| arm | success | composite | score |
+|---|---|---|---|
+| **engram** | **85% (84–85)** | 0.907 (0.898–0.918) | **525 (511–543)** |
+| langmem | 63% (61–66) | 0.468 (0.461–0.473) | 52 (51–54) |
+| rag | 63% (61–66) | 0.468 (0.461–0.473) | 52 (51–54) |
+| mem0 | 59% (57–61) | 0.443 (0.438–0.447) | 46 (45–48) |
+| grep | 53% (51–55) | 0.418 (0.414–0.422) | 43 (42–44) |
+| whole file | 71% (69–74) | 0.487 (0.483–0.492) | 5 (5–5) |
+| curated (3k) | 9% (9–9) | 0.156 (0.151–0.160) | 4 (4–4) |
+| chance | 4% (4–4) | 0.131 (0.131–0.132) | 13 (11–15) |
+
+Per family, three seeds:
+
+| arm | retrieval | abstention | currency | contradiction | drift | deletion | rationale | temporal |
+|---|---|---|---|---|---|---|---|---|
+| engram | 81% (80–82) | 100% (99–100) | 89% (87–91) | 74% (72–75) | 93% (91–97) | 90% (90–90) | 100% (99–100) | 100% (99–100) |
+| langmem | 80% (78–83) | 0% | 90% (87–93) | n/a | n/a | 100% | 4% (3–5) | 100% (99–100) |
+| rag | 80% (78–83) | 0% | 90% (87–93) | n/a | n/a | 100% | 4% (3–5) | 100% (99–100) |
+| mem0 | 74% (72–76) | 0% | 78% (76–80) | n/a | n/a | 100% | 2% (2–3) | 100% |
+| grep | 65% (63–67) | 0% | 69% (68–69) | n/a | n/a | 100% | 0% (0–1) | 100% |
+| curated | 6% (6–7) | 0% | 0% | n/a | n/a | 100% | 18% (15–21) | n/a |
+| whole | 90% (87–94) | 0% | 100% | n/a | n/a | 100% | 100% | n/a |
+| chance | 1% | 0% | 0% | n/a | n/a | 100% | 0% (0–1) | 4% |
+
+### Pollution shapes at 500, seed 1
+
+`stale_above` = share of polluted questions whose stale sibling outranked
+the answer; `noticed` = drift pairs the suspect queue raised.
+
+| shape | engram success | engram stale_above | engram drift noticed | rag stale_above | grep stale_above |
+|---|---|---|---|---|---|
+| `stale` (default) | 85% | 0.21 | 0.91 | 0.38 | 0.58 |
+| `twin` | 82% | 0.64 | 0.98 | 0.55 | 0.78 |
+| `late` | 85% | 0.35 | 0.91 | 0.38 | 0.58 |
+
+### The 100 world, seed 1 (preliminary rung, single seed)
+
+| arm | success | composite | score |
+|---|---|---|---|
+| engram | 92% | 0.947 | 601 |
+| langmem | 71% | 0.516 | 54 |
+| rag | 71% | 0.516 | 54 |
+| mem0 | 68% | 0.510 | 51 |
+| grep | 62% | 0.459 | 50 |
+| whole file | 72% | 0.488 | 5 |
+| curated (3k) | 29% | 0.317 | 9 |
+| chance | 7% | 0.168 | 18 |
+
+(The 100 rung for the in-process arms is not a committed receipt; it is
+reproduced by `cargo run --release --features fastembed -- --sizes 100`.)
