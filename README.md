@@ -15,6 +15,7 @@ a language model, and nothing asks a model whether a model did well.
 | LangMem 0.0.30 (store + semantic index)                    | 63% (61–66) | 52 (51–54) | ~2,300 |
 | vector top-k (`rag`)                                       | 63% (61–66) | 52 (51–54) | ~2,300 |
 | Mem0 2.0.20 (`infer=False`)                                | 59% (57–61) | 46 (45–48) | ~2,600 |
+| cognee 1.5.4 (no LLM: chunk store + `CHUNKS` search)       | 58% (56–60) | 40 (39–42) | ~2,000 |
 | keyword overlap (`grep`)                                   | 53% (51–55) | 43 (42–44) | ~2,600 |
 | MemContinuum 0.2.0rc5 (append-only topics, hybrid FTS5 + bge-small) | 52% (49–55) | 33 (33–34) | ~800 |
 | the whole file in context                                  | 71% (69–74) | 5 (5–5) | ~134,000 |
@@ -194,7 +195,7 @@ can take it or leave it, and floored so that silence cannot buy it.
 worlds/v1/         the frozen v1 worlds (100/500/1500 seed 1; 500 seeds 2, 3; 500 twin, late; 100/500/1500 authority)
 src/               protocol, script, world generator (vendored corpus), runner, grader, report
 src/arms/          the in-process arms (--features arms | fastembed)
-adapters/          the Python protocol mirror, the runner, and the Mem0, LangMem and MemContinuum adapters
+adapters/          the Python protocol mirror, the runner, and the Mem0, LangMem, MemContinuum and cognee adapters
 results/v1/        every graded receipt behind the tables, and how each was produced
 docs/              protocol, families, scoring
 RESULTS.md         what the v1 numbers say

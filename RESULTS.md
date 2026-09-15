@@ -28,7 +28,7 @@ eighth of the tokens per answer.
 ## The official ladder (seed 1)
 
 `results/v1/reference-arms/ladder-500-1500-seed1.json`,
-`results/v1/{langmem-0.0.30,mem0-2.0.20}/{500,1500}-seed1.json`.
+`results/v1/{langmem-0.0.30,mem0-2.0.20,memcontinuum-0.2.0rc5,cognee-1.5.4}/{500,1500}-seed1.json`.
 
 | arm | success @500 | score @500 | success @1500 | score @1500 | tok/query |
 |---|---|---|---|---|---|
@@ -36,13 +36,14 @@ eighth of the tokens per answer.
 | langmem 0.0.30 | 63% | 51 | 57% | 52 | ~2,200 |
 | rag | 63% | 51 | 57% | 52 | ~2,200 |
 | mem0 2.0.20 | 58% | 45 | 55% | 47 | ~2,500 |
+| cognee 1.5.4 | 57% | 39 | 52% | 39 | ~2,000 |
 | grep | 53% | 44 | 51% | 43 | ~2,600 |
 | memcontinuum 0.2.0rc5 | 52% | 33 | 48% | 32 | ~800 |
 | whole file | 71% | 5 | 71% | 5 | 134k–402k |
 | curated 3k | 9% | 4 | 5% | 4 | ~2,900 |
 | chance | 4% | 15 | 4% | 13 | ~2,300 |
 
-Three readings:
+Five readings:
 
 1. **Three flat stores are one system.** `rag` (the harness's own vector
    top-k), LangMem's store and Mem0 with `infer=False` land within four
@@ -70,7 +71,19 @@ Three readings:
    its schema is built around never reaches ranking (see the authority
    section). 52% (49–55) over three seeds, score 33; 48% at 1500, where
    oblique recall falls to 0.14 and *why* to 0%.
-4. **The whole file is the honest ceiling on recall and the floor on
+4. **cognee without its LLM is `rag` minus the clock.** With the
+   extraction task out of its pipeline, cognee is documents → chunks →
+   one LanceDB cosine search, and its retrieval lands where the flat
+   stores land (80% (78–82) over three seeds, r@5 0.83–0.84, oblique
+   0.52–0.57, the stale sibling above the truth on 37–45% of polluted
+   questions). Its currency is 91% because delete + add leaves no retired
+   generation to pollute, and its bill is the flat store's (~2,000 tokens
+   per answer, whole notes). What separates it from `rag` is the one
+   family every other flat store attempts: its chunk search has no time
+   filter, so the temporal family is N/A and the headline charges for it —
+   58% (56–60), score 40. At 1500 it holds the pattern: 52%, score 39,
+   retrieval 72% (r@5 0.75, oblique 0.33), currency 81%, rationale 1%.
+5. **The whole file is the honest ceiling on recall and the floor on
    cost.** 71% of tasks at every rung by showing everything; composite
    0.49, score 5. The curated 3,000-token file, the thing most agent
    frameworks ship as "memory", loses by 100 notes (29% → 9% → 5%).
@@ -107,6 +120,7 @@ changes (607–641 notes, 2,318–2,373 tasks). Mean, then min–max:
 | langmem | 63% (61–66) | 0.468 (0.461–0.473) | 52 (51–54) |
 | rag | 63% (61–66) | 0.468 (0.461–0.473) | 52 (51–54) |
 | mem0 | 59% (57–61) | 0.443 (0.438–0.447) | 46 (45–48) |
+| cognee | 58% (56–60) | 0.342 (0.337–0.348) | 40 (39–42) |
 | grep | 53% (51–55) | 0.418 (0.414–0.422) | 43 (42–44) |
 | memcontinuum | 52% (49–55) | 0.321 (0.314–0.327) | 33 (33–34) |
 | whole file | 71% (69–74) | 0.487 (0.483–0.492) | 5 (5–5) |

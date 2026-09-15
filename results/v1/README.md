@@ -62,6 +62,16 @@ and the authority world `500-seed1-authority.json` (its 1500 authority
 replay was not run: at 2% on the 500 world there was nothing a second
 rung would change).
 
+### `cognee-1.5.4/` — cognee without its LLM
+
+`adapters/cognee_adapter.py`, notes in `adapters/cognee.md`: documents
+through `cognee.add`, cognee's `cognify()` pipeline with the LLM
+extraction task removed (classify → chunk → `add_data_points`, the shape
+of its own no-LLM routes), its `fastembed` provider with bge-small, its
+default LanceDB + LadybugDB stores, `SearchType.CHUNKS`; every capability
+false — cognee's chunk search has no time filter, so temporal is N/A too.
+Files `500-seed{1,2,3}.json`, `1500-seed1.json`.
+
 ### `mem0-2.0.20/` — Mem0 OSS as a raw store
 
 `adapters/mem0_adapter.py`, notes in `adapters/mem0.md`: `add(infer=False)`
@@ -85,6 +95,7 @@ into the three-seed table.
 | langmem | 63% | 1,477 / 2,058 | 0.469 | 0.11 | ×1.1 | 51 | 0 | 2,328 |
 | rag | 63% | 1,478 / 2,058 | 0.469 | 0.11 | ×1.1 | 51 | 0 | 2,335 |
 | mem0 | 58% | 1,361 / 2,058 | 0.438 | 0.10 | ×1.0 | 45 | 0 | 2,581 |
+| cognee | 57% | 1,341 / 1,933 | 0.341 | 0.11 | ×1.1 | 39 | 0 | 2,002 |
 | grep | 53% | 1,241 / 2,058 | 0.418 | 0.10 | ×1.0 | 44 | 0 | 2,606 |
 | memcontinuum | 52% | 1,224 / 1,958 | 0.322 | 0.10 | ×1.0 | 33 | 0 | 804 |
 | whole file | 71% | 1,658 / 1,933 | 0.486 | 0.00 | ×0.1 | 5 | 141,258 | 134,043 |
@@ -99,6 +110,7 @@ into the three-seed table.
 | langmem | 57% | 4,066 / 6,220 | 0.442 | 0.12 | ×1.2 | 52 | 0 | 2,147 |
 | rag | 57% | 4,064 / 6,220 | 0.442 | 0.12 | ×1.2 | 52 | 0 | 2,153 |
 | mem0 | 55% | 3,880 / 6,220 | 0.430 | 0.11 | ×1.1 | 47 | 0 | 2,452 |
+| cognee | 52% | 3,672 / 5,845 | 0.318 | 0.12 | ×1.2 | 39 | 0 | 1,876 |
 | grep | 51% | 3,575 / 6,220 | 0.412 | 0.10 | ×1.0 | 43 | 0 | 2,620 |
 | memcontinuum | 48% | 3,378 / 5,920 | 0.304 | 0.10 | ×1.0 | 32 | 0 | 799 |
 | whole file | 71% | 5,041 / 5,845 | 0.487 | 0.00 | ×0.1 | 5 | 423,672 | 401,934 |
@@ -113,6 +125,7 @@ into the three-seed table.
 | langmem | 63% (61–66) | 0.468 (0.461–0.473) | 52 (51–54) |
 | rag | 63% (61–66) | 0.468 (0.461–0.473) | 52 (51–54) |
 | mem0 | 59% (57–61) | 0.443 (0.438–0.447) | 46 (45–48) |
+| cognee | 58% (56–60) | 0.342 (0.337–0.348) | 40 (39–42) |
 | grep | 53% (51–55) | 0.418 (0.414–0.422) | 43 (42–44) |
 | memcontinuum | 52% (49–55) | 0.321 (0.314–0.327) | 33 (33–34) |
 | whole file | 71% (69–74) | 0.487 (0.483–0.492) | 5 (5–5) |
@@ -127,6 +140,7 @@ Per family, three seeds:
 | langmem | 80% (78–83) | 0% | 90% (87–93) | n/a | n/a | 100% | 4% (3–5) | 100% (99–100) |
 | rag | 80% (78–83) | 0% | 90% (87–93) | n/a | n/a | 100% | 4% (3–5) | 100% (99–100) |
 | mem0 | 74% (72–76) | 0% | 78% (76–80) | n/a | n/a | 100% | 2% (2–3) | 100% |
+| cognee | 80% (78–82) | 0% | 91% (89–92) | n/a | n/a | 100% | 3% (3–4) | n/a |
 | grep | 65% (63–67) | 0% | 69% (68–69) | n/a | n/a | 100% | 0% (0–1) | 100% |
 | memcontinuum | 70% (67–74) | 0% | 85% (83–86) | n/a | n/a | 100% | 2% (1–2) | n/a |
 | curated | 6% (6–7) | 0% | 0% | n/a | n/a | 100% | 18% (15–21) | n/a |

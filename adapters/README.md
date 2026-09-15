@@ -43,6 +43,7 @@ adapter and its results need to carry.
 
 ## Arms
 
+- **cognee** — `cognee_adapter.py`, notes in `cognee.md`: cognee 1.5.4 with the LLM left out (the `cognify()` pipeline minus its extraction task: classify → chunk → `add_data_points`, `CHUNKS` search), cognee's own `fastembed` provider with bge-small, its default LanceDB + LadybugDB stores; no window on its chunk search, so temporal is N/A beside every other capability.
 - **langmem** — `langmem_adapter.py`, notes in `langmem.md`: LangMem's memory layer (the LangGraph store with its semantic index, the three calls its tools make) with the same bge-small embedder; temporal native, everything else N/A.
 - **memcontinuum** — `memcontinuum_adapter.py`, notes in `memcontinuum.md`: MemContinuum (decision chains over append-only markdown topics, SQLite FTS5 + bge-small via fastembed, RRF hybrid search) driven in-process through its own `memidx` commands; history native (the chain), the owner's endorsement native (a promotion link), everything else N/A.
 - **mem0** — `mem0_adapter.py`, notes in `mem0.md`: Mem0 OSS (mem0ai 2.0) with `infer=False` (no LLM anywhere; the mandatory client is pointed at an unreachable address and the run is socket-guarded), local Qdrant, hybrid BM25 on, bge-small fp32 via sentence-transformers (fastembed-python's bge-small entry is the int8 export — the one place the "same embedder" line above needs that footnote); temporal native via a numeric capture-time field, everything else N/A.
