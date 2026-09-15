@@ -36,6 +36,7 @@ the `.log` beside each receipt is the terminal report.
 | `500-seed1-late.json` | `--sizes 500 --pollution-shape late` | pollution shape |
 | `500-seed1-authority.json` | `--sizes 500 --authority` | the authority family (plus the plain eight) |
 | `1500-seed1-authority.json` | `--sizes 1500 --authority` | the authority family at 1500 |
+| `500-seed1-tfidf.json` | `--sizes 500 --arms tfidf` | the in-process `tfidf` arm (v2 branch): the lexical crack reproduced on the v1 500 world — 564 at 61% |
 
 Arms in every file: `engram` (engram-core 0.9.4, in-memory store, driven
 the way its daemon drives it), `rag` (vector top-k, same embedder, nothing

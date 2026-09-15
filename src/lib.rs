@@ -30,7 +30,9 @@ pub mod world;
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 
 /// Every in-process arm by name, in the order the tables print them.
-pub const ARM_NAMES: [&str; 6] = ["engram", "rag", "grep", "curated", "whole", "chance"];
+pub const ARM_NAMES: [&str; 7] = [
+    "engram", "rag", "grep", "curated", "whole", "chance", "tfidf",
+];
 
 #[cfg(all(test, feature = "arms"))]
 mod tests {
@@ -108,6 +110,49 @@ mod tests {
         assert!((0.0..=1.0).contains(&g.success));
         assert!(g.multiplier >= 0.1 && g.multiplier <= 10.0);
         assert!(g.standing_tokens_hint() > 0);
+    }
+
+    /// The v2 score is additive and the v2 world's traps bite the lexical
+    /// arm: natural nulls are answered where phantoms were declined, the
+    /// synonym restatement is not flagged as a value flip would be, and a
+    /// v1 world graded by the same code keeps its v1 score.
+    #[test]
+    fn the_v2_edition_scores_additively_and_traps_the_lexical_arm() {
+        let v2 = world::build(&world::WorldConfig {
+            size: 66,
+            seed: 11,
+            edition: 2,
+            ..world::WorldConfig::default()
+        });
+        let mut tfidf = crate::arms::TfidfArm::default();
+        let t = runner::run(&v2, &mut tfidf).unwrap();
+        let g = grade::grade(&v2, &t).unwrap();
+        assert_eq!(g.edition, 2);
+        assert!((g.score - (g.family_points + g.signal_score + g.token_score)).abs() < 1e-9);
+        assert!(g.family_points <= 800.0 && g.signal_score <= 100.0 && g.token_score <= 100.0);
+        // The idf oracle declines a coined phantom and answers a written
+        // subject's natural null.
+        assert!(col(&g, "abstention", "natural_fp") >= col(&g, "abstention", "phantom_fp"));
+        assert!(col(&g, "retrieval", "crossed_r@5") <= col(&g, "retrieval", "lexical_r@5"));
+        // Title-only snippets carry the answer for every kind, so the
+        // readable rule does not zero a lexical hit.
+        assert!(col(&g, "retrieval", "lexical_r@5") > 0.5);
+
+        let v1 = world::build(&world::WorldConfig {
+            size: 66,
+            seed: 11,
+            ..world::WorldConfig::default()
+        });
+        let mut tfidf = crate::arms::TfidfArm::default();
+        let t = runner::run(&v1, &mut tfidf).unwrap();
+        let g1 = grade::grade(&v1, &t).unwrap();
+        assert_eq!(g1.edition, 1);
+        assert!((g1.score - g1.composite * g1.multiplier * 100.0).abs() < 1e-9);
+        assert!(
+            g1.families
+                .iter()
+                .all(|f| !f.columns.contains_key("crossed_r@5"))
+        );
     }
 
     #[test]

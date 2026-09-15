@@ -22,6 +22,12 @@ import json
 
 def row(g: dict) -> str:
     cost = g.get("cost", {})
+    if g.get("edition", 1) >= 2:
+        return (
+            f"| {g['arm']} | {g['success'] * 100:.0f}% | {g['passed']:,} / {g['attempted']:,} | "
+            f"{g['family_points']:.0f} | {g['signal_score']:.0f} | {g['token_score']:.0f} | "
+            f"**{g['score']:.0f}** | {g['tokens_billed']:,.0f} |"
+        )
     return (
         f"| {g['arm']} | {g['success'] * 100:.0f}% | {g['passed']:,} / {g['attempted']:,} | "
         f"{g['composite']:.3f} | {g['signal_share']:.2f} | ×{g['multiplier']:.1f} | {g['score']:.0f} | "
@@ -103,8 +109,6 @@ def main() -> None:
     if a.seeds:
         seed_rows(collect(a.seeds + a.graded, a.size))
         return
-    print("| arm | success | passed / attempted | composite | S | mult | score | standing tok | tok/query |")
-    print("|---|---|---|---|---|---|---|---|---|")
     arms: list[dict] = []
     if a.receipt:
         r = json.load(open(a.receipt))
@@ -113,8 +117,17 @@ def main() -> None:
                 arms.extend(s["arms"])
     for p in a.graded:
         arms.append(json.load(open(p)))
+    if arms and arms[0].get("edition", 1) >= 2:
+        print("| arm | success | passed / attempted | families (800) | signal (100) | tokens (100) | v2 score | billed tok/query |")
+        print("|---|---|---|---|---|---|---|---|")
+    else:
+        print("| arm | success | passed / attempted | composite | S | mult | score | standing tok | tok/query |")
+        print("|---|---|---|---|---|---|---|---|---|")
     for g in arms:
         print(row(g))
+    for g in arms:
+        for flag in g.get("flags", []):
+            print(f"<!-- {g['arm']}: {flag} -->")
     if a.families:
         for g in arms:
             print(f"\n{g['arm']}:")

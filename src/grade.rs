@@ -21,6 +21,17 @@
 //!   answers in a few relevant tokens can earn up to ×10. The multiplier is
 //!   a stated sketch, printed beside the unmultiplied number. The score is
 //!   scaled ×100 so it reads as a whole number: 0.87 × 6.4 → 550.
+//!
+//! On a v2 world (`spec.edition == 2`) the score is **additive**: every plain
+//! family contributes its pass rate as points out of 100 (eight families,
+//! 800 points), plus an efficiency bonus of two 0–100 terms — the signal
+//! score (mean focus over EVERY retrieval probe, a miss or a declined real
+//! question scoring zero) and the token score, logarithmic between 200
+//! tokens per query (100) and 3,000 (0), with standing tokens amortised over
+//! twenty questions a session. One family point trades one-for-one against
+//! one bonus point, and the bonus is capped at 200 against the families'
+//! 800, so no system wins on efficiency alone. A v2 hit also counts only when
+//! the answer is readable in the delivered text, not merely keyed.
 
 use std::collections::BTreeMap;
 
@@ -64,8 +75,23 @@ pub struct Graded {
     pub composite: f64,
     pub signal_share: f64,
     pub multiplier: f64,
-    /// 100 × composite × multiplier.
+    /// v1: 100 × composite × multiplier. v2: family_points + signal_score +
+    /// token_score.
     pub score: f64,
+    /// The world's benchmark edition the score was computed under.
+    pub edition: u8,
+    /// v2: Σ over the plain families of pass rate × 100 (N/A = 0).
+    pub family_points: f64,
+    /// v2: 100 × mean focus over every retrieval probe (a miss = 0).
+    pub signal_score: f64,
+    /// v2: 100 × clamp(ln(3000 / t) / ln 15, 0, 1) over the billed tokens.
+    pub token_score: f64,
+    /// v2: the tokens the token score was read off — tokens per query plus
+    /// standing tokens over twenty questions (a dump is billed once).
+    pub tokens_billed: f64,
+    /// Declared capabilities whose column never showed: a review reads
+    /// these before the numbers.
+    pub flags: Vec<String>,
     pub families: Vec<FamilyReport>,
     pub attention: BTreeMap<String, f64>,
     pub cost: BTreeMap<String, f64>,
@@ -145,6 +171,31 @@ fn top_score(r: &Recalled) -> Option<f64> {
         .fold(None, |m, s| Some(m.map_or(s, |m: f64| m.max(s))))
 }
 
+/// v2: the answer must be readable in the delivered hit, not merely keyed.
+/// An empty `answer` (every v1 probe) keeps key-based credit.
+fn readable(r: &Recalled, key: &str, answer: &str) -> bool {
+    if answer.is_empty() {
+        return true;
+    }
+    let needle = answer.to_lowercase();
+    r.hits
+        .iter()
+        .any(|h| h.key.as_deref() == Some(key) && h.text.to_lowercase().contains(&needle))
+}
+
+/// Standing tokens are paid once a session; a session is taken to hold
+/// twenty questions — a stated sketch, like the v1 multiplier.
+pub const STANDING_QUERIES_PER_SESSION: f64 = 20.0;
+
+/// The v2 token score: 100 at 200 tokens per query, 0 at 3,000, logarithmic
+/// between, so halving the bill is worth the same everywhere.
+pub fn token_score(tokens: f64) -> f64 {
+    if tokens <= 200.0 {
+        return 100.0;
+    }
+    (100.0 * (3000.0 / tokens).ln() / 15f64.ln()).clamp(0.0, 100.0)
+}
+
 fn recall_reply<'a>(t: &'a Transcript, id: &str) -> anyhow::Result<&'a Recalled> {
     match t.reply(id) {
         Some(Reply::Recall { result, .. }) => Ok(result),
@@ -160,6 +211,7 @@ pub fn grade(script: &Script, t: &Transcript) -> anyhow::Result<Graded> {
         script.digest()
     );
     let caps = t.capabilities;
+    let v2 = script.spec.edition >= 2;
     let mut acc = Acc {
         tasks: Vec::new(),
         cols: BTreeMap::new(),
@@ -246,6 +298,12 @@ pub fn grade(script: &Script, t: &Transcript) -> anyhow::Result<Graded> {
     let mut control_scores: Vec<Option<f64>> = Vec::new();
     let mut focus_sum = 0.0;
     let mut focus_n = 0usize;
+    // v2: focus over EVERY retrieval probe — a miss, an unreadable hit or
+    // a declined real question scores zero signal for what it delivered.
+    let mut focus2_sum = 0.0;
+    let mut focus2_n = 0usize;
+    let mut dump_seen = false;
+    let mut declined_any = false;
     let mut phrasing: BTreeMap<String, (usize, usize)> = BTreeMap::new();
 
     for p in &script.probes {
@@ -257,9 +315,13 @@ pub fn grade(script: &Script, t: &Transcript) -> anyhow::Result<Graded> {
                 gold,
                 phrasing: ph,
                 stale,
+                answer,
             } => {
                 let r = recall_reply(t, &p.id)?;
-                let rank = rank_of(r, gold);
+                dump_seen |= r.dump;
+                declined_any |= r.declined;
+                let legible = readable(r, gold, answer);
+                let rank = rank_of(r, gold).filter(|_| legible);
                 let stale_rank = stale.as_deref().and_then(|s| rank_of(r, s));
                 let found5 = rank.is_some_and(|k| k <= 5);
                 // A stale twin ranked above (or beside, in a dump) the
@@ -292,7 +354,11 @@ pub fn grade(script: &Script, t: &Transcript) -> anyhow::Result<Graded> {
                     focus_sum += f;
                     focus_n += 1;
                     acc.col(Family::Retrieval, "hedge", b(r.declined));
+                    if legible && !r.declined {
+                        focus2_sum += f;
+                    }
                 }
+                focus2_n += 1;
                 if stale.is_some() {
                     acc.col(Family::Retrieval, "stale_above", b(stale_above));
                 }
@@ -301,19 +367,31 @@ pub fn grade(script: &Script, t: &Transcript) -> anyhow::Result<Graded> {
                 e.1 += 1;
                 answerable_scores.push(top_score(r));
             }
-            Expect::Control => {
+            Expect::Control { natural } => {
                 let r = recall_reply(t, &p.id)?;
+                declined_any |= r.declined;
                 let answered = !r.hits.is_empty();
                 let pass = !answered || r.declined;
                 acc.task(&p.id, Family::Abstention, pass);
                 acc.col(Family::Abstention, "answered", b(answered));
                 acc.col(Family::Abstention, "fp", b(!pass));
                 acc.col(Family::Abstention, "declined", b(answered && r.declined));
+                if v2 {
+                    acc.col(
+                        Family::Abstention,
+                        if *natural { "natural_fp" } else { "phantom_fp" },
+                        b(!pass),
+                    );
+                }
                 control_scores.push(top_score(r));
             }
-            Expect::Current { head, retired } => {
+            Expect::Current {
+                head,
+                retired,
+                answer,
+            } => {
                 let r = recall_reply(t, &p.id)?;
-                let rank = rank_of(r, head);
+                let rank = rank_of(r, head).filter(|_| readable(r, head, answer));
                 let polluted = retired.iter().any(|k| rank_of(r, k).is_some());
                 let pass = rank.is_some_and(|k| k <= 5) && !polluted;
                 acc.task(&p.id, Family::Currency, pass);
@@ -338,9 +416,9 @@ pub fn grade(script: &Script, t: &Transcript) -> anyhow::Result<Graded> {
                     acc.col(Family::Currency, "lineage_na", 1.0);
                 }
             },
-            Expect::Linked { gold, .. } => {
+            Expect::Linked { gold, answer, .. } => {
                 let r = recall_reply(t, &p.id)?;
-                let direct = rank_of(r, gold).is_some_and(|k| k <= 5);
+                let direct = rank_of(r, gold).is_some_and(|k| k <= 5) && readable(r, gold, answer);
                 let assisted = r
                     .hits
                     .iter()
@@ -353,9 +431,13 @@ pub fn grade(script: &Script, t: &Transcript) -> anyhow::Result<Graded> {
                 acc.col(Family::Rationale, "assisted_r@5", b(pass));
                 acc.col(Family::Rationale, "structure_only", b(!direct && assisted));
             }
-            Expect::Windowed { gold, window } => {
+            Expect::Windowed {
+                gold,
+                window,
+                answer,
+            } => {
                 let r = recall_reply(t, &p.id)?;
-                let found = rank_of(r, gold).is_some_and(|k| k <= 5);
+                let found = rank_of(r, gold).is_some_and(|k| k <= 5) && readable(r, gold, answer);
                 let leak = r
                     .hits
                     .iter()
@@ -545,10 +627,20 @@ pub fn grade(script: &Script, t: &Transcript) -> anyhow::Result<Graded> {
             columns.insert("lexical_r@5".into(), r5("lexical"));
             columns.insert("paraphrase_r@5".into(), r5("paraphrase"));
             columns.insert("oblique_r@5".into(), r5("oblique"));
-            columns.insert(
-                "weighted_r@5".into(),
-                0.45 * r5("lexical") + 0.45 * r5("paraphrase") + 0.10 * r5("oblique"),
-            );
+            if v2 {
+                // Four phrasings, equal weight: the crossed question is a
+                // quarter of retrieval, not a side column.
+                columns.insert("crossed_r@5".into(), r5("crossed"));
+                columns.insert(
+                    "weighted_r@5".into(),
+                    (r5("lexical") + r5("paraphrase") + r5("oblique") + r5("crossed")) / 4.0,
+                );
+            } else {
+                columns.insert(
+                    "weighted_r@5".into(),
+                    0.45 * r5("lexical") + 0.45 * r5("paraphrase") + 0.10 * r5("oblique"),
+                );
+            }
         }
         if fam == Family::Abstention {
             columns.insert(
@@ -598,6 +690,18 @@ pub fn grade(script: &Script, t: &Transcript) -> anyhow::Result<Graded> {
     };
     let multiplier = (10.0 * signal_share).clamp(0.1, 10.0);
 
+    // ---- v2: the additive score ------------------------------------------
+    let family_points: f64 = families
+        .iter()
+        .filter(|f| f.posed > 0 && f.family != "authority")
+        .map(|f| 100.0 * f.pass_rate.unwrap_or(0.0))
+        .sum();
+    let signal_score = if focus2_n == 0 {
+        0.0
+    } else {
+        100.0 * focus2_sum / focus2_n as f64
+    };
+
     let retrieval = families
         .iter()
         .find(|f| f.family == "retrieval")
@@ -613,6 +717,45 @@ pub fn grade(script: &Script, t: &Transcript) -> anyhow::Result<Graded> {
         "tokens_per_query".into(),
         retrieval.get("tokens").copied().unwrap_or(0.0),
     );
+    let tokens_per_query = retrieval.get("tokens").copied().unwrap_or(0.0);
+    // A dump's delivered tokens ARE its standing text: bill it once.
+    let tokens_billed = tokens_per_query
+        + if dump_seen {
+            0.0
+        } else {
+            t.standing_tokens as f64 / STANDING_QUERIES_PER_SESSION
+        };
+    let token_score = token_score(tokens_billed);
+    let score = if v2 {
+        family_points + signal_score + token_score
+    } else {
+        composite * multiplier * 100.0
+    };
+
+    // ---- capability honesty -----------------------------------------------
+    let mut flags = Vec::new();
+    let fam = |name: &str| families.iter().find(|f| f.family == name);
+    let colv = |name: &str, c: &str| fam(name).and_then(|f| f.columns.get(c).copied());
+    if caps.trace && colv("deletion", "trace") == Some(0.0) {
+        flags.push("trace declared, but no release ever delivered a marker".into());
+    }
+    if caps.verdict && !declined_any {
+        flags.push("verdict declared, but no recall ever declined".into());
+    }
+    if caps.suspects && queue.is_empty() && fam("contradiction").is_some_and(|f| f.posed > 0) {
+        flags.push("suspects declared, but the queue stayed empty".into());
+    }
+    if caps.history && colv("currency", "lineage") == Some(0.0) {
+        flags.push("history declared, but no lineage walk reached a retired generation".into());
+    }
+    if caps.write_check
+        && !inscribed
+            .values()
+            .any(|w| w.matched.is_some() || !w.warnings.is_empty() || !w.suspects.is_empty())
+    {
+        flags.push("write_check declared, but no write ever came back with a verdict".into());
+    }
+
     let mut cost = BTreeMap::new();
     cost.insert("standing_tokens".into(), t.standing_tokens as f64);
     cost.insert(
@@ -636,7 +779,13 @@ pub fn grade(script: &Script, t: &Transcript) -> anyhow::Result<Graded> {
         composite,
         signal_share,
         multiplier,
-        score: composite * multiplier * 100.0,
+        score,
+        edition: script.spec.edition,
+        family_points,
+        signal_score,
+        token_score,
+        tokens_billed,
+        flags,
         families,
         attention,
         cost,

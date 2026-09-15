@@ -26,6 +26,11 @@ OPTIONS:
                           late (hinted, dated AFTER the truth — a migration
                           re-import)                          [default: stale]
     --chain-len N         generations per re-decided subject  [default: 3]
+    --v2                  build the v2 edition of the world: shared-vocabulary
+                          subjects, a fourth crossed phrasing, natural-null
+                          controls, reworded contradiction shapes, answer-bearing
+                          probes, and the additive score (families + signal +
+                          tokens)
     --authority           add the authority family: near-identical twins
                           endorsed on different rungs (retrieval use, the
                           assistant's confirm, the owner's approve, a
@@ -126,6 +131,7 @@ fn cli() -> anyhow::Result<()> {
             }
             "--chain-len" => cfg.chain_len = value()?.parse()?,
             "--authority" => cfg.authority = true,
+            "--v2" => cfg.edition = 2,
             "--arms" => arms = value()?.split(',').map(|s| s.trim().to_string()).collect(),
             "--no-rerank" => no_rerank = true,
             "--json" => json_out = Some(value()?),
@@ -201,8 +207,9 @@ fn cli() -> anyhow::Result<()> {
                 other => format!("-{}", other.name()),
             };
             let authority = if cfg.authority { "-authority" } else { "" };
+            let edition = if cfg.edition >= 2 { "-v2" } else { "" };
             let path = format!(
-                "{dir}/knowledgedrift-{size}-seed{}{shape}{authority}.json",
+                "{dir}/knowledgedrift-{size}-seed{}{shape}{authority}{edition}.json",
                 cfg.seed
             );
             std::fs::write(&path, serde_json::to_string_pretty(&s)?)?;
@@ -242,7 +249,7 @@ fn ladder(
     no_rerank: bool,
     json_out: Option<String>,
 ) -> anyhow::Result<()> {
-    use knowledgedrift::arms::{EngramArm, FlatArm, Mode, embedder, nli, reranker};
+    use knowledgedrift::arms::{EngramArm, FlatArm, Mode, TfidfArm, embedder, nli, reranker};
     use knowledgedrift::protocol::Memory;
     use knowledgedrift::{VERSION, runner};
 
@@ -264,6 +271,9 @@ fn ladder(
         cfg.shape.name(),
         if cfg.authority { ", authority" } else { "" }
     );
+    if cfg.edition >= 2 {
+        println!("edition 2: additive score = families (800) + signal (100) + tokens (100)");
+    }
 
     let mut flags = Vec::new();
     if no_rerank {
@@ -271,6 +281,9 @@ fn ladder(
     }
     if cfg.authority {
         flags.push("--authority".to_string());
+    }
+    if cfg.edition >= 2 {
+        flags.push("--v2".to_string());
     }
     let mut receipt = Receipt {
         generator: format!("knowledgedrift {VERSION}"),
@@ -309,6 +322,7 @@ fn ladder(
                 )),
                 "whole" => Box::new(FlatArm::new(Mode::Whole, None)),
                 "chance" => Box::new(FlatArm::new(Mode::Chance, None)),
+                "tfidf" => Box::new(TfidfArm::default()),
                 other => anyhow::bail!("unknown arm {other}"),
             };
             let t = runner::run(&s, arm.as_mut())?;

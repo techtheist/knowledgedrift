@@ -30,20 +30,21 @@ jobs:
       - run: python3 -m py_compile adapters/*.py
 
   receipts:
-    name: every v1 receipt answers a v1 world
+    name: every receipt answers a world of its edition
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - run: |
           python3 - <<'EOF'
           import json, glob, sys
-          digests = {json.load(open(p))["digest"] for p in glob.glob("worlds/v1/*.json")}
           bad = []
-          for p in glob.glob("results/v1/**/*.json", recursive=True):
-              d = json.load(open(p))
-              found = [s["digest"] for s in d["sizes"]] if "sizes" in d else [d["script_digest"]]
-              bad += [(p, x) for x in found if x not in digests]
-          for p, x in bad:
-              print(f"{p}: digest {x} is not a v1 world", file=sys.stderr)
+          for edition in ("v1", "v2"):
+              digests = {json.load(open(p))["digest"] for p in glob.glob(f"worlds/{edition}/*.json")}
+              for p in glob.glob(f"results/{edition}/**/*.json", recursive=True):
+                  d = json.load(open(p))
+                  found = [s["digest"] for s in d["sizes"]] if "sizes" in d else [d["script_digest"]]
+                  bad += [(p, x, edition) for x in found if x not in digests]
+          for p, x, edition in bad:
+              print(f"{p}: digest {x} is not a {edition} world", file=sys.stderr)
           sys.exit(1 if bad else 0)
           EOF

@@ -22,6 +22,17 @@ a language model, and nothing asks a model whether a model did well.
 | a curated 3,000-token file                                 | 9% (9–9) | 4 (4–4) | ~2,900 |
 | [Engram Alpha](https://github.com/techtheist/engram) 0.9.4 | 85% (84–85) | 525 (511–543) | ~260 |
 
+**v2 is being built on the `v2` branch.** The first lexical submission
+(TF-IDF over titles, one snippet per answer) scored 823 on v1 at 76%
+success by riding the attention multiplier and the coined subject names;
+the in-process `tfidf` arm reproduces it (564 at 61% on the 500 world,
+against the reference system's 511 at 85%). v2 answers with an additive
+score (family points + a capped efficiency bonus), a fourth crossed
+phrasing, shared-vocabulary subjects, natural-null abstention controls,
+three contradiction shapes aimed at token differencing, answer-readable
+credit, and capability flags — `docs/scoring.md`, `docs/families.md`,
+`results/v2/`. The leaderboard above is v1 and stays v1.
+
 Full tables, the 1500 rung, per-family readings and receipts:
 [`results/v1/`](results/v1/README.md) and [`RESULTS.md`](RESULTS.md).
 Submit your own system: [`CONTRIBUTING.md`](CONTRIBUTING.md).

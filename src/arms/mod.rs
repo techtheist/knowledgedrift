@@ -4,9 +4,11 @@
 
 pub mod engram;
 pub mod flat;
+pub mod tfidf;
 
 pub use engram::EngramArm;
 pub use flat::{FlatArm, Mode};
+pub use tfidf::TfidfArm;
 
 use engram_core::{Embedder, Nli, Reranker};
 

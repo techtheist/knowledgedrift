@@ -36,6 +36,15 @@ pub fn print_arm(g: &Graded) {
         g.cost.get("standing_tokens").copied().unwrap_or(0.0) as usize,
         g.cost.get("tokens_per_query").copied().unwrap_or(0.0) as usize,
     );
+    if g.edition >= 2 {
+        println!(
+            "  {:<8} v2 score {:.0} = families {:.0} + signal {:.0} + tokens {:.0} (billed {:.0} tok/query)",
+            "", g.score, g.family_points, g.signal_score, g.token_score, g.tokens_billed
+        );
+    }
+    for flag in &g.flags {
+        println!("  {:<8} ! {flag}", "");
+    }
     let detail: &[(&str, &[&str])] = &[
         (
             "retrieval",
@@ -45,12 +54,23 @@ pub fn print_arm(g: &Graded) {
                 "lexical_r@5",
                 "paraphrase_r@5",
                 "oblique_r@5",
+                "crossed_r@5",
                 "stale_above",
                 "hedge",
                 "noise",
             ],
         ),
-        ("abstention", &["fp", "answered", "declined", "separation"]),
+        (
+            "abstention",
+            &[
+                "fp",
+                "phantom_fp",
+                "natural_fp",
+                "answered",
+                "declined",
+                "separation",
+            ],
+        ),
         (
             "currency",
             &["head_r@1", "head_r@5", "pollution", "lineage"],
@@ -121,7 +141,11 @@ pub fn print_arm(g: &Graded) {
 
 /// The cross-arm table for one size.
 pub fn print_summary(size: usize, notes: usize, arms: &[Graded]) {
-    println!("\n== {size} tested facts, {notes} notes ==");
+    let v2 = arms.iter().any(|g| g.edition >= 2);
+    println!(
+        "\n== {size} tested facts, {notes} notes{} ==",
+        if v2 { ", v2" } else { "" }
+    );
     println!(
         "  {:<8} {:>6} {:>9} {:>6} {:>8} {:>9} {:>9} {:>5} {:>5} {:>7} {:>9} {:>8}",
         "arm",
@@ -153,5 +177,17 @@ pub fn print_summary(size: usize, notes: usize, arms: &[Graded]) {
             g.cost.get("standing_tokens").copied().unwrap_or(0.0) as usize,
             g.cost.get("tokens_per_query").copied().unwrap_or(0.0) as usize,
         );
+    }
+    if v2 {
+        println!(
+            "  {:<8} {:>8} {:>8} {:>7} {:>7} {:>9}",
+            "arm", "families", "signal", "tokens", "score", "billed"
+        );
+        for g in arms {
+            println!(
+                "  {:<8} {:>8.0} {:>8.0} {:>7.0} {:>7.0} {:>9.0}",
+                g.arm, g.family_points, g.signal_score, g.token_score, g.score, g.tokens_billed
+            );
+        }
     }
 }

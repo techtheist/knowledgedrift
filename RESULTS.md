@@ -297,15 +297,41 @@ Kept here because the next benchmark author will think of them too.
 - **No behaviour.** Whether an agent *acts* on what it recalls is a
   separate, online question this benchmark does not ask.
 
-## What v2 would add
+## What v2 adds (the `v2` branch)
 
-- A `collider`-style negative for every family, not only contradiction.
-- Authority scenarios the generator cannot yet template: an endorsed note
-  that is later contradicted by judged evidence (demotion vs approval),
-  and endorsements spread across sessions rather than stamped in one.
-- A pollution shape the generator cannot template: a note that stopped
-  being true without any sibling saying so.
-- A second corpus style (chat-shaped or issue-tracker-shaped notes) to
-  see which columns are register-dependent.
-- Results from systems with a language model in the loop, once a
-  judge-free way to hold the model fixed exists.
+v1 was cracked the day it shipped: a TF-IDF store that shows one title per
+answer scored 823 at 76% success (the reference system: 511 at 80%) by
+riding the ×10 attention multiplier, by treating a coined subject token
+nobody had written as "not in memory", by matching lexical and paraphrase
+questions on the subject name, and by flagging a contradiction whenever
+one token of a title changed. The in-process `tfidf` arm reproduces the
+mechanism (`results/v1/reference-arms/500-seed1-tfidf.json`: 564 at 61%
+on the 500 world, 99 tokens per answer, signal share 0.82). v2 keeps the
+benchmark judge-free and changes what it rewards:
+
+- **An additive score** — Σ family pass rates × 100 (800) + a signal score
+  (100) + a logarithmic token score (100), so a family point trades
+  one-for-one against a bonus point and efficiency alone cannot win
+  (`docs/scoring.md`).
+- **Signal over every probe** — a miss, an unreadable hit and a decline on
+  an answerable question all count as zero signal for the tokens they cost.
+- **Answer-readable credit** — every retrieval, currency, rationale and
+  temporal probe carries the answer substring; a hit that does not show it
+  is a miss.
+- **Shared-vocabulary subjects** — `amber harbor lease broker` from two
+  pools of ordinary words, so no token names a note and an unseen token is
+  not an oracle.
+- **A fourth, crossed phrasing** that shares no content word with its
+  note, weighed equally with the other three.
+- **Natural-null controls** beside the phantoms — a written subject asked
+  a kind of question it has no note for.
+- **Three contradiction shapes** for token differencing: `reworded`,
+  `clause`, `synonym`.
+- **Capability flags** — a declared capability whose column never showed
+  is named in the receipt.
+
+Still owed: a `collider`-style negative for every family; authority
+scenarios with judged evidence and endorsements spread across sessions;
+a pollution shape with no sibling; a second corpus register; systems with
+a language model in the loop, once a judge-free way to hold the model
+fixed exists.
