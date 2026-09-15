@@ -1,4 +1,4 @@
-# KnowledgeDrift v1
+# KnowledgeDrift v2
 
 An offline, judge-free benchmark for AI memory in software development.
 
@@ -6,11 +6,33 @@ One seeded world of invented project knowledge is poured into a memory
 system through an eleven-operation protocol, and then the system is questioned,
 re-decided, contradicted, asked to forget, endorsed, and asked again. Every probe is a
 **task** with a pass/fail rule fixed before the question was asked. The
-headline is the **mean success over every task**, beside a macro-averaged
-**composite** and an attention-multiplied **score**. Nothing in the loop is
-a language model, and nothing asks a model whether a model did well.
+headline is the **v2 score**: every family's pass rate as points out of
+100 (eight families, 800), plus a capped efficiency bonus — a signal score
+for how much of what the reader was shown was the answer, and a token
+score for how little had to be read (100 each). Nothing in the loop is a
+language model, and nothing asks a model whether a model did well.
 
-| system (v1, 500 tested facts, 3 seeds)                     | success | score | tok / answer |
+| system (v2, 500 tested facts, 3 seeds)                     | success | families | signal | tokens | **v2 score** | tok / answer |
+|------------------------------------------------------------|---|---|---|---|---|---|
+| TF-IDF over titles, one snippet per answer (`tfidf`)       | 44% (43–46) | 440 | 43 | 100 | **583 (576–587)** | ~140 |
+| the whole file in context                                  | 71% (69–74) | 390 | 0 | 0 | **390 (387–394)** | ~134,000 |
+| vector top-k (`rag`)                                       | 53% (52–55) | 358 | 8 | 9 | **375 (374–375)** | ~2,400 |
+| keyword overlap (`grep`)                                   | 42% (40–44) | 320 | 6 | 3 | **329 (328–330)** | ~2,800 |
+| a curated 3,000-token file                                 | 8% (7–8) | 122 | 0 | 1 | **122 (119–125)** | ~2,900 |
+| chance                                                     | 4% (3–4) | 106 | 0 | 9 | **116 (115–117)** | ~2,300 |
+| [Engram Alpha](https://github.com/techtheist/engram) 0.9.4 | 69% (69–70) | 630 | 34 | 74 | **738 (737–739)** | ~400 (218 + a 3,900-token brief over 20 questions) |
+
+At 1500 tested facts (seed 1): Engram Alpha 721, `tfidf` 580, the whole file 390, `rag` 359, `grep` 323.
+
+The v2 worlds have shared-vocabulary subjects, a fourth question phrasing
+that shares no content word with its note, natural-null abstention
+controls, and contradiction shapes that a token diff cannot separate —
+`docs/families.md`. External systems (LangMem, Mem0, MemContinuum,
+cognee) have not been run on v2 yet; their v1 rows are below.
+
+### v1 (frozen 2026-09-14; composite × attention multiplier)
+
+| system (v1, 500 tested facts, 3 seeds)                     | success | v1 score | tok / answer |
 |------------------------------------------------------------|---|---|---|
 | LangMem 0.0.30 (store + semantic index)                    | 63% (61–66) | 52 (51–54) | ~2,300 |
 | vector top-k (`rag`)                                       | 63% (61–66) | 52 (51–54) | ~2,300 |
@@ -22,19 +44,18 @@ a language model, and nothing asks a model whether a model did well.
 | a curated 3,000-token file                                 | 9% (9–9) | 4 (4–4) | ~2,900 |
 | [Engram Alpha](https://github.com/techtheist/engram) 0.9.4 | 85% (84–85) | 525 (511–543) | ~260 |
 
-**v2 is being built on the `v2` branch.** The first lexical submission
-(TF-IDF over titles, one snippet per answer) scored 823 on v1 at 76%
-success by riding the attention multiplier and the coined subject names;
-the in-process `tfidf` arm reproduces it (564 at 61% on the 500 world,
-against the reference system's 511 at 85%). v2 answers with an additive
-score (family points + a capped efficiency bonus), a fourth crossed
-phrasing, shared-vocabulary subjects, natural-null abstention controls,
-three contradiction shapes aimed at token differencing, answer-readable
-credit, and capability flags — `docs/scoring.md`, `docs/families.md`,
-`results/v2/`. The leaderboard above is v1 and stays v1.
+**Why v2.** The day v1 shipped, a TF-IDF store that shows one title per
+answer scored 823 on it at 76% success — above the reference system — by
+riding the ×10 attention multiplier and the coined subject names. The
+`tfidf` arm reproduces that on v1 (564 at 61%, against 511 at 85%) and
+lands 155 points under the reference system on v2, with every mechanism it
+rode visible as a column. v1's worlds and receipts are frozen and kept;
+v2 is the benchmark — `docs/scoring.md` for the score, `results/v2/` for
+the receipts.
 
 Full tables, the 1500 rung, per-family readings and receipts:
-[`results/v1/`](results/v1/README.md) and [`RESULTS.md`](RESULTS.md).
+[`results/v2/`](results/v2/README.md), [`results/v1/`](results/v1/README.md)
+and [`RESULTS.md`](RESULTS.md).
 Submit your own system: [`CONTRIBUTING.md`](CONTRIBUTING.md).
 
 ## Why

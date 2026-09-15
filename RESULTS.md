@@ -330,6 +330,16 @@ benchmark judge-free and changes what it rewards:
 - **Capability flags** — a declared capability whose column never showed
   is named in the receipt.
 
+Measured (`results/v2/`, seven in-process arms, no external adapter yet):
+at 500 over three seeds engram 738 (737–739) at 69% success, tfidf 583
+(576–587) at 44%, the whole file 390, rag 375, grep 329, curated 122,
+chance 116; at 1500 engram 721, tfidf 580, whole 390, rag 359,
+grep 323. The score is a sum of means, so it is stable to a point per
+arm across seeds. The lexical arm keeps what it honestly earns (100 token
+points, ~40 signal points, the families it attempts) and loses the
+oracles: phantom and natural false positives 1.00, crossed recall 0.00,
+the stale sibling above the truth 70% of the time.
+
 Still owed: a `collider`-style negative for every family; authority
 scenarios with judged evidence and endorsements spread across sessions;
 a pollution shape with no sibling; a second corpus register; systems with

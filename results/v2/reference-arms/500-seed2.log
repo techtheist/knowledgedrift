@@ -1,0 +1,104 @@
+    Finished `release` profile [optimized] target(s) in 0.66s
+     Running `target/release/knowledgedrift --v2 --sizes 500 --seed 2 --arms engram,rag,grep,curated,whole,chance,tfidf --json results/v2/reference-arms/500-seed2.json`
+knowledgedrift 1.0.0 — embedder bge-small-en-v1.5, reranker jina-reranker-v1-turbo-en, nli deberta-v3-small-tasksource-nli, seed 2, pollution 10% (stale)
+edition 2: additive score = families (800) + signal (100) + tokens (100)
+world 500: 607 notes, 530 edges, 4187 ops, 2984 probes
+  engram: 2943 tasks, success 0.700, 612s
+    settle: auto-tune left the defaults; weak line 0.912; sweep queued 1
+  rag: 2943 tasks, success 0.545, 38s
+  grep: 2943 tasks, success 0.435, 3s
+  curated: 2943 tasks, success 0.082, 1s
+  whole: 2943 tasks, success 0.743, 1s
+  chance: 2943 tasks, success 0.038, 0s
+  tfidf: 2943 tasks, success 0.459, 14s
+    settle: token differencing nominated 148 pairs
+
+== 500 tested facts, 607 notes, v2 ==
+  arm       posed attempted passed  success   of att. composite     S  mult   score  standing    tok/q
+  engram     2943      2943   2060      70%       70%     0.785  0.65   6.5     737      3888      205
+  rag        2943      2678   1604      55%       60%     0.450  0.10   1.0     375         0     2453
+  grep       2943      2678   1281      44%       48%     0.401  0.10   1.0     329         0     2827
+  curated    2943      2553    242       8%        9%     0.155  0.03   0.3     125      2997     2934
+  whole      2943      2553   2187      74%       86%     0.492  0.00   0.1     394    141514   133749
+  chance     2943      2678    113       4%        4%     0.134  0.10   1.0     116         0     2407
+  tfidf      2943      2876   1351      46%       47%     0.549  0.84   8.4     585         0      135
+  arm      families   signal  tokens   score    billed
+  engram        628       34      74     737       400
+  rag           360        8       7     375      2454
+  grep          321        6       2     329      2827
+  curated       124        0       1     125      2934
+  whole         394        0       0     394    133749
+  chance        107        0       8     116      2407
+  tfidf         440       45     100     585       135
+  engram   success  70% = 2060 passed of 2943 posed (attempted 2943/2943,  70% of those passed)   composite 0.785   S 0.65 ×6.5   score 737   standing 3888 tok   205 tok/query
+           v2 score 737 = families 628 + signal 34 + tokens 74 (billed 400 tok/query)
+    retrieval      2000   62%  r@1 0.53  r@5 0.64  lexical_r@5 1.00  paraphrase_r@5 0.99  oblique_r@5 0.51  crossed_r@5 0.04  stale_above 0.22  hedge 0.42  noise 0.49
+    abstention      238  100%  fp 0.00  phantom_fp 0.00  natural_fp 0.00  answered 1.00  declined 1.00  separation 0.70
+    currency        100   88%  head_r@1 0.75  head_r@5 0.84  pollution 0.00  lineage 1.00
+    contradiction   166   46%  t1_recall 0.04  t2_recall 0.10  t3_recall 0.04  t2_false_alarm 0.00  t3_false_alarm 0.00  queued 0.09  flagged 0.06  absorbed 0.02
+    drift            32   41%  noticed 0.41  flagged 0.28
+    deletion        125   91%  released_gone 1.00  purged_gone 1.00  trace 1.00  marker_leak 1.00  resurrection_warned 0.74  purged_rewrite_warned 0.12
+    rationale       157   99%  direct_r@5 0.01  assisted_r@5 0.99  structure_only 0.99
+    temporal        125  100%  in_window_r@5 1.00  leak 0.00
+  rag      success  55% = 1604 passed of 2943 posed (attempted 2678/2943,  60% of those passed)   composite 0.450   S 0.10 ×1.0   score 375   standing 0 tok   2453 tok/query
+           v2 score 375 = families 360 + signal 8 + tokens 7 (billed 2454 tok/query)
+    retrieval      2000   66%  r@1 0.54  r@5 0.68  lexical_r@5 1.00  paraphrase_r@5 0.99  oblique_r@5 0.55  crossed_r@5 0.17  stale_above 0.24  hedge 0.00  noise 0.93
+    abstention      238    0%  fp 1.00  phantom_fp 1.00  natural_fp 1.00  answered 1.00  declined 0.00  separation 0.61
+    currency         75   91%  head_r@1 0.75  head_r@5 0.91  pollution 0.00
+    contradiction     -  n/a — no suspect nomination
+    drift             -  n/a — no suspect nomination
+    deletion         83  100%  released_gone 1.00  purged_gone 1.00  resurrection_warned 0.00  purged_rewrite_warned 0.00
+    rationale       157    3%  direct_r@5 0.03  assisted_r@5 0.03  structure_only 0.00
+    temporal        125  100%  in_window_r@5 1.00  leak 0.00
+  grep     success  44% = 1281 passed of 2943 posed (attempted 2678/2943,  48% of those passed)   composite 0.401   S 0.10 ×1.0   score 329   standing 0 tok   2827 tok/query
+           v2 score 329 = families 321 + signal 6 + tokens 2 (billed 2827 tok/query)
+    retrieval      2000   51%  r@1 0.48  r@5 0.54  lexical_r@5 1.00  paraphrase_r@5 1.00  oblique_r@5 0.15  crossed_r@5 0.01  stale_above 0.46  hedge 0.00  noise 0.94
+    abstention      238    0%  fp 1.00  phantom_fp 1.00  natural_fp 1.00  answered 1.00  declined 0.00  separation 0.72
+    currency         75   68%  head_r@1 0.67  head_r@5 0.68  pollution 0.00
+    contradiction     -  n/a — no suspect nomination
+    drift             -  n/a — no suspect nomination
+    deletion         83  100%  released_gone 1.00  purged_gone 1.00  resurrection_warned 0.00  purged_rewrite_warned 0.00
+    rationale       157    2%  direct_r@5 0.02  assisted_r@5 0.02  structure_only 0.00
+    temporal        125  100%  in_window_r@5 1.00  leak 0.00
+  curated  success   8% = 242 passed of 2943 posed (attempted 2553/2943,   9% of those passed)   composite 0.155   S 0.03 ×0.3   score 125   standing 2997 tok   2934 tok/query
+           v2 score 125 = families 124 + signal 0 + tokens 1 (billed 2934 tok/query)
+    retrieval      2000    7%  r@1 0.07  r@5 0.07  lexical_r@5 0.07  paraphrase_r@5 0.07  oblique_r@5 0.07  crossed_r@5 0.07  stale_above 0.12  hedge 0.00  noise 1.00
+    abstention      238    0%  fp 1.00  phantom_fp 1.00  natural_fp 1.00  answered 1.00  declined 0.00  separation 0.50
+    currency         75    0%  head_r@1 0.00  head_r@5 0.00  pollution 0.00
+    contradiction     -  n/a — no suspect nomination
+    drift             -  n/a — no suspect nomination
+    deletion         83  100%  released_gone 1.00  purged_gone 1.00  resurrection_warned 0.00  purged_rewrite_warned 0.00
+    rationale       157   17%  direct_r@5 0.17  assisted_r@5 0.17  structure_only 0.00
+    temporal          -  n/a — no capture-time scoping
+  whole    success  74% = 2187 passed of 2943 posed (attempted 2553/2943,  86% of those passed)   composite 0.492   S 0.00 ×0.1   score 394   standing 141514 tok   133749 tok/query
+           v2 score 394 = families 394 + signal 0 + tokens 0 (billed 133749 tok/query)
+    retrieval      2000   94%  r@1 1.00  r@5 1.00  lexical_r@5 1.00  paraphrase_r@5 1.00  oblique_r@5 1.00  crossed_r@5 1.00  stale_above 1.00  hedge 0.00  noise 1.00
+    abstention      238    0%  fp 1.00  phantom_fp 1.00  natural_fp 1.00  answered 1.00  declined 0.00  separation 0.50
+    currency         75  100%  head_r@1 1.00  head_r@5 1.00  pollution 0.00
+    contradiction     -  n/a — no suspect nomination
+    drift             -  n/a — no suspect nomination
+    deletion         83  100%  released_gone 1.00  purged_gone 1.00  resurrection_warned 0.00  purged_rewrite_warned 0.00
+    rationale       157  100%  direct_r@5 1.00  assisted_r@5 1.00  structure_only 0.00
+    temporal          -  n/a — no capture-time scoping
+  chance   success   4% = 113 passed of 2943 posed (attempted 2678/2943,   4% of those passed)   composite 0.134   S 0.10 ×1.0   score 116   standing 0 tok   2407 tok/query
+           v2 score 116 = families 107 + signal 0 + tokens 8 (billed 2407 tok/query)
+    retrieval      2000    1%  r@1 0.00  r@5 0.01  lexical_r@5 0.01  paraphrase_r@5 0.01  oblique_r@5 0.01  crossed_r@5 0.02  stale_above 0.02  hedge 0.00  noise 1.00
+    abstention      238    0%  fp 1.00  phantom_fp 1.00  natural_fp 1.00  answered 1.00  declined 0.00  separation 0.50
+    currency         75    0%  head_r@1 0.00  head_r@5 0.00  pollution 0.00
+    contradiction     -  n/a — no suspect nomination
+    drift             -  n/a — no suspect nomination
+    deletion         83  100%  released_gone 1.00  purged_gone 1.00  resurrection_warned 0.00  purged_rewrite_warned 0.00
+    rationale       157    3%  direct_r@5 0.03  assisted_r@5 0.03  structure_only 0.00
+    temporal        125    3%  in_window_r@5 0.03  leak 0.00
+  tfidf    success  46% = 1351 passed of 2943 posed (attempted 2876/2943,  47% of those passed)   composite 0.549   S 0.84 ×8.4   score 585   standing 0 tok   135 tok/query
+           v2 score 585 = families 440 + signal 45 + tokens 100 (billed 135 tok/query)
+    retrieval      2000   49%  r@1 0.47  r@5 0.51  lexical_r@5 0.99  paraphrase_r@5 0.99  oblique_r@5 0.07  crossed_r@5 0.00  stale_above 0.71  hedge 0.00  noise 0.56
+    abstention      238    0%  fp 1.00  phantom_fp 1.00  natural_fp 1.00  answered 1.00  declined 0.00  separation 0.69
+    currency         75   69%  head_r@1 0.68  head_r@5 0.69  pollution 0.00
+    contradiction   166   59%  t1_recall 0.38  t2_recall 0.38  t3_recall 0.33  t2_false_alarm 0.06  t3_false_alarm 0.19  queued 0.36  flagged 0.36  absorbed 0.00
+    drift            32   62%  noticed 0.62  flagged 0.62
+    deletion         83  100%  released_gone 1.00  purged_gone 1.00  resurrection_warned 0.00  purged_rewrite_warned 0.00
+    rationale       157    0%  direct_r@5 0.00  assisted_r@5 0.00  structure_only 0.00
+    temporal        125  100%  in_window_r@5 1.00  leak 0.00
+
+wrote results/v2/reference-arms/500-seed2.json
