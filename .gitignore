@@ -2,7 +2,9 @@
 /.cargo/config.toml
 /.idea
 /.engram
+/paper
 __pycache__/
 .pytest_cache/
 adapters/.venv-*
 adapters/out/
+adapters/vendor/

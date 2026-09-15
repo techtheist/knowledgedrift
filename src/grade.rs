@@ -32,6 +32,9 @@ use crate::script::{Expect, Family, Reply, Script, Timing, Transcript};
 #[derive(Debug, Clone, Serialize)]
 pub struct FamilyReport {
     pub family: String,
+    /// Tasks the script poses in this family (the same for every system).
+    pub posed: usize,
+    /// Tasks this system attempted.
     pub tasks: usize,
     pub passed: usize,
     /// `None` when the family is N/A for this system.
@@ -170,6 +173,10 @@ pub fn grade(script: &Script, t: &Transcript) -> anyhow::Result<Graded> {
     if !caps.temporal {
         acc.na
             .insert(Family::Temporal, "no capture-time scoping".into());
+    }
+    if !caps.endorses_any() {
+        acc.na
+            .insert(Family::Authority, "no endorsement rung".into());
     }
 
     // The suspect queue at the end of the run, plus every write-time
@@ -438,6 +445,70 @@ pub fn grade(script: &Script, t: &Transcript) -> anyhow::Result<Graded> {
                     acc.col(Family::Deletion, "purged_gone", b(gone));
                 }
             }
+            Expect::Ranked {
+                winner,
+                losers,
+                retired,
+                order,
+                layer,
+                scenario,
+                needs,
+            } => {
+                // The winning signal needs a rung (or history) the system
+                // did not declare: not attempted, still posed.
+                let na_col: &'static str = "na_share";
+                if needs.iter().any(|n| caps.has(n) != Some(true)) {
+                    acc.col(Family::Authority, na_col, 1.0);
+                    continue;
+                }
+                acc.col(Family::Authority, na_col, 0.0);
+                let r = recall_reply(t, &p.id)?;
+                let wr = rank_of(r, winner);
+                let top5 = wr.is_some_and(|k| k <= 5);
+                // Above every other twin — a dump holding both is ambiguous.
+                let above_all = losers.iter().all(|l| match (wr, rank_of(r, l)) {
+                    (Some(w), Some(l)) => !r.dump && w < l,
+                    (Some(_), None) => true,
+                    (None, _) => false,
+                });
+                let resurrected = retired.iter().any(|k| rank_of(r, k).is_some());
+                let ordered = if *order {
+                    let mut last = wr;
+                    let mut ok = wr.is_some() && !r.dump;
+                    for l in losers {
+                        if let Some(lr) = rank_of(r, l) {
+                            if last.is_some_and(|p| lr <= p) {
+                                ok = false;
+                            }
+                            last = Some(lr);
+                        }
+                    }
+                    ok
+                } else {
+                    true
+                };
+                let pass = top5 && above_all && !resurrected && ordered;
+                acc.task(&p.id, Family::Authority, pass);
+                acc.col(Family::Authority, "winner_top", b(top5 && above_all));
+                acc.col(Family::Authority, "winner_r@5", b(top5));
+                let layer_col: &'static str = match layer {
+                    1 => "l1_autonomous",
+                    2 => "l2_governed",
+                    3 => "l3_three_hands",
+                    _ => "l4_supervised",
+                };
+                acc.col(Family::Authority, layer_col, b(pass));
+                if *order {
+                    acc.col(Family::Authority, "order_exact", b(ordered));
+                }
+                if !retired.is_empty() {
+                    acc.col(Family::Authority, "resurrected", b(resurrected));
+                }
+                // Per-scenario pass rate, for reading a receipt back to the
+                // case; interned so the column table can stay &'static.
+                let name: &'static str = Box::leak(format!("s_{scenario}").into_boxed_str());
+                acc.col(Family::Authority, name, b(pass));
+            }
             Expect::Resurrect { released, .. } => {
                 let warned = inscribed
                     .get(p.id.as_str())
@@ -497,6 +568,7 @@ pub fn grade(script: &Script, t: &Transcript) -> anyhow::Result<Graded> {
             .or_else(|| (posed == 0).then(|| "no tasks in this world".to_string()));
         families.push(FamilyReport {
             family: fam.as_str().to_string(),
+            posed,
             tasks: tasks.len(),
             passed,
             pass_rate: (na.is_none()).then(|| passed as f64 / tasks.len().max(1) as f64),
@@ -510,11 +582,15 @@ pub fn grade(script: &Script, t: &Transcript) -> anyhow::Result<Graded> {
     let passed = acc.tasks.iter().filter(|t| t.pass).count();
     let success = passed as f64 / tasks.max(1) as f64;
     let attempted_success = passed as f64 / attempted.max(1) as f64;
-    let composite = families
+    // The macro mean over the families this WORLD poses: a world built
+    // without the authority family averages eight, one built with it nine.
+    // An N/A family the world does pose still scores zero.
+    let posed_families: Vec<&FamilyReport> = families.iter().filter(|f| f.posed > 0).collect();
+    let composite = posed_families
         .iter()
         .map(|f| f.pass_rate.unwrap_or(0.0))
         .sum::<f64>()
-        / families.len().max(1) as f64;
+        / posed_families.len().max(1) as f64;
     let signal_share = if focus_n == 0 {
         0.0
     } else {

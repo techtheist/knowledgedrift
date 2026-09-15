@@ -19,10 +19,13 @@ the benchmark is about:
 | controls | N/4 subjects that are never written | abstention |
 | planted contradictions | max(6, N/3) cases across eleven shapes | the contradiction ladder |
 | deletions | max(4, N/6) victims, half released with a reason, half purged | deletion honesty |
+| authority twins (`--authority` only) | max(21, N/3) subjects, each with 1–4 planted twins | the authority ladder: which near-identical note comes first |
 
 Target subjects are disjoint by construction: contradiction targets are
 the tested facts at index ≡ 0 (mod 3), deletion targets ≡ 1 (mod 3) and
-never polluted, temporal targets ≡ 2 (mod 3).
+never polluted, temporal targets ≡ 2 (mod 3). Authority targets reuse the
+≡ 2 (mod 3) facts: their twins are planted after every other family has
+been asked, so they crowd nothing that was graded.
 
 ### Pollution shapes
 
@@ -154,6 +157,57 @@ The paraphrase question for a subject, scoped to ±5 days around its
 capture. *Pass:* gold in the top five and no delivered hit captured
 outside the window. Columns: `in_window_r@5`, `leak`. N/A for a system
 without a clock (a file).
+
+### authority — whose word ranks? (`--authority` worlds)
+
+The world's twins. For each target subject the generator plants one to
+four **twins** of the note — same body, same code refs, same capture time,
+a different value in the title — and endorses them on different rungs of
+one ladder:
+
+| rung | `endorse(key, by)` | what it stands for | a system maps it to |
+|---|---|---|---|
+| 0 | — | nothing; the original note is always this rung | — |
+| 1 | `retrieval` | the note was delivered and used | a use counter, `last_seen` |
+| 2 | `assistant` | the assistant confirmed it still holds | a confirmed stamp, an `update` |
+| 3 | `user` | the project's owner approved it | an approval, an owner-ratified ruling |
+| 4 | `supervisor` | a supervisor pinned it above every other signal | a pin, a constant trust |
+
+Then one session boundary, and the subject's paraphrase question. The
+expectation is stated once and every scenario is an instance of it:
+**a higher rung outranks a lower one; on the same rung the more recent
+endorsement wins; count never beats rung** (three confirms lose to one
+approval); **and no confound outranks a rung** — not a fresher capture
+stamp, not a weightier kind (the winner wears `Insight`, the loser the
+subject's own kind), not a body that *says* it was verified. Twenty-one
+scenarios in four layers, named for who is in the loop:
+
+| layer | who endorses | scenarios |
+|---|---|---|
+| 1 `autonomous` | the assistant alone (one rung) | `confirm_vs_none`, `confirm_vs_fresh`, `confirm_vs_kind`, `latest_confirm` |
+| 2 `governed` | the owner over the assistant (two rungs, across kinds) | `approve_vs_confirm`, `approve_vs_confirms` (×3), `approve_vs_kind`, `approve_vs_claims`, `approve_vs_fresh_confirm`, `ladder2`, `latest_approve` |
+| 3 `three_hands` | retrieval use beside both | `exposure_vs_none` (×10), `confirm_vs_exposure`, `approve_vs_exposure_confirm`, `exposure_vs_fresh`, `ladder3` |
+| 4 `supervised` | a supervisor's pin above everything | `pin_vs_approve`, `pin_vs_everything` (approved + confirmed ×2 + used ×10 + fresher + claims), `latest_pin`, `pin_then_supersede`, `ladder4` |
+
+*Pass:* the winner in the top five and ranked above every other twin (a
+dump holding them all is ambiguous and fails); for `ladder2/3/4` every
+delivered twin in the ladder's order; for `pin_then_supersede` the pinned
+twin — superseded after its pin by an unendorsed successor — never
+delivered at all (a pin must not resurrect what was re-decided). A task
+whose winning signal sits on a rung the system did not declare is **posed,
+not attempted**: `exposure_vs_none` needs `endorse_retrieval`,
+`pin_vs_approve` needs `endorse_supervisor`, the graded ladders need every
+rung in them. Columns: `l1_autonomous` … `l4_supervised` (pass rate per
+layer), `winner_top`, `winner_r@5`, `order_exact`, `resurrected`,
+`na_share`, and `s_<scenario>` for every scenario. N/A for a system with
+no rung at all.
+
+Three scenarios are stated knowing the reference system cannot pass them:
+`latest_confirm`, `latest_approve` and `latest_pin` ask for the more recent
+of two equal endorsements, and a trust model that reads rungs but not their
+clocks has nothing to separate the twins with. They stay in the table
+because "who endorsed it last" is a question a project owner does ask, and
+the column that fails is the honest answer.
 
 ### cost
 

@@ -85,11 +85,27 @@ pub fn print_arm(g: &Graded) {
             &["direct_r@5", "assisted_r@5", "structure_only"],
         ),
         ("temporal", &["in_window_r@5", "leak"]),
+        (
+            "authority",
+            &[
+                "l1_autonomous",
+                "l2_governed",
+                "l3_three_hands",
+                "l4_supervised",
+                "winner_top",
+                "order_exact",
+                "resurrected",
+                "na_share",
+            ],
+        ),
     ];
     for (fam, names) in detail {
         let Some(f) = g.families.iter().find(|f| f.family == *fam) else {
             continue;
         };
+        if f.posed == 0 {
+            continue; // this world does not pose the family
+        }
         match (&f.na, f.pass_rate) {
             (Some(why), _) => println!("    {fam:<14} {:>4}  n/a — {why}", "-"),
             (None, Some(rate)) => println!(

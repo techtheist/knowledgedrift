@@ -50,6 +50,11 @@ pub fn run(script: &Script, mem: &mut dyn Memory) -> anyhow::Result<Transcript> 
                     .map_err(|e| anyhow::anyhow!("purge {key}: {e}"))?;
                 "purge"
             }
+            Op::Endorse { key, by } => {
+                mem.endorse(key, *by)
+                    .map_err(|e| anyhow::anyhow!("endorse {key} by {}: {e}", by.as_str()))?;
+                "endorse"
+            }
             Op::Settle => {
                 if let Some(note) = mem.settle()? {
                     settle_note = Some(note);

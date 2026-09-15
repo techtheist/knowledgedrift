@@ -2,7 +2,7 @@
 //! software development.
 //!
 //! One seeded world of invented project knowledge is poured into a memory
-//! system through a ten-operation protocol and then questioned, re-decided,
+//! system through an eleven-operation protocol and then questioned, re-decided,
 //! contradicted, retired and asked again. Every probe is a task with a
 //! pass/fail rule the script fixed before the question was asked; the
 //! headline is the mean success over every task posed,
@@ -40,9 +40,12 @@ mod tests {
     use engram_core::{FakeEmbedder, FakeNli};
 
     fn world() -> script::Script {
+        // Sixty-six facts: enough ≡ 2 (mod 3) targets for every one of the
+        // twenty-one authority scenarios to appear once.
         world::build(&world::WorldConfig {
-            size: 30,
+            size: 66,
             seed: 11,
+            authority: true,
             ..world::WorldConfig::default()
         })
     }
@@ -95,6 +98,12 @@ mod tests {
         // A purged note written again warns nobody: there is nothing left
         // to warn about.
         assert_eq!(col(&g, "deletion", "purged_rewrite_warned"), 0.0);
+        // Retrieval is not a rung for engram: every task whose winning
+        // signal is exposure is posed, not attempted, and the family is
+        // graded on the rest.
+        assert!(col(&g, "authority", "na_share") > 0.0);
+        assert!(col(&g, "authority", "na_share") < 1.0);
+        assert!(g.attempted < g.tasks);
         assert!(g.tasks > 100);
         assert!((0.0..=1.0).contains(&g.success));
         assert!(g.multiplier >= 0.1 && g.multiplier <= 10.0);
@@ -109,6 +118,10 @@ mod tests {
         let g = grade::grade(&s, &t).unwrap();
         assert!(rate(&g, "contradiction").is_none());
         assert!(rate(&g, "drift").is_none());
+        assert!(
+            rate(&g, "authority").is_none(),
+            "a flat store has no rung to endorse on"
+        );
         assert!(rate(&g, "temporal").is_some(), "grep can filter by date");
         assert!(col(&g, "currency", "lineage_na") == 1.0);
         // A flat store's release IS a purge: gone, no trace, no warning.

@@ -1,6 +1,6 @@
 # The protocol
 
-Ten operations (`src/protocol.rs`; mirrored for Python in
+Eleven operations (`src/protocol.rs`; mirrored for Python in
 `adapters/adapter.py`). An adapter implements them against its system's
 native API; the harness never reaches around them.
 
@@ -11,6 +11,7 @@ native API; the harness never reaches around them.
 | `supersede(old, new)` | `new` re-decides `old`: from now on `old` is not current | replace in place (`history: false`) |
 | `release(key, reason)` | retire a note deliberately, leaving whatever trace the system leaves | delete (`trace: false`) |
 | `purge(key)` | destroy a note | delete |
+| `endorse(key, by)` | someone vouches for the note on one rung of the authority ladder: `retrieval` (it was delivered and used), `assistant` (confirmed still true), `user` (the owner approved it), `supervisor` (pinned above every other signal); a rung may repeat | nothing (`endorse_*: false`) |
 | `settle()` | a session boundary: calibration, sweeps, consolidation | nothing |
 | `recall(query, k, window?)` | top-k, optionally scoped to a capture-time window | rank, filter by date if it has one |
 | `suspects()` | every disagreement the system wants a person to judge | `None` (`suspects: false`) |
@@ -44,11 +45,20 @@ delivery).
 | `temporal` | a recall window is applied natively by the store |
 | `verdict` | a recall can decline |
 | `write_check` | a write can refuse a near-duplicate or warn about canon |
+| `endorse_retrieval` | a note being delivered and used is counted on the note (a use counter) |
+| `endorse_assistant` | the assistant's "still true" is stamped on the note (a confirmed date) |
+| `endorse_user` | the owner's approval is stored on the note |
+| `endorse_supervisor` | a supervisor's pin is stored on the note |
+
+An `endorse_*` rung is declared when the endorsement is stored as a
+first-class attribute of the note; whether ranking reads it is what the
+authority family measures. Absent from an older transcript = false.
 
 Families that need a missing capability are marked N/A with the reason:
 contradiction and drift need `suspects`; the lineage task needs `history`;
-temporal needs `temporal`. The headline still charges for them
-(`docs/scoring.md`).
+temporal needs `temporal`; an authority task needs the rung its winning
+signal sits on (per task, not per family). The headline still charges for
+them (`docs/scoring.md`).
 
 ## The wire format
 
@@ -68,11 +78,13 @@ temporal needs `temporal`. The headline still charges for them
     { "op": "inscribe", "id": "W1", "record": { "key": "c0a", "...": "..." }, "mode": "write" },
     { "op": "suspects", "id": "S" },
     { "op": "release", "key": "f0004", "reason": "no longer applies after the lease broker rework" },
+    { "op": "endorse", "key": "a3a", "by": "user" },
     { "op": "lineage", "id": "L1", "key": "f0102" }
   ],
   "probes": [
     { "id": "R1", "family": "retrieval", "expect": "gold", "gold": "f0000", "phrasing": "lexical", "stale": "s-f0000" },
-    { "id": "C0", "family": "contradiction", "expect": "case", "gold": "f0000", "planted": ["c0a"], "witness": "c0a", "tier": 1, "shape": "value", "positive": true }
+    { "id": "C0", "family": "contradiction", "expect": "case", "gold": "f0000", "planted": ["c0a"], "witness": "c0a", "tier": 1, "shape": "value", "positive": true },
+    { "id": "R412", "family": "authority", "expect": "ranked", "winner": "a3a", "losers": ["a3b", "f0011"], "order": false, "layer": 2, "scenario": "approve_vs_confirm", "needs": ["endorse_user"] }
   ] }
 ```
 
@@ -84,14 +96,16 @@ The operation order is load-bearing and the same in every world:
    untouched world, so no family's plantings crowd another's questions;
 4. plant the contradiction cases as assistant-style writes;
 5. settle, then ask for the suspect queue (contradiction + drift);
-6. release and purge the deletion targets, probe them, write them back.
+6. release and purge the deletion targets, probe them, write them back;
+7. (`--authority` worlds only) plant near-identical twins of the authority
+   targets, endorse them, settle, and ask which comes first.
 
 The adapter replays `ops` in order and returns a **transcript**: one reply
 per op that carries an `id`, echoing that id, plus its capabilities,
 standing cost and per-op timings:
 
 ```json
-{ "arm": "mem0", "capabilities": { "link": false, "history": false, "trace": false, "suspects": false, "temporal": true, "verdict": false, "write_check": false },
+{ "arm": "mem0", "capabilities": { "link": false, "history": false, "trace": false, "suspects": false, "temporal": true, "verdict": false, "write_check": false, "endorse_retrieval": false, "endorse_assistant": false, "endorse_user": false, "endorse_supervisor": false },
   "standing_tokens": 0, "script_digest": "<the script's digest field, copied>",
   "replies": [
     { "reply": "recall", "id": "R1", "result": { "hits": [ { "key": "f0000", "text": "...", "score": 0.81, "created_at": 1782000000 } ] } },

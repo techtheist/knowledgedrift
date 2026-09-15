@@ -32,6 +32,8 @@ def row(g: dict) -> str:
 def family_rows(g: dict) -> list[str]:
     out = []
     for f in g["families"]:
+        if f.get("posed", 1) == 0:
+            continue  # a family this world does not pose (the opt-in authority family)
         if f.get("na"):
             out.append(f"| {f['family']} | – | n/a — {f['na']} |")
             continue
@@ -74,7 +76,7 @@ def seed_rows(arms: list[dict]) -> None:
             f"{sum(comp) / len(comp):.3f} ({min(comp):.3f}–{max(comp):.3f}) | "
             f"{_span([g['score'] for g in gs], False)} |"
         )
-    fams = [f["family"] for f in arms[0]["families"]]
+    fams = [f["family"] for f in arms[0]["families"] if f.get("posed", 1) > 0]
     print("\n| arm | " + " | ".join(fams) + " |")
     print("|---|" + "---|" * len(fams))
     for arm, gs in by.items():

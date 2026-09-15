@@ -29,9 +29,14 @@ context (a graph system's delivery; flat systems leave it empty).
 Capabilities
 ------------
 ``link``, ``history``, ``trace``, ``suspects``, ``temporal``, ``verdict``,
-``write_check`` — declare what the system can do; the grader marks the
-families that need a missing one N/A (and the headline charges for them,
-so declare honestly, not generously).
+``write_check``, and the four endorsement rungs ``endorse_retrieval``,
+``endorse_assistant``, ``endorse_user``, ``endorse_supervisor`` — declare
+what the system can do; the grader marks the families (and, for the
+authority family, the tasks) that need a missing one N/A (and the headline
+charges for them, so declare honestly, not generously). A rung is declared
+when an endorsement on it is stored as a first-class attribute of the note
+(a use counter, a confirmed stamp, an approval, a pin); whether ranking
+reads it is what the family measures.
 """
 
 from __future__ import annotations
@@ -101,7 +106,21 @@ class Inscribed:
         return d
 
 
-CAPABILITY_NAMES = ("link", "history", "trace", "suspects", "temporal", "verdict", "write_check")
+CAPABILITY_NAMES = (
+    "link",
+    "history",
+    "trace",
+    "suspects",
+    "temporal",
+    "verdict",
+    "write_check",
+    "endorse_retrieval",
+    "endorse_assistant",
+    "endorse_user",
+    "endorse_supervisor",
+)
+
+AUTHORITIES = ("retrieval", "assistant", "user", "supervisor")
 
 
 class MemoryAdapter:
@@ -136,6 +155,14 @@ class MemoryAdapter:
 
     def purge(self, key: str) -> None:
         raise NotImplementedError
+
+    def endorse(self, key: str, by: str) -> bool:
+        """Someone vouches for the note: ``by`` is one of ``retrieval`` (it
+        was delivered and used), ``assistant`` (confirmed still true),
+        ``user`` (the owner approved it), ``supervisor`` (pinned above every
+        other signal). May repeat. Return False when the system has no such
+        rung (and leave the matching capability False)."""
+        return False
 
     def settle(self) -> Optional[str]:
         """A session boundary: maintenance, calibration, consolidation.

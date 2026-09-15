@@ -1,10 +1,11 @@
 //! The adapter protocol — the only thing a memory system has to implement to
 //! be scored by KnowledgeDrift.
 //!
-//! Ten operations, each one thing a coding agent's memory is asked to do in
-//! the field: write a note, link two notes, re-decide something, retire a
-//! note with a trace, destroy a note, sit through a session boundary, recall,
-//! nominate disagreements, walk a decision's history, and price itself. A
+//! Eleven operations, each one thing a coding agent's memory is asked to do
+//! in the field: write a note, link two notes, re-decide something, retire a
+//! note with a trace, destroy a note, endorse a note on someone's authority,
+//! sit through a session boundary, recall, nominate disagreements, walk a
+//! decision's history, and price itself. A
 //! system that lacks an operation says so through [`Capabilities`] and the
 //! families that need it score N/A — never zero.
 //!
@@ -140,6 +141,50 @@ pub struct Recalled {
     pub dump: bool,
 }
 
+/// Who is vouching for a note when it is endorsed — the authority ladder
+/// the `authority` family ranks by. Lowest first: a note being delivered
+/// and used (`retrieval`), the assistant confirming it still holds
+/// (`assistant`), the project's owner approving it (`user`), a supervisor
+/// pinning it above every other signal (`supervisor`). A system maps each
+/// rung to whatever it has — a use counter, a confirmed stamp, an approval,
+/// a pin — and declares the rungs it lacks through [`Capabilities`].
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, Hash, PartialOrd, Ord)]
+#[serde(rename_all = "lowercase")]
+pub enum Authority {
+    Retrieval,
+    Assistant,
+    User,
+    Supervisor,
+}
+
+impl Authority {
+    pub const ALL: [Authority; 4] = [
+        Authority::Retrieval,
+        Authority::Assistant,
+        Authority::User,
+        Authority::Supervisor,
+    ];
+
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Authority::Retrieval => "retrieval",
+            Authority::Assistant => "assistant",
+            Authority::User => "user",
+            Authority::Supervisor => "supervisor",
+        }
+    }
+
+    /// The capability name a system declares for this rung.
+    pub fn capability(self) -> &'static str {
+        match self {
+            Authority::Retrieval => "endorse_retrieval",
+            Authority::Assistant => "endorse_assistant",
+            Authority::User => "endorse_user",
+            Authority::Supervisor => "endorse_supervisor",
+        }
+    }
+}
+
 /// Capture-time window, unix seconds, half-open `[after, before)`.
 #[derive(Debug, Clone, Copy, Default, Serialize, Deserialize, PartialEq, Eq)]
 pub struct Window {
@@ -175,6 +220,52 @@ pub struct Capabilities {
     pub verdict: bool,
     /// Writes come back with a verdict (near-duplicate match, warnings).
     pub write_check: bool,
+    /// An endorsement on that rung of the authority ladder is stored as a
+    /// first-class attribute of the note (a use counter, a confirmed stamp,
+    /// an approval, a pin) — whether ranking reads it is what the
+    /// `authority` family measures. Absent from older transcripts = false.
+    #[serde(default)]
+    pub endorse_retrieval: bool,
+    #[serde(default)]
+    pub endorse_assistant: bool,
+    #[serde(default)]
+    pub endorse_user: bool,
+    #[serde(default)]
+    pub endorse_supervisor: bool,
+}
+
+impl Capabilities {
+    /// Whether the system declared the rung an endorsement came on.
+    pub fn endorses(&self, by: Authority) -> bool {
+        match by {
+            Authority::Retrieval => self.endorse_retrieval,
+            Authority::Assistant => self.endorse_assistant,
+            Authority::User => self.endorse_user,
+            Authority::Supervisor => self.endorse_supervisor,
+        }
+    }
+
+    /// The capability flag by name (`endorse_user`, `history`, …).
+    pub fn has(&self, name: &str) -> Option<bool> {
+        Some(match name {
+            "link" => self.link,
+            "history" => self.history,
+            "trace" => self.trace,
+            "suspects" => self.suspects,
+            "temporal" => self.temporal,
+            "verdict" => self.verdict,
+            "write_check" => self.write_check,
+            "endorse_retrieval" => self.endorse_retrieval,
+            "endorse_assistant" => self.endorse_assistant,
+            "endorse_user" => self.endorse_user,
+            "endorse_supervisor" => self.endorse_supervisor,
+            _ => return None,
+        })
+    }
+
+    pub fn endorses_any(&self) -> bool {
+        Authority::ALL.iter().any(|a| self.endorses(*a))
+    }
 }
 
 /// The protocol. Every method takes the harness key; the adapter owns the
@@ -199,6 +290,13 @@ pub trait Memory {
 
     /// Destroy a note. Nothing should remain.
     fn purge(&mut self, key: &str) -> anyhow::Result<()>;
+
+    /// Someone vouches for a note: it was delivered and used (`retrieval`),
+    /// the assistant confirmed it still holds (`assistant`), the owner
+    /// approved it (`user`), a supervisor pinned it (`supervisor`). The same
+    /// rung may be repeated. `Ok(false)` = the system has no such rung
+    /// (no-op) — declare it through [`Capabilities`] too.
+    fn endorse(&mut self, key: &str, by: Authority) -> anyhow::Result<bool>;
 
     /// A session boundary: run whatever maintenance the system runs between
     /// sessions (calibration, sweeps, consolidation). Returns a note for the

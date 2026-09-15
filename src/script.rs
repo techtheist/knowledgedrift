@@ -8,7 +8,9 @@
 
 use serde::{Deserialize, Serialize};
 
-use crate::protocol::{Capabilities, Inscribed, Recalled, Record, SuspectPair, Window, WriteMode};
+use crate::protocol::{
+    Authority, Capabilities, Inscribed, Recalled, Record, SuspectPair, Window, WriteMode,
+};
 
 /// Which family a probe belongs to. Attention and cost are read off the
 /// retrieval probes and have no probes of their own.
@@ -23,10 +25,11 @@ pub enum Family {
     Rationale,
     Temporal,
     Drift,
+    Authority,
 }
 
 impl Family {
-    pub const ALL: [Family; 8] = [
+    pub const ALL: [Family; 9] = [
         Family::Retrieval,
         Family::Abstention,
         Family::Currency,
@@ -35,6 +38,7 @@ impl Family {
         Family::Rationale,
         Family::Temporal,
         Family::Drift,
+        Family::Authority,
     ];
 
     pub fn as_str(self) -> &'static str {
@@ -47,6 +51,7 @@ impl Family {
             Family::Rationale => "rationale",
             Family::Temporal => "temporal",
             Family::Drift => "drift",
+            Family::Authority => "authority",
         }
     }
 }
@@ -78,6 +83,11 @@ pub enum Op {
     },
     Purge {
         key: String,
+    },
+    /// Someone vouches for a note on one rung of the authority ladder.
+    Endorse {
+        key: String,
+        by: Authority,
     },
     Settle,
     Recall {
@@ -160,6 +170,26 @@ pub enum Expect {
     /// The victim written again after its release: pass = the system warned
     /// that this knowledge was deliberately removed.
     Resurrect { victim: String, released: bool },
+    /// An authority scenario: `twins` are near-identical notes about one
+    /// subject (same body, a different value in the title) that were
+    /// endorsed on different rungs; `winner` is the one the ladder says
+    /// should come first, `losers` the rest in the order the ladder ranks
+    /// them. Pass = the winner is in the top five and ranked above every
+    /// other twin; when `order` is set, every delivered twin must also sit
+    /// in the ladder's order; `retired` twins were superseded after their
+    /// endorsement and must not be delivered at all. `needs` lists the
+    /// capabilities the winning signal requires — a system without one is
+    /// not attempting the task (N/A, still charged in the headline).
+    Ranked {
+        winner: String,
+        losers: Vec<String>,
+        #[serde(default, skip_serializing_if = "Vec::is_empty")]
+        retired: Vec<String>,
+        order: bool,
+        layer: u8,
+        scenario: String,
+        needs: Vec<String>,
+    },
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
@@ -238,6 +268,10 @@ pub struct WorldSpec {
     pub window_days: i64,
     /// The world's "now" — every capture time is before it.
     pub base_ts: i64,
+    /// The authority family was generated (`--authority`). Absent from the
+    /// file when off, so the v1 worlds keep their digests.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub authority: bool,
     /// Notes in the world at the end of the import (before plantings).
     pub notes: usize,
     pub edges: usize,

@@ -12,8 +12,8 @@ use engram_core::{
 };
 
 use crate::protocol::{
-    Capabilities, Hit, Inscribed, Memory, Recalled, Record, SuspectPair, Warning, Window,
-    WriteMode, tokens,
+    Authority, Capabilities, Hit, Inscribed, Memory, Recalled, Record, SuspectPair, Warning,
+    Window, WriteMode, tokens,
 };
 
 pub struct EngramArm {
@@ -126,6 +126,15 @@ impl Memory for EngramArm {
             temporal: true,
             verdict: self.engine.has_reranker(),
             write_check: true,
+            // Trust v2's ladder: confirm (the assistant's deliberate
+            // "still true"), approve (the user), pin (a constant override).
+            // Retrieval is deliberately NOT a rung — "retrieval is
+            // observability, not evidence": a delivered note's last_seen
+            // is stamped and nothing reads it for trust.
+            endorse_retrieval: false,
+            endorse_assistant: true,
+            endorse_user: true,
+            endorse_supervisor: true,
         }
     }
 
@@ -218,6 +227,31 @@ impl Memory for EngramArm {
         let id = self.id(key)?.to_string();
         self.engine.delete_node(&id)?;
         Ok(())
+    }
+
+    fn endorse(&mut self, key: &str, by: Authority) -> anyhow::Result<bool> {
+        let id = self.id(key)?.to_string();
+        match by {
+            // Exposure never validates: the engine stamps last_seen on
+            // delivery and reads it for nothing. Declared unsupported.
+            Authority::Retrieval => Ok(false),
+            // The pane's "Confirm still true" / an update_node patch:
+            // stamps confirmed_at, trust restarts on the confirmed curve.
+            Authority::Assistant => {
+                self.engine.reconfirm(&id)?;
+                Ok(true)
+            }
+            // The pane's Approve: trust restarts at its ceiling.
+            Authority::User => {
+                self.engine.approve(&id)?;
+                Ok(true)
+            }
+            // The pane's Pin: a constant trust of 1.0 that no evidence moves.
+            Authority::Supervisor => {
+                self.engine.set_trust_override(&id, Some(1.0))?;
+                Ok(true)
+            }
+        }
     }
 
     fn settle(&mut self) -> anyhow::Result<Option<String>> {

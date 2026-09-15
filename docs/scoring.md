@@ -4,7 +4,10 @@ Every task is posed to every system; the task list is fixed by the script.
 A system attempts every task its declared capabilities cover: a system with
 a suspect queue, history and a clock attempts all of them; a flat store
 skips the suspect, drift and lineage tasks; a file skips the temporal ones
-too.
+too. In the authority family the check is per task: a task whose winning
+signal sits on a rung the system did not declare (`endorse_retrieval`,
+`endorse_assistant`, `endorse_user`, `endorse_supervisor`) is posed, not
+attempted — the column `na_share` says how many.
 
 ## Definitions
 
@@ -13,9 +16,12 @@ too.
 - **of attempted** = passed / tasks attempted. The capability-aware
   reading (ForgetEval's convention), printed beside the headline;
   identical to success for a system that attempts everything.
-- **composite** = the unweighted mean of the eight families' pass rates,
-  an N/A family scoring zero. A macro-average, so a family with twelve
-  tasks weighs the same as one with three hundred.
+- **composite** = the unweighted mean of the pass rates of the families
+  the world poses (eight; nine when it was built with `--authority`), an
+  N/A family scoring zero. A macro-average, so a family with twelve tasks
+  weighs the same as one with three hundred. A family the world does not
+  pose is not averaged, so the plain and the authority world agree on the
+  first eight.
 - **S** (signal share) = mean **focus** over the retrieval tasks that
   delivered the answer, where focus is the share of delivered tokens that
   belonged to the answering record.

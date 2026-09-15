@@ -21,7 +21,8 @@ use std::collections::HashMap;
 use engram_core::Embedder;
 
 use crate::protocol::{
-    Capabilities, Hit, Inscribed, Memory, Recalled, Record, SuspectPair, Window, WriteMode, tokens,
+    Authority, Capabilities, Hit, Inscribed, Memory, Recalled, Record, SuspectPair, Window,
+    WriteMode, tokens,
 };
 
 const STOPWORDS: [&str; 46] = [
@@ -226,6 +227,11 @@ impl Memory for FlatArm {
     fn purge(&mut self, key: &str) -> anyhow::Result<()> {
         self.remove(key);
         Ok(())
+    }
+
+    /// A flat store has no rung to put an endorsement on.
+    fn endorse(&mut self, _key: &str, _by: Authority) -> anyhow::Result<bool> {
+        Ok(false)
     }
 
     fn settle(&mut self) -> anyhow::Result<Option<String>> {

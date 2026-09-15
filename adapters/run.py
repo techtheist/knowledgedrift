@@ -60,6 +60,8 @@ def replay(script: dict, mem: MemoryAdapter, limit_ops: int | None = None, progr
             mem.release(op["key"], op["reason"])
         elif kind == "purge":
             mem.purge(op["key"])
+        elif kind == "endorse":
+            mem.endorse(op["key"], op["by"])
         elif kind == "settle":
             note = mem.settle()
             if note:

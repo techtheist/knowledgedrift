@@ -3,7 +3,10 @@
 Two kinds of pull request are expected: **an adapter** for a memory system,
 and **a result** for a system on the v1 worlds. Anything else — a new
 family, a generator change, a scoring change — is a v2 conversation; open
-an issue first.
+an issue first. (Opt-in variants that leave the plain worlds' digests
+untouched — the pollution shapes, the `--authority` family — are how a
+family is added inside v1: the variant world is frozen beside the others
+and reported in its own table, never folded into the leaderboard row.)
 
 ## Submitting an adapter
 
@@ -25,7 +28,11 @@ submission. It states:
    capability is declared only if the system honestly has it: `temporal`
    means the window is applied natively by the store, not by the adapter
    filtering a wider fetch; `history` means a reader could walk from a note
-   to what it replaced; `trace` means a release leaves something findable.
+   to what it replaced; `trace` means a release leaves something findable;
+   an `endorse_*` rung means an endorsement on it is stored as a
+   first-class attribute of the note (a use counter, a confirmed stamp, an
+   approval, a pin) — whether ranking reads it is what the authority family
+   measures.
 5. **Deviations and shims** — every place the adapter did something the
    system's own caller would not, and every place the system was
    configured away from its defaults. An LLM-driven system run without its

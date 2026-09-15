@@ -37,6 +37,7 @@ eighth of the tokens per answer.
 | rag | 63% | 51 | 57% | 52 | ~2,200 |
 | mem0 2.0.20 | 58% | 45 | 55% | 47 | ~2,500 |
 | grep | 53% | 44 | 51% | 43 | ~2,600 |
+| memcontinuum 0.2.0rc5 | 52% | 33 | 48% | 32 | ~800 |
 | whole file | 71% | 5 | 71% | 5 | 134k–402k |
 | curated 3k | 9% | 4 | 5% | 4 | ~2,900 |
 | chance | 4% | 15 | 4% | 13 | ~2,300 |
@@ -58,7 +59,18 @@ Three readings:
    rationale 99% vs 1%, contradiction 75% and drift 91% vs N/A,
    resurrection warned 50–69% vs N/A, and 263–289 tokens per answer at
    focus 0.52–0.57 against ~2,300 at 0.11.
-3. **The whole file is the honest ceiling on recall and the floor on
+3. **MemContinuum is a flat store with a chain.** Its append-only topics
+   carry supersession natively — currency 85%, lineage 1.00, pollution
+   0.00, the only external system to attempt the lineage walk — and it
+   shows snippets, so it answers in ~800 tokens instead of ~2,300. But its
+   hybrid search ranks the stale sibling above the truth on 81–89% of
+   polluted questions (the sibling's short "kept for reference" ruling
+   wins BM25's length normalisation and the vector over title-plus-short-
+   body), rationale is 2%, nothing declines, and the per-field authority
+   its schema is built around never reaches ranking (see the authority
+   section). 52% (49–55) over three seeds, score 33; 48% at 1500, where
+   oblique recall falls to 0.14 and *why* to 0%.
+4. **The whole file is the honest ceiling on recall and the floor on
    cost.** 71% of tasks at every rung by showing everything; composite
    0.49, score 5. The curated 3,000-token file, the thing most agent
    frameworks ship as "memory", loses by 100 notes (29% → 9% → 5%).
@@ -96,6 +108,7 @@ changes (607–641 notes, 2,318–2,373 tasks). Mean, then min–max:
 | rag | 63% (61–66) | 0.468 (0.461–0.473) | 52 (51–54) |
 | mem0 | 59% (57–61) | 0.443 (0.438–0.447) | 46 (45–48) |
 | grep | 53% (51–55) | 0.418 (0.414–0.422) | 43 (42–44) |
+| memcontinuum | 52% (49–55) | 0.321 (0.314–0.327) | 33 (33–34) |
 | whole file | 71% (69–74) | 0.487 (0.483–0.492) | 5 (5–5) |
 | curated 3k | 9% (9–9) | 0.156 (0.151–0.160) | 4 (4–4) |
 | chance | 4% (4–4) | 0.131 (0.131–0.132) | 13 (11–15) |
@@ -156,6 +169,69 @@ Two findings, both of them the point of the benchmark:
   questions, while success is unchanged because the drift queue is
   clock-blind and still raises every pair. The receipt says by how much.
 
+## Authority: whose word ranks?
+
+`results/v1/reference-arms/{500,1500}-seed1-authority.json`. The ninth family is
+opt-in (`--authority`) and lands after the eighth has been asked, so its
+world reproduces the plain ladder's first eight families within one task
+and adds 166 tasks of its own. Each plants one to four **twins** of a note —
+same body, same capture time, a different value in the title — endorses
+them on a four-rung ladder (retrieval use, the assistant's confirm, the
+owner's approve, a supervisor's pin) through the new `endorse` operation,
+and asks the subject's paraphrase question. The stated expectation:
+*higher rung wins; same rung, the later endorsement wins; count never
+beats rung; no confound — a fresher stamp, a weightier kind, a body that
+says it is verified — outranks a rung.* A task whose winning rung a system
+does not declare is posed, not attempted.
+
+The reference system declares three rungs (confirm, approve, pin;
+retrieval use is deliberately not evidence in its trust model) and passes
+**49%** of the 135 tasks it attempts at 500 and **56%** of 405 at 1500:
+layers 0.47 / 0.61 / 0.50 / 0.29, then 0.59 / 0.65 / 0.58 / 0.34. The
+winner is in the top five 99% of the time and first among its twins 52%
+(59%) of the time. Read per scenario (500, then 1500 in brackets), the
+numbers say exactly where its trust ladder reaches its ranking and where
+it does not:
+
+- **An endorsement wins when nothing else separates the twins.**
+  `confirm_vs_none` 0.88 (0.92), `approve_vs_confirms` 0.88 (0.83) — one
+  approval over three confirms; count does not beat rung.
+- **It loses to every confound of its own size.** Trust enters the fused
+  retrieval score as a multiplier, `1 + 0.15·trust`, beside a recency
+  factor and a per-type rank prior of the same magnitude: a confirm (0.6
+  against 0.5) is a 1.5% nudge and loses to a stamp ten days fresher
+  (`confirm_vs_fresh` 0.25, 0.46 at 1500) and to the `Insight`-vs-`Decision`
+  prior (`confirm_vs_kind` 0.38, 0.62); an approval (1.0 against 0.5, a 7%
+  nudge) wins the retrieval half of the final rank vote and then meets the
+  reranker's half, which reads title and snippet and no trust at all — so
+  `approve_vs_confirm`, `approve_vs_kind`, `approve_vs_fresh_confirm` sit at
+  0.62–0.71 and `approve_vs_claims`, `ladder2` near the coin flip
+  (0.50–0.62).
+- **Pin and approve are one number.** Both compute trust 1.0;
+  `pin_vs_approve` 0.50 (0.42), `pin_vs_everything` 0.25 (0.35).
+- **Equal rungs have no clock.** `latest_confirm` 0.38 (0.38),
+  `latest_approve` 0.50 (0.50), `latest_pin` 0.38 (0.43) — the endorsement
+  stamps are stored and never compared, so "which did the owner approve
+  last" is unanswerable.
+- **A pinned note survives its own supersession.** `pin_then_supersede`
+  0/8 at 500 and 4/24 at 1500, with the superseded pinned twin still
+  delivered 86% (78%) of the time: the
+  reference system exempts pinned notes from the archive that a `replaces`
+  edge otherwise performs (a pin is the user's "never fade"). The benchmark
+  states the opposite reading — a re-decision must not be resurrected by a
+  pin — and the column is the honest record of the disagreement.
+
+MemContinuum declares one rung (the owner's promotion to an
+`owner-ratified` ruling) and passes 2% of the 56 tasks it attempts: the
+promotion writes an authority field its hybrid search filters by and never
+ranks by. Every flat store declares no rung and is N/A across the family.
+
+What the family is for, then, is not the headline: it is a per-scenario
+map of which endorsements a system's *ranking* can see, against a stated
+ladder. On this evidence the reference system's ladder is real in its trust
+numbers and mostly invisible in its ranking, which is a product finding the
+plain families could not have produced.
+
 ## Design decisions the numbers forced
 
 Kept here because the next benchmark author will think of them too.
@@ -210,6 +286,9 @@ Kept here because the next benchmark author will think of them too.
 ## What v2 would add
 
 - A `collider`-style negative for every family, not only contradiction.
+- Authority scenarios the generator cannot yet template: an endorsed note
+  that is later contradicted by judged evidence (demotion vs approval),
+  and endorsements spread across sessions rather than stamped in one.
 - A pollution shape the generator cannot template: a note that stopped
   being true without any sibling saying so.
 - A second corpus style (chat-shaped or issue-tracker-shaped notes) to

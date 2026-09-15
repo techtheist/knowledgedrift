@@ -26,6 +26,11 @@ OPTIONS:
                           late (hinted, dated AFTER the truth — a migration
                           re-import)                          [default: stale]
     --chain-len N         generations per re-decided subject  [default: 3]
+    --authority           add the authority family: near-identical twins
+                          endorsed on different rungs (retrieval use, the
+                          assistant's confirm, the owner's approve, a
+                          supervisor's pin), asked which comes first. Off
+                          by default; the v1 worlds do not carry it
     --arms a,b,...        in-process arms to run (needs --features arms or
                           fastembed) [default: engram,rag,grep,curated,whole,chance]
     --no-rerank           drop the cross-encoder from the engram arm (a
@@ -120,6 +125,7 @@ fn cli() -> anyhow::Result<()> {
                 })?;
             }
             "--chain-len" => cfg.chain_len = value()?.parse()?,
+            "--authority" => cfg.authority = true,
             "--arms" => arms = value()?.split(',').map(|s| s.trim().to_string()).collect(),
             "--no-rerank" => no_rerank = true,
             "--json" => json_out = Some(value()?),
@@ -194,7 +200,11 @@ fn cli() -> anyhow::Result<()> {
                 PollutionShape::Stale => String::new(),
                 other => format!("-{}", other.name()),
             };
-            let path = format!("{dir}/knowledgedrift-{size}-seed{}{shape}.json", cfg.seed);
+            let authority = if cfg.authority { "-authority" } else { "" };
+            let path = format!(
+                "{dir}/knowledgedrift-{size}-seed{}{shape}{authority}.json",
+                cfg.seed
+            );
             std::fs::write(&path, serde_json::to_string_pretty(&s)?)?;
             println!(
                 "wrote {path} ({} ops, {} probes, digest {})",
@@ -248,15 +258,19 @@ fn ladder(
         eprintln!("! fake embedder: the lexical path is measured, the semantic numbers are noise");
     }
     println!(
-        "knowledgedrift {VERSION} — embedder {embedder_name}, reranker {reranker_name}, nli {nli_name}, seed {}, pollution {:.0}% ({})",
+        "knowledgedrift {VERSION} — embedder {embedder_name}, reranker {reranker_name}, nli {nli_name}, seed {}, pollution {:.0}% ({}){}",
         cfg.seed,
         cfg.pollution * 100.0,
-        cfg.shape.name()
+        cfg.shape.name(),
+        if cfg.authority { ", authority" } else { "" }
     );
 
     let mut flags = Vec::new();
     if no_rerank {
         flags.push("--no-rerank".to_string());
+    }
+    if cfg.authority {
+        flags.push("--authority".to_string());
     }
     let mut receipt = Receipt {
         generator: format!("knowledgedrift {VERSION}"),
