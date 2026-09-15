@@ -171,8 +171,42 @@ is a finding about the product, not the bench:
 None of this is fixed here: the engram arm is the v1 stack at the pinned
 revision, and the v2 branch measures it as it is.
 
+## External systems (`{langmem-0.0.30,mem0-2.0.20,memcontinuum-0.2.0rc5,cognee-1.5.4}/`)
+
+The four v1 adapters replayed the v2 500 and 1500 worlds (seed 1) unchanged
+— an adapter maps the eleven operations and never reads a probe, so a v2
+script is just a longer v1 script to it. One seed each; the three-seed
+spread is not yet measured for them.
+
+| system | success @500 | families | signal | tokens | **v2 score @500** | success @1500 | **v2 score @1500** | billed tok/query |
+|---|---|---|---|---|---|---|---|---|
+| LangMem 0.0.30 | 52% | 359 | 8 | 9 | **375** | 47% | **359** | 2,358 |
+| Mem0 2.0.20 | 47% | 334 | 7 | 6 | **346** | 44% | **347** | 2,574 |
+| MemContinuum 0.2.0rc5 | 42% | 240 | 7 | 48 | **295** | 38% | **287** | 823 |
+| cognee 1.5.4 | 48% | 259 | 8 | 14 | **281** | 43% | **263** | 2,052 |
+
+Per family at 500:
+
+| system | retrieval | abstention | currency | contradiction | drift | deletion | rationale | temporal |
+|---|---|---|---|---|---|---|---|---|
+| langmem | 64% | 0% | 91% | n/a | n/a | 100% | 4% | 100% |
+| mem0 | 56% | 0% | 73% | n/a | n/a | 100% | 5% | 100% |
+| memcontinuum | 53% | 0% | 82% | n/a | n/a | 100% | 5% | n/a |
+| cognee | 63% | 0% | 92% | n/a | n/a | 100% | 4% | n/a |
+
+Reading: LangMem is `rag` to the digit again (375 and 359 against
+375 and 359) — a flat store with this embedder is one system, on v2 as on
+v1. Every flat store answers every natural null and every phantom
+(`natural_fp` and `phantom_fp` 1.00 for all four), finds the crossed
+question at r@5 0.17 (LangMem), 0.06 (Mem0),
+0.05 (MemContinuum), 0.17 (cognee), and puts the stale
+sibling above the truth on 0.27 / 0.30 / 0.62 / 0.26 of polluted
+questions. MemContinuum's snippets earn it 48 token points, the only
+external bonus worth having; its retrieval family falls to 53% on
+the shared vocabulary (the FTS5 channel loses its rare tokens). cognee is
+`rag` minus the clock again, 281, temporal N/A.
+
 ## Not yet run
 
-Seeds 2 and 3 at 500, the 100 and 1500 rungs, and every external adapter
-(the v1 receipts under `results/v1/` stay the leaderboard). The v2 worlds
-are exported and frozen so those runs can happen without regenerating.
+Seeds 2 and 3 at 500 for the external systems, the 100 rung, and the
+authority world under v2.

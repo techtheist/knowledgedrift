@@ -340,6 +340,13 @@ points, ~40 signal points, the families it attempts) and loses the
 oracles: phantom and natural false positives 1.00, crossed recall 0.00,
 the stale sibling above the truth 70% of the time.
 
+The four external systems on one seed (`results/v2/`): LangMem 375 / 359
+(= `rag` to the digit, as on v1), Mem0 346 / 347, MemContinuum 295 / 287,
+cognee 281 / 263 at 500 / 1500. Every flat store answers every natural
+null and every phantom, reaches the crossed question at r@5 ≤ 0.2, and
+none earns a bonus worth having except MemContinuum's snippets (48 token
+points).
+
 Still owed: a `collider`-style negative for every family; authority
 scenarios with judged evidence and endorsements spread across sessions;
 a pollution shape with no sibling; a second corpus register; systems with

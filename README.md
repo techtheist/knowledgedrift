@@ -17,18 +17,22 @@ language model, and nothing asks a model whether a model did well.
 | TF-IDF over titles, one snippet per answer (`tfidf`)       | 44% (43–46) | 440 | 43 | 100 | **583 (576–587)** | ~140 |
 | the whole file in context                                  | 71% (69–74) | 390 | 0 | 0 | **390 (387–394)** | ~134,000 |
 | vector top-k (`rag`)                                       | 53% (52–55) | 358 | 8 | 9 | **375 (374–375)** | ~2,400 |
+| LangMem 0.0.30 (store + semantic index), 1 seed            | 52% | 359 | 8 | 9 | **375** | ~2,400 |
+| Mem0 2.0.20 (`infer=False`), 1 seed                        | 47% | 334 | 7 | 6 | **346** | ~2,600 |
 | keyword overlap (`grep`)                                   | 42% (40–44) | 320 | 6 | 3 | **329 (328–330)** | ~2,800 |
+| MemContinuum 0.2.0rc5 (append-only topics), 1 seed         | 42% | 240 | 7 | 48 | **295** | ~800 |
+| cognee 1.5.4 (no LLM: chunk store), 1 seed                 | 48% | 259 | 8 | 14 | **281** | ~2,100 |
 | a curated 3,000-token file                                 | 8% (7–8) | 122 | 0 | 1 | **122 (119–125)** | ~2,900 |
 | chance                                                     | 4% (3–4) | 106 | 0 | 9 | **116 (115–117)** | ~2,300 |
 | [Engram Alpha](https://github.com/techtheist/engram) 0.9.4 | 69% (69–70) | 630 | 34 | 74 | **738 (737–739)** | ~400 (218 + a 3,900-token brief over 20 questions) |
 
-At 1500 tested facts (seed 1): Engram Alpha 721, `tfidf` 580, the whole file 390, `rag` 359, `grep` 323.
+At 1500 tested facts (seed 1): Engram Alpha 721, `tfidf` 580, the whole file 390, `rag` 359, LangMem 359, Mem0 347, `grep` 323, MemContinuum 287, cognee 263.
 
 The v2 worlds have shared-vocabulary subjects, a fourth question phrasing
 that shares no content word with its note, natural-null abstention
 controls, and contradiction shapes that a token diff cannot separate —
-`docs/families.md`. External systems (LangMem, Mem0, MemContinuum,
-cognee) have not been run on v2 yet; their v1 rows are below.
+`docs/families.md`. The four external systems ran the v2 500 and 1500 worlds on one seed
+each (`results/v2/`); their v1 rows are below.
 
 ### v1 (frozen 2026-09-14; composite × attention multiplier)
 

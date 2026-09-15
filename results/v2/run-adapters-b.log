@@ -1,0 +1,15 @@
+=== memcontinuum 500-seed1 start 2026-09-15T20:31:46Z
+  4000/4223 ops
+wrote adapters/out/memcontinuum-500-seed1-v2.json (2978 replies, 647s)
+=== memcontinuum 500-seed1 end 2026-09-15T20:42:34Z
+  arm       posed attempted passed  success   of att. composite     S  mult   score  standing    tok/q
+  memcontinuum success  42% = 1238 passed of 2979 posed (attempted 2591/2979,  48% of those passed)   composite 0.300   S 0.10 ×1.0   score 295   standing 0 tok   822 tok/query
+           v2 score 295 = families 240 + signal 7 + tokens 48 (billed 823 tok/query)
+=== memcontinuum 1500-seed1 start 2026-09-15T20:42:35Z
+  12500/12673 ops
+wrote adapters/out/memcontinuum-1500-seed1-v2.json (8948 replies, 5043s)
+=== memcontinuum 1500-seed1 end 2026-09-15T22:06:38Z
+  arm       posed attempted passed  success   of att. composite     S  mult   score  standing    tok/q
+  memcontinuum success  38% = 3435 passed of 8944 posed (attempted 7786/8944,  44% of those passed)   composite 0.291   S 0.10 ×1.0   score 287   standing 0 tok   823 tok/query
+           v2 score 287 = families 233 + signal 6 + tokens 48 (billed 823 tok/query)
+=== CHAIN B DONE

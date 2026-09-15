@@ -1,0 +1,27 @@
+=== langmem 500-seed1 start 2026-09-15T20:31:46Z
+results/v2/run-adapters-a.sh: line 5: adapters/.venv-langmem/bin/python3: No such file or directory
+=== langmem 500-seed1 end 2026-09-15T20:31:46Z
+=== langmem 1500-seed1 start 2026-09-15T20:31:55Z
+results/v2/run-adapters-a.sh: line 5: adapters/.venv-langmem/bin/python3: No such file or directory
+=== langmem 1500-seed1 end 2026-09-15T20:31:55Z
+=== mem0 500-seed1 start 2026-09-15T20:31:56Z
+results/v2/run-adapters-a.sh: line 5: adapters/.venv-mem0/bin/python3: No such file or directory
+=== mem0 500-seed1 end 2026-09-15T20:31:56Z
+=== mem0 1500-seed1 start 2026-09-15T20:31:56Z
+results/v2/run-adapters-a.sh: line 5: adapters/.venv-mem0/bin/python3: No such file or directory
+=== mem0 1500-seed1 end 2026-09-15T20:31:56Z
+=== cognee 500-seed1 start 2026-09-15T20:31:56Z
+
+wrote adapters/out/cognee-500-seed1-v2.json (2978 replies, 956s)
+=== cognee 500-seed1 end 2026-09-15T20:47:58Z
+  arm       posed attempted passed  success   of att. composite     S  mult   score  standing    tok/q
+  cognee   success  48% = 1416 passed of 2979 posed (attempted 2566/2979,  55% of those passed)   composite 0.324   S 0.11 ×1.1   score 281   standing 0 tok   2052 tok/query
+           v2 score 281 = families 259 + signal 8 + tokens 14 (billed 2052 tok/query)
+=== cognee 1500-seed1 start 2026-09-15T20:47:59Z
+
+wrote adapters/out/cognee-1500-seed1-v2.json (8948 replies, 4234s)
+=== cognee 1500-seed1 end 2026-09-15T21:58:37Z
+  arm       posed attempted passed  success   of att. composite     S  mult   score  standing    tok/q
+  cognee   success  43% = 3806 passed of 8944 posed (attempted 7711/8944,  49% of those passed)   composite 0.300   S 0.12 ×1.2   score 263   standing 0 tok   1936 tok/query
+           v2 score 263 = families 240 + signal 8 + tokens 16 (billed 1936 tok/query)
+=== CHAIN A DONE
