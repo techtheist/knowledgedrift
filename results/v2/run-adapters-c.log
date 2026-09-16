@@ -1,0 +1,29 @@
+=== langmem 500-seed1 start 2026-09-15T20:32:28Z
+  4000/4223 ops
+wrote adapters/out/langmem-500-seed1-v2.json (2978 replies, 69s)
+=== langmem 500-seed1 end 2026-09-15T20:33:38Z
+  arm       posed attempted passed  success   of att. composite     S  mult   score  standing    tok/q
+  langmem  success  52% = 1558 passed of 2979 posed (attempted 2691/2979,  58% of those passed)   composite 0.448   S 0.11 ×1.1   score 375   standing 0 tok   2357 tok/query
+           v2 score 375 = families 359 + signal 8 + tokens 9 (billed 2358 tok/query)
+=== langmem 1500-seed1 start 2026-09-15T20:33:39Z
+  12500/12673 ops
+wrote adapters/out/langmem-1500-seed1-v2.json (8948 replies, 323s)
+=== langmem 1500-seed1 end 2026-09-15T20:39:03Z
+  arm       posed attempted passed  success   of att. composite     S  mult   score  standing    tok/q
+  langmem  success  47% = 4245 passed of 8944 posed (attempted 8086/8944,  52% of those passed)   composite 0.425   S 0.11 ×1.1   score 359   standing 0 tok   2202 tok/query
+           v2 score 359 = families 340 + signal 7 + tokens 11 (billed 2202 tok/query)
+=== mem0 500-seed1 start 2026-09-15T20:39:04Z
+  4000/4223 ops
+wrote adapters/out/mem0-500-seed1-v2.json (2978 replies, 152s)
+=== mem0 500-seed1 end 2026-09-15T20:41:38Z
+  arm       posed attempted passed  success   of att. composite     S  mult   score  standing    tok/q
+  mem0     success  47% = 1386 passed of 2979 posed (attempted 2691/2979,  52% of those passed)   composite 0.417   S 0.10 ×1.0   score 346   standing 0 tok   2574 tok/query
+           v2 score 346 = families 334 + signal 7 + tokens 6 (billed 2574 tok/query)
+=== mem0 1500-seed1 start 2026-09-15T20:41:39Z
+  12500/12673 ops
+wrote adapters/out/mem0-1500-seed1-v2.json (8948 replies, 857s)
+=== mem0 1500-seed1 end 2026-09-15T20:55:59Z
+  arm       posed attempted passed  success   of att. composite     S  mult   score  standing    tok/q
+  mem0     success  44% = 3962 passed of 8944 posed (attempted 8086/8944,  49% of those passed)   composite 0.417   S 0.11 ×1.1   score 347   standing 0 tok   2441 tok/query
+           v2 score 347 = families 333 + signal 6 + tokens 8 (billed 2442 tok/query)
+=== CHAIN C DONE

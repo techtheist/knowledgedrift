@@ -29,7 +29,7 @@ makes the grader complain about missing replies; inspect the JSON instead.
 The grader poses fewer tasks than the script has probes: the rewrite of a
 purged note is a column, never a task.
 
-`adapter.py` is the protocol (eleven operations, the hit shape, capabilities);
+`adapter.py` is the protocol (twelve operations, the hit shape, capabilities);
 `run.py` is the loop. An adapter is one file, `<name>_adapter.py`, with a
 class `Adapter(MemoryAdapter)`. It maps keys to native ids itself, returns
 exactly the text its system would show a caller, declares only the

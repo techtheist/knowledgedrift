@@ -31,7 +31,9 @@ use std::collections::{HashMap, HashSet};
 
 use crate::corpus::profile::Profile;
 use crate::corpus::rng::Rng;
-use crate::corpus::{Corpus, Fact, KINDS, Kind, Phrasing, corpus_chained};
+use crate::corpus::{
+    Corpus, CorpusShape, Fact, KINDS, Kind, Phrasing, corpus_chained_shaped, natural_null,
+};
 
 use crate::protocol::{Authority, Record, Window, WriteMode};
 use crate::script::{Expect, Family, Op, PollutionShape, Probe, Script, WorldSpec};
@@ -61,6 +63,10 @@ pub struct WorldConfig {
     /// worlds keep their digests; on, the world grows its twins and probes
     /// after every other family has been asked.
     pub authority: bool,
+    /// Benchmark edition: 1 = the frozen v1 worlds; 2 = shared-vocabulary
+    /// subjects, the crossed phrasing, natural-null controls, the reworded
+    /// contradiction shapes and answer-bearing probes (`--v2`).
+    pub edition: u8,
 }
 
 impl Default for WorldConfig {
@@ -75,6 +81,7 @@ impl Default for WorldConfig {
             spread_days: 60,
             window_days: 5,
             authority: false,
+            edition: 1,
         }
     }
 }
@@ -105,8 +112,15 @@ fn kind_name(k: Kind) -> String {
     k.type_name().to_string()
 }
 
+/// The component is a subject's last two words (`lease broker`), whatever
+/// precedes them — a coined name in v1, two shared words in v2.
 fn component_of(subject: &str) -> &str {
-    subject.split_once(' ').map(|(_, c)| c).unwrap_or(subject)
+    let (head, last) = subject.rsplit_once(' ').unwrap_or(("", subject));
+    let (_, prev) = head.rsplit_once(' ').unwrap_or(("", head));
+    if prev.is_empty() || prev.len() + 1 + last.len() > subject.len() {
+        return subject;
+    }
+    &subject[subject.len() - prev.len() - 1 - last.len()..]
 }
 
 /// `(parameter, value, unit)` of a Decision's predicate
@@ -189,6 +203,62 @@ fn flip_clause(f: &Fact, salt: usize) -> String {
     }
 }
 
+/// A flipped claim in a wholly different frame — the v2 `reworded` shape:
+/// no token of the original sentence survives but the subject and the
+/// slot word, so a token-differencing detector sees a new sentence, not a
+/// one-token edit.
+fn flip_c(f: &Fact, salt: usize) -> String {
+    let s = &f.subject;
+    match f.kind {
+        Kind::Decision => match decision_parts(f) {
+            Some((param, v, unit)) => format!(
+                "Operators pinned the {s} to {} {unit} for its {param}, and the dashboard agrees",
+                altered(v, salt)
+            ),
+            None => format!("Operators moved the {s} off {} some time ago", f.answer),
+        },
+        Kind::Caution => format!(
+            "Nobody has ever seen the {s} {}; it has been stable in every environment",
+            f.predicate
+        ),
+        Kind::Principle => format!(
+            "Doing {} inside the {s} is fine and routinely done",
+            f.answer
+        ),
+        Kind::Problem => format!(
+            "The {s} has stopped showing that it {}; the issue is resolved",
+            f.predicate
+        ),
+        Kind::Insight => format!(
+            "The explanation for the {s} {} was traced elsewhere; {} plays no part",
+            f.predicate, f.answer
+        ),
+    }
+}
+
+/// An agreeing restatement one token away from the original title — the
+/// v2 `synonym` shape, the trap for a detector that flags any small edit.
+/// `None` when the title has no token to swap.
+fn synonym(f: &Fact) -> Option<String> {
+    let t = &f.title;
+    let swapped = match f.kind {
+        Kind::Decision => t
+            .contains(" uses a ")
+            .then(|| t.replacen(" uses a ", " keeps a ", 1)),
+        Kind::Caution => t
+            .contains(" when ")
+            .then(|| t.replacen(" when ", " whenever ", 1)),
+        Kind::Principle => t
+            .contains(" must never ")
+            .then(|| t.replacen(" must never ", " should never ", 1)),
+        Kind::Problem => Some(format!("Confirmed: {t}")),
+        Kind::Insight => t
+            .contains(" because ")
+            .then(|| t.replacen(" because ", " since ", 1)),
+    }?;
+    (swapped != *t).then_some(swapped)
+}
+
 /// An agreeing restatement — the paraphrase trap that must not be flagged.
 fn agree(f: &Fact) -> String {
     let s = &f.subject;
@@ -208,6 +278,27 @@ const SHAPES: [(&str, u8, bool); 11] = [
     ("negation", 2, true),
     ("paraphrase", 2, false),
     ("unit", 2, true),
+    ("coreference", 2, false),
+    ("transitive", 3, true),
+    ("quantifier", 2, true),
+    ("collider", 2, false),
+    ("compound", 3, true),
+    ("unit_agree", 2, false),
+    ("historical", 3, false),
+];
+
+/// The v2 rotation: the eleven above plus three shapes aimed at lexical
+/// contradiction detectors — a flip that shares no frame with the original
+/// (`reworded`), a flip carried by a clause rather than a token (`clause`),
+/// and an agreeing restatement exactly one token from the title (`synonym`).
+const SHAPES_V2: [(&str, u8, bool); 14] = [
+    ("value", 1, true),
+    ("reworded", 1, true),
+    ("negation", 2, true),
+    ("paraphrase", 2, false),
+    ("synonym", 2, false),
+    ("unit", 2, true),
+    ("clause", 2, true),
     ("coreference", 2, false),
     ("transitive", 3, true),
     ("quantifier", 2, true),
@@ -250,6 +341,21 @@ fn make_case(
             "Checked against the current deployment.".into(),
         )],
         "paraphrase" => vec![(agree(f), "Restated for the onboarding notes.".into())],
+        "reworded" => vec![(
+            flip_c(f, salt),
+            "Written up fresh after the last operations review.".into(),
+        )],
+        "clause" => vec![(
+            format!(
+                "Contrary to the runbook, it is wrong that the {s} {}; the earlier note was mistaken",
+                f.predicate
+            ),
+            "Corrected after the incident that the runbook version caused.".into(),
+        )],
+        "synonym" => vec![(
+            synonym(f)?,
+            "Restated word for word from the original note.".into(),
+        )],
         "unit" => {
             let (param, v, unit) = parts.clone()?;
             let (unit2, factor) = convert(&unit)?;
@@ -699,6 +805,7 @@ fn phrasing_name(p: Phrasing) -> &'static str {
         Phrasing::Lexical => "lexical",
         Phrasing::Paraphrase => "paraphrase",
         Phrasing::Oblique => "oblique",
+        Phrasing::Crossed => "crossed",
     }
 }
 
@@ -709,8 +816,9 @@ fn cap(size: usize, div: usize, floor: usize) -> usize {
 /// Build the script for one world.
 pub fn build(cfg: &WorldConfig) -> Script {
     let base = day_to_unix(BASE_DAY).expect("BASE_DAY parses");
+    let v2 = cfg.edition >= 2;
     let n_chains = cap(cfg.size, 20, 4);
-    let c: Corpus = corpus_chained(
+    let c: Corpus = corpus_chained_shaped(
         cfg.size,
         0,
         cfg.seed,
@@ -718,7 +826,14 @@ pub fn build(cfg: &WorldConfig) -> Script {
         &uniform_mix(),
         n_chains,
         cfg.chain_len,
+        CorpusShape {
+            shared_vocab: v2,
+            crossed: v2,
+            ..CorpusShape::default()
+        },
     );
+    // v2 probes carry the answer substring; v1 probes stay key-graded.
+    let answer_of = |f: &Fact| if v2 { f.answer.clone() } else { String::new() };
 
     let chain_keys: HashSet<&str> = c
         .chains
@@ -867,10 +982,60 @@ pub fn build(cfg: &WorldConfig) -> Script {
                     gold: f.key.clone(),
                     phrasing: phrasing_name(q.phrasing).to_string(),
                     stale: stale.clone(),
+                    answer: answer_of(f),
                 },
             );
         }
     }
+
+    // v2: the path-shaped read. Every file the world's code refs name is
+    // asked once, as a path — what a caller about to edit it should see.
+    // Gold is every live, truthful note bound to the file: the non-chain
+    // facts (tested or not — a distractor bound to a file is still what an
+    // editor should know) and the chain heads. A stale sibling shares its
+    // fact's refs but is neither gold nor penalised.
+    let mut path_n = 0usize;
+    if v2 {
+        let live: Vec<&Fact> = facts
+            .iter()
+            .copied()
+            .chain(c.chains.iter().map(|ch| by_key[ch.head()]))
+            .collect();
+        let mut paths: Vec<&str> = Vec::new();
+        let mut bound: HashMap<&str, Vec<&Fact>> = HashMap::new();
+        for f in &live {
+            for p in &f.code_refs {
+                if !bound.contains_key(p.as_str()) {
+                    paths.push(p);
+                }
+                let golds = bound.entry(p.as_str()).or_default();
+                // A note may name the same file twice in its refs.
+                if !golds.iter().any(|g| g.key == f.key) {
+                    golds.push(f);
+                }
+            }
+        }
+        for p in paths {
+            let golds = &bound[p];
+            path_n += 1;
+            let id = format!("P{path_n}");
+            ops.push(Op::RecallPath {
+                id: id.clone(),
+                path: p.to_string(),
+                k: cfg.k,
+            });
+            probes.push(Probe {
+                id,
+                family: Family::Retrieval,
+                expect: Expect::Bound {
+                    path: p.to_string(),
+                    gold: golds.iter().map(|f| f.key.clone()).collect(),
+                    answers: golds.iter().map(|f| answer_of(f)).collect(),
+                },
+            });
+        }
+    }
+    let _ = path_n;
 
     // Contradiction plan first: transitive cases borrow phantom subjects
     // from the END of the control list, and those controls are dropped.
@@ -898,8 +1063,9 @@ pub fn build(cfg: &WorldConfig) -> Script {
         let ghost_idx = c.phantom_subjects.len().checked_sub(ghosts_used + 1);
         let ghost = ghost_idx.map(|g| c.phantom_subjects[g].as_str());
         let mut made = None;
-        for step in 0..SHAPES.len() {
-            let (shape, tier, positive) = SHAPES[(n + step) % SHAPES.len()];
+        let shapes: &[(&'static str, u8, bool)] = if v2 { &SHAPES_V2 } else { &SHAPES };
+        for step in 0..shapes.len() {
+            let (shape, tier, positive) = shapes[(n + step) % shapes.len()];
             let needs_ghost = shape == "transitive";
             if needs_ghost && ghost.is_none() {
                 continue;
@@ -935,8 +1101,27 @@ pub fn build(cfg: &WorldConfig) -> Script {
             Family::Abstention,
             q.text.clone(),
             None,
-            Expect::Control,
+            Expect::Control { natural: false },
         );
+    }
+    // v2: natural nulls — a real subject, a kind of question it has no
+    // note for. One per four tested facts, like the phantoms.
+    if v2 {
+        for (i, f) in facts
+            .iter()
+            .enumerate()
+            .filter(|(i, f)| f.tested && i % 4 == 3)
+            .take(cap(cfg.size, 4, 4))
+        {
+            recall(
+                &mut ops,
+                &mut probes,
+                Family::Abstention,
+                natural_null(f, i + 5),
+                None,
+                Expect::Control { natural: true },
+            );
+        }
     }
 
     // Currency: the current state of every re-decided subject, plus a
@@ -953,6 +1138,7 @@ pub fn build(cfg: &WorldConfig) -> Script {
                 Expect::Current {
                     head: ch.head().to_string(),
                     retired: retired.clone(),
+                    answer: answer_of(by_key[ch.head()]),
                 },
             );
         }
@@ -999,6 +1185,7 @@ pub fn build(cfg: &WorldConfig) -> Script {
                         gold: to.key.clone(),
                         anchor: from.key.clone(),
                         verb: "because".into(),
+                        answer: answer_of(to),
                     },
                 );
             }
@@ -1017,6 +1204,7 @@ pub fn build(cfg: &WorldConfig) -> Script {
                         gold: from.key.clone(),
                         anchor: to.key.clone(),
                         verb: "answers".into(),
+                        answer: answer_of(from),
                     },
                 );
             }
@@ -1048,6 +1236,7 @@ pub fn build(cfg: &WorldConfig) -> Script {
             Expect::Windowed {
                 gold: f.key.clone(),
                 window,
+                answer: answer_of(f),
             },
         );
     }
@@ -1307,6 +1496,7 @@ pub fn build(cfg: &WorldConfig) -> Script {
             window_days: cfg.window_days,
             base_ts: base,
             authority: cfg.authority,
+            edition: cfg.edition,
             notes,
             edges,
         },
@@ -1358,9 +1548,10 @@ mod tests {
             .iter()
             .filter_map(|op| match op {
                 Op::Inscribe { id: Some(id), .. } => Some(id.as_str()),
-                Op::Recall { id, .. } | Op::Suspects { id } | Op::Lineage { id, .. } => {
-                    Some(id.as_str())
-                }
+                Op::Recall { id, .. }
+                | Op::RecallPath { id, .. }
+                | Op::Suspects { id }
+                | Op::Lineage { id, .. } => Some(id.as_str()),
                 _ => None,
             })
             .collect();
@@ -1445,6 +1636,7 @@ mod tests {
                 spread_days: spec.spread_days,
                 window_days: spec.window_days,
                 authority: spec.authority,
+                edition: spec.edition,
             });
             assert_eq!(
                 rebuilt.digest(),
@@ -1534,6 +1726,187 @@ mod tests {
             .filter(|op| matches!(op, Op::Endorse { .. }))
             .count();
         assert!(endorsements > 40, "{endorsements}");
+    }
+
+    /// The v2 edition is a switch on the same generator: the default digest
+    /// does not move, and the v2 world carries what v2 is about — two-word
+    /// shared subjects, a fourth crossed phrasing on every tested fact,
+    /// natural-null controls whose subject was written, an answer on every
+    /// retrieval probe, and the three lexical-trap contradiction shapes.
+    #[test]
+    fn the_v2_edition_is_a_switch_on_the_same_generator() {
+        let v1 = build(&WorldConfig {
+            size: 60,
+            seed: 3,
+            ..WorldConfig::default()
+        });
+        let v2 = build(&WorldConfig {
+            size: 60,
+            seed: 3,
+            edition: 2,
+            ..WorldConfig::default()
+        });
+        assert_ne!(v1.digest(), v2.digest());
+        assert!(!serde_json::to_string(&v1.spec).unwrap().contains("edition"));
+        assert_eq!(v2.spec.edition, 2);
+        let titles: Vec<&str> = v2
+            .ops
+            .iter()
+            .filter_map(|op| match op {
+                Op::Inscribe { record, .. } | Op::Supersede { new: record, .. } => {
+                    Some(record.title.as_str())
+                }
+                _ => None,
+            })
+            .collect();
+        // Every imported note's subject is three lowercase words before its
+        // predicate (planted contradiction notes start however their shape
+        // frames them).
+        let imported = v2.ops.iter().filter_map(|op| match op {
+            Op::Inscribe {
+                record,
+                mode: WriteMode::Import,
+                ..
+            } => Some(record.title.as_str()),
+            _ => None,
+        });
+        for t in imported {
+            let first = t.split_whitespace().next().unwrap();
+            assert!(
+                first.chars().all(|c| c.is_ascii_lowercase()),
+                "v2 subject starts with a shared word: {t}"
+            );
+        }
+        let mut crossed = 0;
+        let mut natural = 0;
+        let mut phantom = 0;
+        let mut shapes = HashSet::new();
+        for p in &v2.probes {
+            match &p.expect {
+                Expect::Gold {
+                    phrasing, answer, ..
+                } => {
+                    assert!(!answer.is_empty());
+                    if phrasing == "crossed" {
+                        crossed += 1;
+                    }
+                }
+                Expect::Control { natural: true } => {
+                    natural += 1;
+                    let Some(Op::Recall { query, .. }) = v2
+                        .ops
+                        .iter()
+                        .find(|op| matches!(op, Op::Recall { id, .. } if *id == p.id))
+                    else {
+                        panic!("control has a recall")
+                    };
+                    // The subject named in the question WAS written …
+                    let subject = titles
+                        .iter()
+                        .find(|t| {
+                            let s = t.split_whitespace().take(4).collect::<Vec<_>>().join(" ");
+                            query.contains(&s)
+                        })
+                        .is_some();
+                    assert!(subject, "natural null names no written subject: {query}");
+                }
+                Expect::Control { natural: false } => phantom += 1,
+                Expect::Case { shape, .. } => {
+                    shapes.insert(shape.clone());
+                }
+                _ => {}
+            }
+        }
+        assert_eq!(crossed, 60, "one crossed question per tested fact");
+        assert_eq!(natural, 15);
+        // The path reads: one per file the code refs name, every gold a
+        // live record, every path an op of its own.
+        let keys: HashSet<&str> = v2
+            .ops
+            .iter()
+            .filter_map(|op| match op {
+                Op::Inscribe { record, .. } | Op::Supersede { new: record, .. } => {
+                    Some(record.key.as_str())
+                }
+                _ => None,
+            })
+            .collect();
+        let mut bound = 0;
+        for p in &v2.probes {
+            if let Expect::Bound {
+                path,
+                gold,
+                answers,
+            } = &p.expect
+            {
+                bound += 1;
+                assert!(path.starts_with("src/"), "{path}");
+                assert!(!gold.is_empty() && gold.len() == answers.len());
+                assert!(gold.iter().all(|g| keys.contains(g.as_str())));
+                assert!(
+                    gold.iter().all(|g| !g.starts_with("s-")),
+                    "siblings are not gold"
+                );
+                let unique: HashSet<&str> = gold.iter().map(String::as_str).collect();
+                assert_eq!(unique.len(), gold.len(), "a note is bound once: {path}");
+                assert!(v2.ops.iter().any(
+                    |op| matches!(op, Op::RecallPath { id, path: p2, .. } if *id == p.id && p2 == path)
+                ));
+            }
+        }
+        assert!(bound > 0, "v2 poses path reads");
+        assert!(
+            v1.probes
+                .iter()
+                .all(|p| !matches!(p.expect, Expect::Bound { .. })),
+            "v1 has no path reads"
+        );
+        assert!(phantom > 0);
+        for s in ["reworded", "clause", "synonym"] {
+            assert!(shapes.contains(s), "v2 shape {s} missing");
+        }
+        for p in &v1.probes {
+            if let Expect::Gold { answer, .. } = &p.expect {
+                assert!(answer.is_empty(), "v1 probes stay key-graded");
+            }
+        }
+    }
+
+    /// The v2 worlds under `worlds/v2/` regenerate byte for byte, like v1's.
+    #[test]
+    fn the_v2_worlds_regenerate_from_this_crate() {
+        let dir = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("worlds/v2");
+        let mut seen = 0;
+        for entry in std::fs::read_dir(&dir).expect("worlds/v2 exists") {
+            let path = entry.unwrap().path();
+            if path.extension().is_none_or(|e| e != "json") {
+                continue;
+            }
+            let file: Script =
+                serde_json::from_str(&std::fs::read_to_string(&path).unwrap()).unwrap();
+            let spec = &file.spec;
+            assert_eq!(spec.edition, 2, "{}", path.display());
+            let rebuilt = build(&WorldConfig {
+                size: spec.size,
+                seed: spec.seed,
+                k: spec.k,
+                chain_len: spec.chain_len,
+                pollution: spec.pollution,
+                shape: spec.pollution_shape,
+                spread_days: spec.spread_days,
+                window_days: spec.window_days,
+                authority: spec.authority,
+                edition: spec.edition,
+            });
+            assert_eq!(
+                rebuilt.digest(),
+                file.digest,
+                "{} no longer regenerates",
+                path.display()
+            );
+            seen += 1;
+        }
+        assert_eq!(seen, 5, "the five v2 worlds");
     }
 
     #[test]

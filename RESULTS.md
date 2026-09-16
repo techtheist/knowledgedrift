@@ -1,311 +1,235 @@
-# KnowledgeDrift v1 — what the numbers say
+# KnowledgeDrift — what the numbers say
 
-A reading of the receipts under `results/v1/`. The benchmark itself —
+A reading of the receipts under `results/v2/`. The benchmark itself —
 world, protocol, families, rules, scoring — is in the README and `docs/`;
-this file says what the v1 numbers mean, what they do not, and which
-design decisions were made because an earlier version of the number was
-misleading. Every figure is quoted from a named receipt; nothing is
-rounded past what three seeds support.
+this file says what the numbers mean and what they do not. Every figure is
+quoted from a named receipt; nothing is rounded past what three seeds
+support.
+
+**Environment.** One Apple-silicon laptop, CPU only, 2026-09-16;
+`BAAI/bge-small-en-v1.5` for every embedding arm; the reference system
+(Engram Alpha 0.9.4, arm `engram`) with `jina-reranker-v1-turbo-en` and
+`deberta-v3-small-tasksource-nli`. Eleven systems: the reference system,
+six in-process baselines (`tfidf`, `whole`, `rag`, `grep`, `curated`,
+`chance`) and four external adapters (MemContinuum, LangMem, Mem0, cognee)
+replaying the exported scripts through their own APIs. External systems
+ran one seed; the in-process arms ran three at 500.
 
 ## In one paragraph
 
-Coding agents forget, but the failures that cost a project are not
-amnesia: they are answering from the note that was re-decided, not
-noticing that two notes disagree, bringing back what a person deleted,
-and being unable to say *why* anything was decided. KnowledgeDrift pours
-one seeded, invented software project into a memory system through a
-ten-operation protocol, then questions, re-decides, contradicts, deletes
-and re-asks it, grading every probe by a rule fixed before the question.
-Measured on the official 500/1500 ladder with the same local embedder
-everywhere, the reference system (Engram Alpha 0.9.4, arm `engram`) scores 85% / 80% success
-(score 511 / 459) against 63% / 57% for LangMem's store, 58% / 55% for
-Mem0 as a raw store, and 53% / 51% for keyword overlap — and the three
-flat stores, given the same vectors, are one system: they fail the same
-tasks for the same reason. The distance is not recall. It is abstention,
-rationale, the suspect queue, the resurrection warning, and roughly an
-eighth of the tokens per answer.
+A memory that knows what it knows leads by 138 points at 1,500 tested
+facts and 158 at 500, and the distance is not recall. The reference
+system's retrieval family is *under* the vector store's (57% against 57%
+at 1500, 63% against 65% at 500): what it earns is abstention (96–100%
+where every flat store answers every question it should not), a suspect
+queue that notices planted contradictions and silent drift, a
+resurrection warning when a deleted note comes back, rationale through
+its edges, and an answer a fifth the size. The lexical arm shows the
+other edge of the score: 100 token points and 37–42 signal points for
+answering in a title, and a family column that says exactly what a title
+cannot do. The three flat stores given the same vectors are one system —
+LangMem is `rag` to the digit at both sizes — and the one external system
+with a structural channel, MemContinuum, is the only one whose rationale
+family is not a rounding error.
 
-## The official ladder (seed 1)
+## The ladder: 1,500 tested facts (seed 1)
 
-`results/v1/reference-arms/ladder-500-1500-seed1.json`,
-`results/v1/{langmem-0.0.30,mem0-2.0.20,memcontinuum-0.2.0rc5,cognee-1.5.4}/{500,1500}-seed1.json`.
+1,883 notes, 9,008 tasks: 6,064 retrieval (four phrasings and 64 path
+reads), 714 abstention, 300 currency, 500 contradiction, 158 drift, 375
+deletion, 522 rationale, 375 temporal.
+`results/v2/reference-arms/1500-seed1.json` and
+`results/v2/<system>/1500-seed1.json`.
 
-| arm | success @500 | score @500 | success @1500 | score @1500 | tok/query |
-|---|---|---|---|---|---|
-| Engram Alpha 0.9.4 | **85%** | **511** | **80%** | **459** | 263–289 |
-| langmem 0.0.30 | 63% | 51 | 57% | 52 | ~2,200 |
-| rag | 63% | 51 | 57% | 52 | ~2,200 |
-| mem0 2.0.20 | 58% | 45 | 55% | 47 | ~2,500 |
-| cognee 1.5.4 | 57% | 39 | 52% | 39 | ~2,000 |
-| grep | 53% | 44 | 51% | 43 | ~2,600 |
-| memcontinuum 0.2.0rc5 | 52% | 33 | 48% | 32 | ~800 |
-| whole file | 71% | 5 | 71% | 5 | 134k–402k |
-| curated 3k | 9% | 4 | 5% | 4 | ~2,900 |
-| chance | 4% | 15 | 4% | 13 | ~2,300 |
+| system | success | passed / attempted | families (800) | signal (100) | tokens (100) | **score** | billed tok/query |
+|---|---|---|---|---|---|---|---|
+| **engram** | 66% | 5,927 / 9,008 | 616 | 32 | 69 | **718** | 457 |
+| tfidf | 43% | 3,886 / 8,808 | 442 | 37 | 100 | **580** | 158 |
+| whole file | 71% | 6,429 / 7,775 | 390 | 0 | 0 | **390** | 404,164 |
+| MemContinuum | 44% | 3,984 / 7,850 | 326 | 7 | 47 | **380** | 844 |
+| rag | 48% | 4,283 / 8,150 | 340 | 7 | 11 | **359** | 2,208 |
+| LangMem | 48% | 4,281 / 8,150 | 340 | 7 | 11 | **359** | 2,201 |
+| Mem0 | 44% | 4,001 / 8,150 | 333 | 6 | 8 | **348** | 2,438 |
+| grep | 41% | 3,651 / 8,150 | 315 | 6 | 3 | **325** | 2,766 |
+| cognee | 43% | 3,836 / 7,775 | 240 | 8 | 16 | **263** | 1,934 |
+| chance | 3% | 285 / 8,150 | 103 | 0 | 9 | **112** | 2,333 |
+| curated (3k) | 5% | 424 / 7,775 | 108 | 0 | 1 | **109** | 2,959 |
 
-Five readings:
+**By family** (pass rate; n/a = the family needs a capability the system
+does not have, and is scored zero in the headline):
 
-1. **Three flat stores are one system.** `rag` (the harness's own vector
-   top-k), LangMem's store and Mem0 with `infer=False` land within four
-   points of each other at every rung and fail identically: fp 1.00
-   (nothing declines), rationale 1% at 1500 (a *why* question that only
-   structure answers), the stale sibling above the answer on ~40% of
-   polluted questions, and no suspect, drift or lineage task attempted.
-   Mem0 is lowest because its hybrid BM25 rescoring costs oblique recall
-   (0.19 vs 0.35 at 1500) — a keyword channel weighted on the wrong
-   register.
-2. **Recall is not where the reference system wins.** On retrieval alone
-   the flat stores match its r@5 (0.76 vs 0.78 at 1500). Its lead is the
-   families they cannot attempt and the bill: abstention fp 0.02 vs 1.00,
-   rationale 99% vs 1%, contradiction 75% and drift 91% vs N/A,
-   resurrection warned 50–69% vs N/A, and 263–289 tokens per answer at
-   focus 0.52–0.57 against ~2,300 at 0.11.
-3. **MemContinuum is a flat store with a chain.** Its append-only topics
-   carry supersession natively — currency 85%, lineage 1.00, pollution
-   0.00, the only external system to attempt the lineage walk — and it
-   shows snippets, so it answers in ~800 tokens instead of ~2,300. But its
-   hybrid search ranks the stale sibling above the truth on 81–89% of
-   polluted questions (the sibling's short "kept for reference" ruling
-   wins BM25's length normalisation and the vector over title-plus-short-
-   body), rationale is 2%, nothing declines, and the per-field authority
-   its schema is built around never reaches ranking (see the authority
-   section). 52% (49–55) over three seeds, score 33; 48% at 1500, where
-   oblique recall falls to 0.14 and *why* to 0%.
-4. **cognee without its LLM is `rag` minus the clock.** With the
-   extraction task out of its pipeline, cognee is documents → chunks →
-   one LanceDB cosine search, and its retrieval lands where the flat
-   stores land (80% (78–82) over three seeds, r@5 0.83–0.84, oblique
-   0.52–0.57, the stale sibling above the truth on 37–45% of polluted
-   questions). Its currency is 91% because delete + add leaves no retired
-   generation to pollute, and its bill is the flat store's (~2,000 tokens
-   per answer, whole notes). What separates it from `rag` is the one
-   family every other flat store attempts: its chunk search has no time
-   filter, so the temporal family is N/A and the headline charges for it —
-   58% (56–60), score 40. At 1500 it holds the pattern: 52%, score 39,
-   retrieval 72% (r@5 0.75, oblique 0.33), currency 81%, rationale 1%.
-5. **The whole file is the honest ceiling on recall and the floor on
-   cost.** 71% of tasks at every rung by showing everything; composite
-   0.49, score 5. The curated 3,000-token file, the thing most agent
-   frameworks ship as "memory", loses by 100 notes (29% → 9% → 5%).
+| system | retrieval | abstention | currency | contradiction | drift | deletion | rationale | temporal |
+|---|---|---|---|---|---|---|---|---|
+| engram | 57% | 96% | 81% | 47% | 48% | 87% | 99% | 100% |
+| tfidf | 45% | 0% | 67% | 58% | 73% | 100% | 0% | 100% |
+| whole file | 90% | 0% | 100% | n/a | n/a | 100% | 100% | n/a |
+| MemContinuum | 49% | 0% | 77% | n/a | n/a | 100% | 100% | n/a |
+| rag | 57% | 0% | 80% | n/a | n/a | 100% | 4% | 99% |
+| LangMem | 57% | 0% | 80% | n/a | n/a | 100% | 4% | 99% |
+| Mem0 | 52% | 0% | 74% | n/a | n/a | 100% | 7% | 100% |
+| grep | 47% | 0% | 67% | n/a | n/a | 100% | 1% | 100% |
+| cognee | 56% | 0% | 80% | n/a | n/a | 100% | 3% | n/a |
+| chance | 0% | 0% | 0% | n/a | n/a | 100% | 0% | 2% |
+| curated (3k) | 2% | 0% | 0% | n/a | n/a | 100% | 6% | n/a |
 
-The reference system's families at 1500 (pass rate, then the columns that
-explain it):
+**Columns worth reading at 1500:**
 
-| family | tasks | pass | reading |
-|---|---|---|---|
-| retrieval | 4,500 | 75% | r@5 0.78, oblique 0.34, `stale_above` 0.23 — one polluted question in four hands the reader the stale value first |
-| abstention | 330 | 98% | fp 0.02, declined 0.98, separation 0.76 |
-| currency | 300 | 80% | head r@5 0.74, pollution 0.00, lineage 1.00 — retired generations never come back and the history is always reachable |
-| contradiction | 500 | 75% | t1 0.78, t2 0.91, t3 0.01; false alarms t2 0.03, t3 0.15 (the `historical` trap) |
-| drift | 158 | 91% | noticed 0.91, flagged 0.73 |
-| deletion | 375 | 83% | released and purged both gone 1.00; trace 1.00; `marker_leak` 1.00; resurrection warned 0.50 (0.69 at 500, 1.00 at 100 — the marker is crowded out of the nearest neighbours as the graph grows) |
-| rationale | 540 | 99% | direct 0.00, assisted 0.99 — *why* is answered by structure, never by ranking |
-| temporal | 375 | 99% | in-window r@5 0.99, leak 0.00 |
-
-What moves with scale for it: oblique recall 0.54 → 0.34, head r@5
-0.84 → 0.74, resurrection warning 0.69 → 0.50, tier-1 contradiction
-0.94 → 0.78 — every one a ranking-depth effect on a growing graph; the
-structural columns (pollution 0.00, lineage 1.00, gone 1.00, leak 0.00) do
-not move.
+| system | crossed_r@5 | oblique_r@5 | path_r@5 | path_cover | stale_above | phantom_fp | natural_fp | hedge | t1_recall |
+|---|---|---|---|---|---|---|---|---|---|
+| engram | 0.02 | 0.32 | 1.00 | 0.98 | 0.17 | 0.01 | 0.06 | 0.34 | 0.04 |
+| tfidf | 0.00 | 0.01 | 0.08 | 0.03 | 0.63 | 1.00 | 1.00 | 0.00 | 0.42 |
+| MemContinuum | 0.02 | 0.14 | 1.00 | 0.87 | 0.58 | 1.00 | 1.00 | 0.00 | – |
+| rag | 0.09 | 0.34 | 0.56 | 0.18 | 0.28 | 1.00 | 1.00 | 0.00 | – |
+| LangMem | 0.09 | 0.34 | 0.56 | 0.19 | 0.28 | 1.00 | 1.00 | 0.00 | – |
+| Mem0 | 0.03 | 0.18 | 0.61 | 0.18 | 0.29 | 1.00 | 1.00 | 0.00 | – |
+| grep | 0.00 | 0.05 | 1.00 | 0.92 | 0.44 | 1.00 | 1.00 | 0.00 | – |
+| cognee | 0.09 | 0.29 | 0.47 | 0.18 | 0.26 | 1.00 | 1.00 | 0.00 | – |
 
 ## Is it stable? Three seeds at 500
 
-`results/v1/reference-arms/{ladder-500-1500-seed1,500-seed2,500-seed3}.json`
-and the matching external files. Same models, same flags; only the world
-changes (607–641 notes, 2,318–2,373 tasks). Mean, then min–max:
+630 notes and 3,042 tasks per world (2,063 retrieval, of which 63 path
+reads; 238 abstention, of which 125 natural nulls; 100 currency; 166
+contradiction; 55 drift; 125 deletion; 170 rationale; 125 temporal).
+Mean, then min–max, over `results/v2/reference-arms/500-seed{1,2,3}.json`.
+The score is a sum of means, so it is stable to about a point per arm —
+two for the reference system, whose calibrated decline line refits on
+every run (741 / 736 / 739 on the three seeds; an identical rerun of seed 1
+gave 739).
 
-| arm | success | composite | score |
-|---|---|---|---|
-| engram | **85% (84–85)** | 0.907 (0.898–0.918) | **525 (511–543)** |
-| langmem | 63% (61–66) | 0.468 (0.461–0.473) | 52 (51–54) |
-| rag | 63% (61–66) | 0.468 (0.461–0.473) | 52 (51–54) |
-| mem0 | 59% (57–61) | 0.443 (0.438–0.447) | 46 (45–48) |
-| cognee | 58% (56–60) | 0.342 (0.337–0.348) | 40 (39–42) |
-| grep | 53% (51–55) | 0.418 (0.414–0.422) | 43 (42–44) |
-| memcontinuum | 52% (49–55) | 0.321 (0.314–0.327) | 33 (33–34) |
-| whole file | 71% (69–74) | 0.487 (0.483–0.492) | 5 (5–5) |
-| curated 3k | 9% (9–9) | 0.156 (0.151–0.160) | 4 (4–4) |
-| chance | 4% (4–4) | 0.131 (0.131–0.132) | 13 (11–15) |
-
-The reference system's families over the three seeds: retrieval 81%
-(80–82), abstention 100% (99–100), currency 89% (87–91), contradiction
-74% (72–75), drift 93% (91–97), deletion 90% (90–90), rationale 100%
-(99–100), temporal 100% (99–100). Under the contradiction number, tier-1
-recall is 0.94 / 1.00 / 0.88 and tier-2 0.97 / 0.90 / 0.87 by seed; the
-tier-3 false-alarm rate (the `historical` trap) is 0.24 / 0.21 / 0.37 —
-the widest-swinging column, because it sits on six to ten cases. The
-stale sibling outranks the answer on 0.21 / 0.32 / 0.26 of polluted
-questions; the resurrection warning is 0.69 on every seed; abstention fp
-never exceeds 0.01; tokens per answer 249–263.
-
-So: the success percentages are stable to about one point for every arm,
-the score to about three percent (it multiplies two means), and the
-ordering never changes. LangMem and `rag` agree **on every seed** to the
-same 61 / 63 / 66 — a flat store with this embedder is one system. The
-ten-point gaps between the reference system and the nearest flat store,
-and between the flat stores and grep, are real; a one-point gap anywhere
-in this table is not.
-
-## Pollution shapes: what gives the stale sibling away
-
-`results/v1/reference-arms/500-seed1-{twin,late}.json` against the
-default. The stale sibling is the same flipped restatement each time;
-`twin` takes away the body hint (it wears the truth's own body, so only
-the value and the date differ), `late` takes away the clock (it is
-stamped 20–40 days *after* the truth, as a migration would). The column
-that reads the shape is `stale_above`: the share of polluted questions
-whose stale sibling outranked the answer.
-
-| shape | engram success | engram `stale_above` | engram drift noticed | rag `stale_above` | grep `stale_above` |
+| arm | success | families (800) | signal (100) | tokens (100) | **score** |
 |---|---|---|---|---|---|
-| `stale` (default) | 85% | 0.21 | 0.91 | 0.38 | 0.58 |
-| `twin` | 82% | **0.64** | **0.98** | 0.55 | 0.78 |
-| `late` | 85% | **0.35** | 0.91 | 0.38 | 0.58 |
+| **engram** | **70% (70–71)** | **632 (629–636)** | 36 (35–37) | 71 (70–71) | **739 (736–741)** |
+| tfidf | 44% (43–46) | 439 (433–445) | 42 (41–44) | 100 | **581 (574–586)** |
+| whole file | 72% (70–75) | 390 (387–394) | 0 | 0 | **390 (387–394)** |
+| rag | 53% (52–55) | 358 (355–360) | 8 (8–9) | 9 (7–10) | **375 (374–376)** |
+| grep | 43% (41–45) | 322 (320–323) | 9 | 3 (3–4) | **334 (332–335)** |
+| curated (3k) | 8% (8–9) | 122 (120–125) | 0 | 1 | **123 (120–126)** |
+| chance | 4% (3–4) | 107 (106–107) | 0 | 9 (8–10) | **116 (116–117)** |
 
-Two findings, both of them the point of the benchmark:
+The external systems on seed 1 at 500 (`results/v2/<system>/500-seed1.json`;
+their three-seed spread is not yet measured):
 
-- **The body hint was carrying the ranking-side separation for
-  everybody.** Take it away and the stale sibling outranks the truth on
-  64% of polluted questions for the reference system, 55% for the vector
-  store, 78% for grep. A ranker cannot tell apart two notes that differ
-  by a number and a date, and no amount of reranking changes that — a
-  reranker reads the hint, not the calendar. What holds the family up is
-  the second channel: the drift queue notices 98% of twin pairs (a twin
-  is closer in similarity than a hinted sibling), and the reference
-  system's success falls three points, all of it in retrieval. **Ranking
-  cannot resolve drift; a queue a person judges can.** That is the
-  benchmark's thesis stated as a number.
-- **Recency is a prior, not a truth.** `rag` and `grep` are byte-identical
-  under `late` — they never look at capture time. The reference system's
-  `stale_above` moves 0.21 → 0.35: a fresher stamp earns a little trust in
-  its ranking, so a migration that restamps import time as capture time
-  makes it prefer the re-imported past on a seventh more polluted
-  questions, while success is unchanged because the drift queue is
-  clock-blind and still raises every pair. The receipt says by how much.
+| system | success | families (800) | signal (100) | tokens (100) | **score** | billed tok/query |
+|---|---|---|---|---|---|---|
+| MemContinuum | 48% | 337 | 9 | 46 | **392** | 852 |
+| LangMem | 53% | 359 | 8 | 9 | **376** | 2,360 |
+| Mem0 | 47% | 334 | 7 | 6 | **347** | 2,567 |
+| cognee | 48% | 259 | 8 | 14 | **281** | 2,053 |
 
-## Authority: whose word ranks?
+**By family at 500** (three seeds for the in-process arms, seed 1 for the
+external systems):
 
-`results/v1/reference-arms/{500,1500}-seed1-authority.json`. The ninth family is
-opt-in (`--authority`) and lands after the eighth has been asked, so its
-world reproduces the plain ladder's first eight families within one task
-and adds 166 tasks of its own. Each plants one to four **twins** of a note —
-same body, same capture time, a different value in the title — endorses
-them on a four-rung ladder (retrieval use, the assistant's confirm, the
-owner's approve, a supervisor's pin) through the new `endorse` operation,
-and asks the subject's paraphrase question. The stated expectation:
-*higher rung wins; same rung, the later endorsement wins; count never
-beats rung; no confound — a fresher stamp, a weightier kind, a body that
-says it is verified — outranks a rung.* A task whose winning rung a system
-does not declare is posed, not attempted.
+| system | retrieval | abstention | currency | contradiction | drift | deletion | rationale | temporal |
+|---|---|---|---|---|---|---|---|---|
+| engram | 63% (62–64) | 100% (99–100) | 88% | 46% | 44% (41–47) | 93% (91–94) | 98% (97–99) | 100% |
+| tfidf | 46% (44–48) | 0% | 69% | 59% | 65% (60–73) | 100% | 0% | 100% |
+| whole file | 90% (87–94) | 0% | 100% | n/a | n/a | 100% | 100% | n/a |
+| MemContinuum | 55% | 0% | 82% | n/a | n/a | 100% | 100% | n/a |
+| LangMem | 64% | 0% | 91% | n/a | n/a | 100% | 4% | 100% |
+| rag | 65% (64–66) | 0% | 89% (87–91) | n/a | n/a | 100% | 4% (3–5) | 100% |
+| Mem0 | 56% | 0% | 73% | n/a | n/a | 100% | 5% | 100% |
+| grep | 51% (49–52) | 0% | 68% (68–69) | n/a | n/a | 100% | 2% (2–3) | 100% |
+| cognee | 63% | 0% | 92% | n/a | n/a | 100% | 4% | n/a |
+| curated (3k) | 7% | 0% | 0% | n/a | n/a | 100% | 15% (13–17) | n/a |
+| chance | 1% | 0% | 0% | n/a | n/a | 100% | 1% (0–3) | 5% (3–6) |
 
-The reference system declares three rungs (confirm, approve, pin;
-retrieval use is deliberately not evidence in its trust model) and passes
-**49%** of the 135 tasks it attempts at 500 and **56%** of 405 at 1500:
-layers 0.47 / 0.61 / 0.50 / 0.29, then 0.59 / 0.65 / 0.58 / 0.34. The
-winner is in the top five 99% of the time and first among its twins 52%
-(59%) of the time. Read per scenario (500, then 1500 in brackets), the
-numbers say exactly where its trust ladder reaches its ranking and where
-it does not:
+**Columns by seed** (seed 1 / 2 / 3): engram `crossed_r@5` 0.02 / 0.04 /
+0.02, `hedge` 0.40 / 0.40 / 0.39, `stale_above` 0.15 / 0.22 / 0.19,
+`natural_fp` 0.00 / 0.00 / 0.02, `phantom_fp` 0.01 / 0.00 / 0.00, tier-1
+contradiction recall 0.04 / 0.04 / 0.00, `path_r@5` 1.00 on every seed.
+tfidf `crossed_r@5` 0.00 / 0.00 / 0.01, `stale_above` 0.70 / 0.71 / 0.71,
+`natural_fp` and `phantom_fp` 1.00 on every seed, tier-1 recall 0.38 on
+every seed, `path_r@5` 0.21 / 0.44 / 0.32. rag `path_r@5` 0.68 / 0.66 /
+0.60 at `path_cover` 0.34–0.36; grep 1.00 at 0.97–0.99.
 
-- **An endorsement wins when nothing else separates the twins.**
-  `confirm_vs_none` 0.88 (0.92), `approve_vs_confirms` 0.88 (0.83) — one
-  approval over three confirms; count does not beat rung.
-- **It loses to every confound of its own size.** Trust enters the fused
-  retrieval score as a multiplier, `1 + 0.15·trust`, beside a recency
-  factor and a per-type rank prior of the same magnitude: a confirm (0.6
-  against 0.5) is a 1.5% nudge and loses to a stamp ten days fresher
-  (`confirm_vs_fresh` 0.25, 0.46 at 1500) and to the `Insight`-vs-`Decision`
-  prior (`confirm_vs_kind` 0.38, 0.62); an approval (1.0 against 0.5, a 7%
-  nudge) wins the retrieval half of the final rank vote and then meets the
-  reranker's half, which reads title and snippet and no trust at all — so
-  `approve_vs_confirm`, `approve_vs_kind`, `approve_vs_fresh_confirm` sit at
-  0.62–0.71 and `approve_vs_claims`, `ladder2` near the coin flip
-  (0.50–0.62).
-- **Pin and approve are one number.** Both compute trust 1.0;
-  `pin_vs_approve` 0.50 (0.42), `pin_vs_everything` 0.25 (0.35).
-- **Equal rungs have no clock.** `latest_confirm` 0.38 (0.38),
-  `latest_approve` 0.50 (0.50), `latest_pin` 0.38 (0.43) — the endorsement
-  stamps are stored and never compared, so "which did the owner approve
-  last" is unanswerable.
-- **A pinned note survives its own supersession.** `pin_then_supersede`
-  0/8 at 500 and 4/24 at 1500, with the superseded pinned twin still
-  delivered 86% (78%) of the time: the
-  reference system exempts pinned notes from the archive that a `replaces`
-  edge otherwise performs (a pin is the user's "never fade"). The benchmark
-  states the opposite reading — a re-decision must not be resurrected by a
-  pin — and the column is the honest record of the disagreement.
+## What the numbers say
 
-MemContinuum declares one rung (the owner's promotion to an
-`owner-ratified` ruling) and passes 2% of the 56 tasks it attempts: the
-promotion writes an authority field its hybrid search filters by and never
-ranks by. Every flat store declares no rung and is N/A across the family.
+**The flat stores are one system.** LangMem and `rag` agree to the digit
+at both sizes (376 / 359); Mem0 and cognee sit within a few points of
+them on every family they attempt. Given the same embedder, a vector
+store is a vector store: it retrieves 57–65% of questions, answers every
+phantom and every natural null (`phantom_fp` and `natural_fp` 1.00), puts
+the stale sibling above the truth on about a quarter of polluted
+questions, and cannot say why anything was decided (rationale 3–7%). The
+difference between them is a clock (cognee has none: temporal N/A) and
+the length of the text they show.
 
-What the family is for, then, is not the headline: it is a per-scenario
-map of which endorsements a system's *ranking* can see, against a stated
-ladder. On this evidence the reference system's ladder is real in its trust
-numbers and mostly invisible in its ranking, which is a product finding the
-plain families could not have produced.
+**The reference system's lead is not recall.** At 1500 its retrieval
+family is 57%, level with `rag`; its `crossed_r@5` is 0.02 against
+`rag`'s 0.09 (a question sharing no content word with its note is where
+the keyword channel and the reranker vote have nothing to hold); and its
+calibrated "not in memory" line hedges on 34–40% of answerable questions,
+which the signal score counts as zero — the signal score is 32–36 where
+the retrieval focus alone would give about 60. The lead is the families
+the flat stores score zero on: abstention 96–100%, contradiction 46–47%,
+drift 44–48%, rationale 98–99% through its edges, deletion 87–93% with a
+resurrection warning, and 450 billed tokens a query against 2,200–2,800.
 
-## Design decisions the numbers forced
+**The lexical arm shows the ceiling of a title.** `tfidf` earns 100 token
+points and 37–42 signal points by answering in a snippet, and 58–59% on
+contradiction from token differencing (`value` and `unit` flips, tier-1
+recall 0.38–0.42). Its columns show what a title index cannot do: the
+crossed phrasing 0.00, the oblique 0.01–0.05, abstention 0% (every word of
+a coined subject was written somewhere, so an unseen token is not an
+oracle), the stale sibling above the truth 63–71% of the time, the path
+read 0.08–0.44, rationale 0%.
 
-Kept here because the next benchmark author will think of them too.
+**The whole file is the cheapest honest memory and the most expensive
+reader.** Every note in context scores 71–72% success — the highest of
+any system — and 390: it pays 404,164 tokens a query at 1500 for 0 signal
+and 0 token points, and it cannot abstain, cannot notice a contradiction,
+and holds the stale sibling beside the truth on every polluted question
+(`stale_above` 1.00). The curated 3,000-token file is the same idea with a
+budget, and at 500 notes the budget holds 7% of the answers.
 
-- **Success over attempted tasks as the headline.** The first tables read
-  "83% of the tasks attempted" and made a store that cannot notice drift
-  look like one that did not miss it. The headline now counts every posed
-  task; the capability-aware rate is the column beside it.
-- **A multiplier floored at 1.** With it, a dump scored like a memory. The
-  floor is 0.1 and the score reads as a whole number (0.05 → 5, 5.50 →
-  550), so a delivery that spends the reader's attention pays for it.
-- **Similarity as a contradiction detector.** Full-note cosine 0.69–0.81
-  for planted contradictions against 0.64–0.77 for the agreeing
-  negatives; title-only and claim cosine the same. Similarity finds
-  *related*, not *disagreeing*, which is why the contradiction ladder
-  carries negatives in every tier and why a raised pair with no label
-  fails.
-- **A generated bench needs real-prose negatives.** The `collider` shape
-  (a different, unrelated claim about the same subject) was added after
-  sentence-pair judges were found to call two facts about one subject a
-  contradiction on real project notes. Without it the tier-2 false-alarm
-  column was flattering every system.
-- **The `historical` tier-3 trap** (*until the rollout X …; the current
-  note stands*). Every sentence-pair judge reads it as a contradiction;
-  it is the family's documented false-alarm floor (t3 false alarm
-  0.15–0.37), not a bug to chase.
-- **No LLM arms.** Lethe and every LLM-driven memory manager are
-  deliberately out: their numbers depend on a model in the loop and the
-  comparison would be model, not mechanism.
+**MemContinuum's channel is the chain, and the chain carries the
+rationale.** Its author's review of an earlier measurement said the bench
+had read `search` where the agent reads the hook-injected
+`for-path`/`chain`. The adapter now writes the schema's typed edges on
+`link`, delivers a hit's edge-neighbours, and answers the path read with
+`for-path`: rationale is 100% (all of it `structure_only` — the reason
+arrives as context, never in the top five itself), the path read is 1.00
+at `path_cover` 0.95 / 0.87, and the score is 392 / 380. What the author
+did not dispute stayed where it was: `stale_above` 0.58–0.62 (the widest
+of any system: its FTS5 channel prefers the sibling's shorter title),
+abstention 0%, no suspect queue, no clock. Its unranked chain text costs
+850 tokens a query, the only external bonus worth having (46–47 token
+points).
+
+**The path read separates three kinds of system.** A file channel —
+engram's code-ref match, grep's substring match over the note files,
+MemContinuum's `for-path` — answers every file and covers 0.87–1.00 of
+what is bound. A vector store handed a path embeds the string and finds
+the *component's* notes: one bound note in the top five for 0.47–0.68 of
+files, never the file (cover 0.18–0.36). A title index barely sees it
+(0.08–0.44). The read is 63–64 of 3,042–9,008 tasks, so it moves no
+headline by more than a point; it is a column.
 
 ## Threats to validity
 
-- **One generator, one style.** One subject, one slot, one value per note;
-  the contradiction tiers are templates. Real notes are mushier — long,
-  multi-clause titles about one subject are a shape the generator does
-  not produce, and the `collider` negative is the one place it tries.
-- **The reference system's models grade the reference system.** Its
-  reranker and NLI model are its own; the flat stores get the embedder
-  only, which is the point of the comparison (mechanism, not model) and
-  also its limit. A submission with a stronger embedder should be read
-  against `rag` with that embedder, not against these rows.
-- **Pollution is three shapes of one thing,** and drift in the wild has
-  more: a note that quietly stopped being true, a tombstone whose victim
-  was re-derived in different words, a supersession whose successor sits
-  in another component.
-- **Trust reads the wall clock** in the reference system while the
-  world's clock is fixed, so its trust-modulated rankings move by a hair
-  between days. The structural columns do not.
-- **No behaviour.** Whether an agent *acts* on what it recalls is a
-  separate, online question this benchmark does not ask.
+- **One seed for the external systems.** The in-process arms are stable
+  to a point across three seeds at 500; the external rows are quoted from
+  seed 1 and should be read with that spread in mind until their seeds
+  2 and 3 are run.
+- **The reference system moves by two points between identical runs.**
+  Its decline line is fitted per run on graph-vocabulary probes; the
+  three-seed range (736–741) is partly that refit, not only the seeds.
+  Every other arm reproduces to the digit.
+- **Contended wall-clock.** Every receipt was taken with three chains
+  running side by side on one laptop; the timing columns say nothing
+  about any system's speed.
+- **One embedder, one register.** Every embedding arm uses the same
+  384-dimensional model, and every world is one corpus register
+  (software-project notes with three-word subjects). A system tuned for
+  another embedder or another register is not measured here.
+- **Adapters are the adapter author's reading of a system.** Each maps
+  twelve operations onto a native API and declares capabilities; a
+  deviation is listed in the adapter's notes, and a system's author can
+  submit a different mapping by pull request.
 
-## What v2 would add
+## Not yet run
 
-- A `collider`-style negative for every family, not only contradiction.
-- Authority scenarios the generator cannot yet template: an endorsed note
-  that is later contradicted by judged evidence (demotion vs approval),
-  and endorsements spread across sessions rather than stamped in one.
-- A pollution shape the generator cannot template: a note that stopped
-  being true without any sibling saying so.
-- A second corpus style (chat-shaped or issue-tracker-shaped notes) to
-  see which columns are register-dependent.
-- Results from systems with a language model in the loop, once a
-  judge-free way to hold the model fixed exists.
+Seeds 2 and 3 at 500 for the external systems; the 100 rung; the
+authority world; a path read on a directory rather than a file, and a
+path that binds no note; a second corpus register; systems with a
+language model in the loop, once a judge-free way to hold the model fixed
+exists.

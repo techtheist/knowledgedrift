@@ -97,6 +97,14 @@ pub enum Op {
         #[serde(default, skip_serializing_if = "Option::is_none")]
         window: Option<Window>,
     },
+    /// v2: the path-shaped read — what a caller about to touch `path`
+    /// should see. Answered by `Reply::Recall` like any recall.
+    #[serde(rename = "recall_path")]
+    RecallPath {
+        id: String,
+        path: String,
+        k: usize,
+    },
     Suspects {
         id: String,
     },
@@ -119,14 +127,42 @@ pub enum Expect {
         phrasing: String,
         #[serde(default, skip_serializing_if = "Option::is_none")]
         stale: Option<String>,
+        /// v2: the substring the delivered text must carry for the hit to
+        /// count — a title-only snippet that names the note but not its
+        /// value is a miss. Empty on v1 worlds (key-based credit).
+        #[serde(default, skip_serializing_if = "String::is_empty")]
+        answer: String,
+    },
+    /// v2: a path-shaped read. `gold` is every live, truthful note bound to
+    /// `path` through its code refs (a stale sibling bound to the same file
+    /// is neither gold nor penalised); `answers` is index-aligned with
+    /// `gold`. Pass = at least one gold delivered readably in the top five;
+    /// `path_cover` is the share of the bound notes the top-k delivered.
+    Bound {
+        path: String,
+        gold: Vec<String>,
+        #[serde(default, skip_serializing_if = "Vec::is_empty")]
+        answers: Vec<String>,
     },
     /// A recall about a subject that was never written. Pass = nothing
     /// delivered, or delivered under the system's own decline signal.
-    Control,
+    /// `natural` (v2): the subject IS written, the predicate asked about is
+    /// not — every word of the question exists in memory, the answer does
+    /// not. Absent = a phantom subject nobody ever wrote.
+    Control {
+        #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+        natural: bool,
+    },
     /// A recall about a re-decided subject: `head` is current, `retired`
     /// are the generations it replaced. Pass = head in the top five and no
     /// retired generation delivered at all.
-    Current { head: String, retired: Vec<String> },
+    Current {
+        head: String,
+        retired: Vec<String>,
+        /// v2: the head's answer substring (see `Gold::answer`).
+        #[serde(default, skip_serializing_if = "String::is_empty")]
+        answer: String,
+    },
     /// A lineage walk from `head` must reach every retired generation.
     Lineage { head: String, retired: Vec<String> },
     /// A recall reachable only through structure: `gold` sits at the far
@@ -136,10 +172,19 @@ pub enum Expect {
         gold: String,
         anchor: String,
         verb: String,
+        /// v2: the gold's answer substring (see `Gold::answer`).
+        #[serde(default, skip_serializing_if = "String::is_empty")]
+        answer: String,
     },
     /// A windowed recall. Pass = gold in the top five and no delivered hit
     /// captured outside the window.
-    Windowed { gold: String, window: Window },
+    Windowed {
+        gold: String,
+        window: Window,
+        /// v2: the gold's answer substring (see `Gold::answer`).
+        #[serde(default, skip_serializing_if = "String::is_empty")]
+        answer: String,
+    },
     /// A planted contradiction case, graded off the planted notes' write
     /// replies and the suspects reply. `positive` = the planted note really
     /// contradicts `gold`; a negative is a trap that must NOT be flagged.
@@ -248,6 +293,14 @@ impl PollutionShape {
     }
 }
 
+fn edition_one() -> u8 {
+    1
+}
+
+fn is_edition_one(e: &u8) -> bool {
+    *e == 1
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct WorldSpec {
     pub size: usize,
@@ -272,6 +325,12 @@ pub struct WorldSpec {
     /// file when off, so the v1 worlds keep their digests.
     #[serde(default, skip_serializing_if = "std::ops::Not::not")]
     pub authority: bool,
+    /// The benchmark edition the world was built for: 1 (absent from the
+    /// file, so every v1 digest holds) or 2 — shared-vocabulary subjects, a
+    /// fourth crossed phrasing, natural-null controls, reworded contradiction
+    /// shapes, answer-bearing probes, and the additive score.
+    #[serde(default = "edition_one", skip_serializing_if = "is_edition_one")]
+    pub edition: u8,
     /// Notes in the world at the end of the import (before plantings).
     pub notes: usize,
     pub edges: usize,

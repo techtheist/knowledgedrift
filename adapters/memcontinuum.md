@@ -52,14 +52,15 @@ passed explicitly (`adapters/out/memcontinuum-index.sqlite`).
 | op | what it becomes | dropped |
 |---|---|---|
 | `inscribe(record, mode)` | a topic file `topics/<kind>/<key>.md`: `id` = key, `title`, `area` = kind, `code_refs`, `tags: [kind]`, one link `L1` (`status: active`, `kind: adopted`, `ruling.text` = body, `ruling.authority: agent-inference`, `date` = capture day); the body renders the chain newest-first | `open` (Problems are rulings like any other); `mode` (no write-time checks exist) |
-| `link(from, to, verb)` | nothing — a link's typed `edges` take only the schema's seven `rel` values, and search never reads them | the edge |
+| `link(from, to, verb)` | a typed edge on the link whose sentence it is, in the one reading the schema's seven `rel` values allow: `X because Y` → on Y `led_to X`; `R answers P` → on P `led_to R`; `X builds-on Y` → on Y `led_to X`; `X about Y` → on X `applies_to Y` (v2 adapter; the v1 receipts were taken with `link` mapped to nothing) | the verb's own name |
 | `supersede(old, new)` | the old link's lifecycle move `status: superseded` + `superseded_by`, a new link `L<n+1>` (`kind: reversed`, `reverses`, `reason_for_change: changed-mind`, the new body as its ruling), the topic's `title` and `current` updated (title changes are free per SCHEMA §7) | — |
 | `release(key, reason)` | the lifecycle move `status: historical` on the active link ("no longer applicable, nothing replaced it"); the reason appended to the topic's free body text | the trace: default search hides non-active rulings |
 | `purge(key)` | the topic file deleted; the next reindex drops its rows | — |
 | `endorse(key, "user")` | SCHEMA §5 promotion: a new active link with the same text at `authority: owner-ratified`, `promoted_by` on the promoted link | — |
 | `endorse(key, retrieval / assistant / supervisor)` | nothing — no use counter, no agent-side confirmation act (only the owner promotes), no pin | the endorsement |
 | `settle()` | `cmd_reindex` if a write landed since the last read | — |
-| `recall(query, k, window)` | `cmd_search --json --mode hybrid --limit k` with the defaults (active rulings only, inbox excluded): FTS5 BM25 and cosine over the fresh vectors, RRF-fused (k=60), one hit per topic family | the window (search filters by status/type/area/topic/authority, never by date) |
+| `recall(query, k, window)` | `cmd_search --json --mode hybrid --limit k` with the defaults (active rulings only, inbox excluded): FTS5 BM25 and cosine over the fresh vectors, RRF-fused (k=60), one hit per topic family; each hit carries as `neighbors` the current keys of the topics its typed edges touch, read off the index's `edges` table in both directions | the window (search filters by status/type/area/topic/authority, never by date) |
+| `recall_path(path, k)` | `cmd_for_path --json --with-chain-text`: every topic whose `code_refs` cover the path (exact, directory prefix or glob — the pre-edit hook's own match), each delivered as its chain text (the exact lines the hook injects), in index order, unranked; the first `k`; edge neighbours as above | the rest of a match list longer than `k` |
 | `suspects()` | `None` | — |
 | `lineage(key)` | the topic's links newest-first, mapped back to the keys they were written under — what `memidx chain` shows | — |
 | `standing_tokens()` | 0 — the hooks inject `for-path` chains per edited file, not a standing memory file | — |
@@ -73,7 +74,7 @@ topic-row hit answers to its newest active link's key.
 
 | capability | value | why |
 |---|---|---|
-| `link` | false | edges exist in the schema but never influence search |
+| `link` | **true** | typed edges are stored on links and delivered as a hit's neighbours (v2 adapter) |
 | `history` | **true** | the chain is the unit; `memidx chain` walks it |
 | `trace` | false | a `historical` ruling stays in the file but default search does not deliver it |
 | `suspects` | false | no disagreement detection |
@@ -100,9 +101,26 @@ topic-row hit answers to its newest active link's key.
   notes — which under the schema's citation rule makes every ruling
   CONTEXT, never CONSTRAINT, until the owner promotes it. The authority
   family's `user` rung is exactly that promotion.
+- **Edges are read both ways.** `chain --json` and `for-path --json` show
+  a link's *outgoing* edges; a rationale question lands on the decision
+  and needs the reason, which is the edge's source. The adapter reads the
+  index's own `edges` table by `to_ref` as well — one query on the same
+  table the CLI walks, not a search feature the system has.
+- **`for-path` delivers everything bound, unranked.** The protocol asks
+  for `k`; the adapter returns the first `k` matches in index order. On
+  the 1500 world some files bind more topics than `k`.
 - **Timing columns are contended**: every replay ran beside the in-process
   ladder on one laptop.
 
 ## Numbers
 
-See `results/v1/memcontinuum-0.2.0rc5/README.md`.
+v1 (the adapter as first written — `link` mapped to nothing, `search`
+for every read): `results/v1/memcontinuum-0.2.0rc5/README.md`. v2 (this
+adapter: typed edges on `link`, edge-neighbours on every hit, `for-path`
+behind `recall_path`): `results/v2/memcontinuum-0.2.0rc5/README.md` —
+392 at 500 and 380 at 1500, rationale 100% (`structure_only` 0.95),
+`path_r@5` 1.00. The revision followed the author's review of the v1
+numbers: the agent's channel is the hook-injected `for-path` chain, not
+`search`; the v2 adapter measures that channel where the protocol has a
+place for it (the rationale walk, the path read) and leaves `search` as
+the answer to a question, which is the only thing a question can ask.

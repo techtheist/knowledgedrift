@@ -5,7 +5,7 @@ exported script (``knowledgedrift --export DIR``) through a subclass of
 :class:`MemoryAdapter` and handing the resulting transcript to the Rust
 grader (``knowledgedrift --grade transcript.json --script script.json``).
 The runner (``run.py``) owns the loop, the timings and the transcript
-shape; an adapter owns only the mapping from the ten operations to its
+shape; an adapter owns only the mapping from the twelve operations to its
 system's native API.
 
 Keys
@@ -174,6 +174,14 @@ class MemoryAdapter:
     def recall(self, query: str, k: int, window: Optional[dict[str, int]]) -> Recalled:
         """``window``: {"after": unix, "before": unix} half-open, or None."""
         raise NotImplementedError
+
+    def recall_path(self, path: str, k: int) -> Recalled:
+        """The path-shaped read (v2 worlds): what a caller about to touch
+        ``path`` should see. A system with a file channel (an edit hook, a
+        code-ref index, a metadata filter) answers from it; the default
+        hands the path to ``recall`` as a query, which is what a store
+        without one would do."""
+        return self.recall(path, k, None)
 
     def suspects(self) -> Optional[list[dict[str, Any]]]:
         """Every disagreement the system wants a person to judge, as

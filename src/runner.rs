@@ -76,6 +76,16 @@ pub fn run(script: &Script, mem: &mut dyn Memory) -> anyhow::Result<Transcript> 
                 });
                 "recall"
             }
+            Op::RecallPath { id, path, k } => {
+                let result = mem
+                    .recall_path(path, *k)
+                    .map_err(|e| anyhow::anyhow!("recall_path {id} {path:?}: {e}"))?;
+                replies.push(Reply::Recall {
+                    id: id.clone(),
+                    result,
+                });
+                "recall_path"
+            }
             Op::Suspects { id } => {
                 let pairs = mem.suspects()?;
                 replies.push(Reply::Suspects {

@@ -1,0 +1,16 @@
+== 1500 tested facts, 1883 notes, v2 ==
+  arm       posed attempted passed  success   of att. composite     S  mult   score  standing    tok/q
+  cognee     9008      7775   3836      43%       49%     0.299  0.12   1.2     263         0     1933
+  arm      families   signal  tokens   score    billed
+  cognee        240        8      16     263      1934
+  cognee   success  43% = 3836 passed of 9008 posed (attempted 7775/9008,  49% of those passed)   composite 0.299   S 0.12 ×1.2   score 263   standing 0 tok   1933 tok/query
+           v2 score 263 = families 240 + signal 8 + tokens 16 (billed 1934 tok/query)
+    retrieval      6064   56%  r@1 0.47  r@5 0.58  lexical_r@5 0.99  paraphrase_r@5 0.96  oblique_r@5 0.29  crossed_r@5 0.09  path_r@5 0.47  path_cover 0.18  stale_above 0.26  hedge 0.00  noise 0.94
+    abstention      714    0%  fp 1.00  phantom_fp 1.00  natural_fp 1.00  answered 1.00  declined 0.00  separation 0.58
+    currency        225   80%  head_r@1 0.71  head_r@5 0.80  pollution 0.00
+    contradiction     -  n/a — no suspect nomination
+    drift             -  n/a — no suspect nomination
+    deletion        250  100%  released_gone 1.00  purged_gone 1.00  resurrection_warned 0.00  purged_rewrite_warned 0.00
+    rationale       522    3%  direct_r@5 0.03  assisted_r@5 0.03  structure_only 0.00
+    temporal          -  n/a — no capture-time scoping
+wrote results/v2/cognee-1.5.4/1500-seed1.json

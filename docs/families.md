@@ -16,6 +16,7 @@ the benchmark is about:
 | re-decided subjects | max(4, N/20) chains of `--chain-len` generations, a month apart | currency: is the head current, is the history reachable |
 | **pollution** | `--pollution` share of tested subjects (default **10%**), shaped by `--pollution-shape` | a stale sibling of the fact — same subject, flipped value — imported and **never superseded by anyone** |
 | capture times | spread over 60 days | temporal scoping; the world's "now" is 2026-09-01 |
+| code refs | on ~40% of notes, one to three paths `src/<component>/{mod,state,handler,config}.rs` | v2: the path-shaped read — every file is asked once, by path |
 | controls | N/4 subjects that are never written | abstention |
 | planted contradictions | max(6, N/3) cases across eleven shapes | the contradiction ladder |
 | deletions | max(4, N/6) victims, half released with a reason, half purged | deletion honesty |
@@ -53,13 +54,29 @@ the family's tasks unless noted.
 
 Three questions per tested fact: **lexical** (the fact's own words),
 **paraphrase** (names the subject, rewords the rest), **oblique** (never
-names the subject, shares no content vocabulary). Rank of the gold among
-live hits; a dump delivers what it holds at rank 1.
+names the subject, shares no content vocabulary). On a v2 world a fourth,
+**crossed**: oblique, and the component is described rather than named
+(`the service that hands out grants — which one picked …`), so the question
+shares no content word at all with the note that answers it. Rank of the
+gold among live hits; a dump delivers what it holds at rank 1.
+
+On a v2 world the family also poses the **path** read: every file the
+world's code refs name is asked once through `recall_path`, as a path and
+no question — what a caller about to edit the file should see. Gold is
+every live, truthful note bound to the file (chain heads and distractors
+included: an editor should see them; a stale sibling bound to the same
+file is neither gold nor penalised). A system with a file channel — an
+edit hook, a code-ref index — answers from it; one without searches the
+path string. *Pass:* a bound note readable in the top five. Columns:
+`path_r@5`, `path_cover` (of the notes bound to the file, the share the
+top-k delivered, capped at k). The path reads count in the family's pass
+rate and in the signal score, not in `weighted_r@5`.
 
 *Pass:* gold in the top five **and not outranked by its stale sibling**
 when the subject was polluted (a dump holding both is ambiguous and
 fails). Columns: `r@1`, `r@5`, `mrr`, per-phrasing `r@5`, `weighted_r@5`
-(45/45/10 — a stated assumption), `stale_above` (over polluted questions),
+(45/45/10 on v1 — a stated assumption; the four phrasings weigh equally on
+v2, `crossed_r@5` beside them), `stale_above` (over polluted questions),
 `hedge` (the gold was delivered under a decline), `noise`, `tokens`.
 
 ### attention — what did the reader wade through?
@@ -72,9 +89,16 @@ and **standing_tokens** price the two halves of the bill.
 
 ### abstention — does it say no?
 
-One question per subject that was never written. *Pass:* nothing
-delivered, or delivered under the system's own decline signal. Columns:
-`fp` (the failure rate), `answered`, `declined`, and `separation` — the
+One question per subject that was never written — a **phantom**. On a v2
+world, as many **natural nulls** beside them: a question about a subject
+that *was* written, in the template of a kind that subject has no note of
+(*what is still broken in the teal creek ingest job?* when the only note
+about that job is a Decision). Every word of a natural null exists in
+memory; the answer does not. A phantom is caught by a detector that has
+never seen a token; a natural null is caught only by one that knows what
+it knows. *Pass:* nothing delivered, or delivered under the system's own
+decline signal. Columns: `fp` (the failure rate; `phantom_fp` and
+`natural_fp` split it on v2), `answered`, `declined`, and `separation` — the
 balanced accuracy of the best threshold between answerable and control
 top scores, the threshold-free number a system with no decline rule can
 still be read on. FP is never printed without recall beside it: a mute
@@ -91,7 +115,10 @@ Columns: `head_r@1`, `head_r@5`, `pollution`, `lineage`.
 ### contradiction — does it notice the disagreement?
 
 Cases are planted as assistant-style writes after the world is probed,
-one per target subject, rotating through eleven shapes in three tiers:
+one per target subject, rotating through eleven shapes in three tiers
+(fourteen on a v2 world — the three marked *v2* are aimed at lexical
+detectors, which the first field submission showed catch a one-token edit
+and nothing else):
 
 | tier | shape | polarity | what it plants |
 |---|---|---|---|
@@ -106,6 +133,9 @@ one per target subject, rotating through eleven shapes in three tiers:
 | 3 | `transitive` | + | two notes: *X mirrors every setting of G* and the flipped claim about G — the contradiction exists only across the bridge |
 | 3 | `compound` | + | a sentence that agrees with the note and then, as a separate matter, contradicts it |
 | 3 | `historical` | − | *until the 3.1 rollout X …; the rollout changed that and the current note stands* — reads as a contradiction, is history |
+| 1 | `reworded` *v2* | + | the flip in a wholly different frame (*Operators pinned the X to 12 attempts for its retry budget*) — no token of the original sentence survives but the subject and the slot word |
+| 2 | `clause` *v2* | + | the flip carried by a clause, not a token (*Contrary to the runbook, it is wrong that the X …; the earlier note was mistaken*) |
+| 2 | `synonym` *v2* | − | the title with exactly one token swapped for a synonym (*uses* → *keeps*, *when* → *whenever*) — must not be flagged; a detector that flags any small edit fails here |
 
 Tier 2 is where a sentence-pair logic layer earns its place; tier 3 is
 what an encoder-only system is not expected to survive, and the score

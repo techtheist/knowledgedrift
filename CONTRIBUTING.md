@@ -2,8 +2,9 @@
 
 Two kinds of pull request are expected: **an adapter** for a memory system,
 and **a result** for a system on the v1 worlds. Anything else — a new
-family, a generator change, a scoring change — is a v2 conversation; open
-an issue first. (Opt-in variants that leave the plain worlds' digests
+family, a generator change, a scoring change — belongs to **v2**, which is
+open on the `v2` branch (`--v2`, `worlds/v2/`, `results/v2/`,
+`docs/scoring.md`); open an issue first. (Opt-in variants that leave the plain worlds' digests
 untouched — the pollution shapes, the `--authority` family — are how a
 family is added inside v1: the variant world is frozen beside the others
 and reported in its own table, never folded into the leaderboard row.)

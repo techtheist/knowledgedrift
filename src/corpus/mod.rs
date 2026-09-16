@@ -59,6 +59,111 @@ const CODA: [&str; 16] = [
     "tos", "fen", "wyn",
 ];
 
+/// The v2 subject vocabulary (`CorpusShape::shared_vocab`): a subject is
+/// `{w1} {w2} {component}` drawn from two pools of ordinary words, 64 × 64
+/// = 4096 pairs — the same name space the coined syllables span, so `Names`
+/// hands out either. Every word recurs across dozens of subjects, so no
+/// single token identifies a note and an unseen token is not an oracle for
+/// "never written": what identifies a subject is the conjunction.
+const W1: [&str; 64] = [
+    "amber",
+    "ashen",
+    "auburn",
+    "azure",
+    "beige",
+    "bronze",
+    "cobalt",
+    "copper",
+    "coral",
+    "crimson",
+    "cyan",
+    "ebony",
+    "emerald",
+    "fawn",
+    "golden",
+    "granite",
+    "hazel",
+    "indigo",
+    "ivory",
+    "jade",
+    "lavender",
+    "lilac",
+    "magenta",
+    "maroon",
+    "mauve",
+    "carmine",
+    "mustard",
+    "navy",
+    "ochre",
+    "olive",
+    "onyx",
+    "opal",
+    "orange",
+    "pearl",
+    "pewter",
+    "plum",
+    "quartz",
+    "ruby",
+    "russet",
+    "vermilion",
+    "saffron",
+    "sage",
+    "salmon",
+    "sand",
+    "scarlet",
+    "sepia",
+    "sienna",
+    "silver",
+    "slate",
+    "sorrel",
+    "verdigris",
+    "tan",
+    "taupe",
+    "teal",
+    "topaz",
+    "umber",
+    "violet",
+    "walnut",
+    "wheat",
+    "willow",
+    "cinnamon",
+    "chalk",
+    "cedar",
+    "birch",
+];
+const W2: [&str; 64] = [
+    "harbor", "meadow", "orchard", "canyon", "glacier", "lagoon", "prairie", "ridge", "marsh",
+    "dune", "fjord", "grove", "heath", "island", "jungle", "knoll", "lake", "mesa", "moor",
+    "oasis", "pond", "quarry", "reef", "river", "savanna", "shore", "summit", "swamp", "tundra",
+    "valley", "wharf", "creek", "delta", "estuary", "forest", "geyser", "gorge", "gulch", "hollow",
+    "inlet", "isthmus", "lowland", "plateau", "rapids", "atoll", "bayou", "bluff", "cape",
+    "cavern", "cliff", "cove", "crag", "dell", "badland", "glade", "hill", "brook", "butte",
+    "cirque", "dale", "ravine", "tarn", "strait", "barrens",
+];
+
+/// What a component IS, in words that name none of it — the v2 crossed
+/// question refers to the category this way, so a question can share no
+/// content word with the note that answers it. Index-aligned with
+/// `COMPONENTS`.
+const COMPONENT_DESC: [&str; 16] = [
+    "the batch that pulls data in",
+    "the service that hands out grants",
+    "the layer that steers requests to partitions",
+    "the store that holds events for a second pass",
+    "the safe that keeps credentials",
+    "the front layer that serves stored copies",
+    "the background process that cleans up",
+    "the process that builds the lookup structure",
+    "the lab bench that measures samples",
+    "the cabinet that holds samples",
+    "the rig that tunes instruments",
+    "the tower that collects readings",
+    "the record that traces origins",
+    "the go-between that gathers votes",
+    "the holding area that keeps deposits",
+    "the drain that collects randomness",
+];
+
 /// Mostly software infrastructure, deliberately salted with laboratory and
 /// abstract-process categories so retrieval is never tuned to one genre's
 /// vocabulary. A component may be named by an oblique question — it is the
@@ -995,6 +1100,10 @@ pub enum Phrasing {
     Paraphrase,
     /// Never names the subject, and describes it entirely in paraphrase.
     Oblique,
+    /// The v2 fourth phrasing (`CorpusShape::crossed`): oblique, and the
+    /// component is described rather than named — the question shares no
+    /// content word with the note that answers it.
+    Crossed,
 }
 
 pub const PHRASINGS: [Phrasing; 3] = [Phrasing::Lexical, Phrasing::Paraphrase, Phrasing::Oblique];
@@ -1231,16 +1340,29 @@ struct Names {
     order: Vec<usize>,
     cursor: usize,
     used: HashSet<usize>,
+    /// v2: spell an index as two ordinary words instead of a coined name.
+    shared: bool,
 }
 
 impl Names {
-    fn new(rng: &mut Rng) -> Self {
+    fn with_shared(rng: &mut Rng, shared: bool) -> Self {
         let mut order: Vec<usize> = (0..ONSET.len() * MID.len() * CODA.len()).collect();
         rng.shuffle(&mut order);
         Self {
             order,
             cursor: 0,
             used: HashSet::new(),
+            shared,
+        }
+    }
+
+    /// The subject name for an issued index: coined syllables, or (v2) a
+    /// pair of shared words.
+    fn word(&self, idx: usize) -> String {
+        if self.shared {
+            format!("{} {}", W1[idx % W1.len()], W2[(idx / W1.len()) % W2.len()])
+        } else {
+            coined(idx)
         }
     }
 
@@ -1322,6 +1444,11 @@ pub struct CorpusShape {
     /// fact on the same subject, making the same coined name carry two
     /// unrelated claims. `0.0` mints none.
     pub collision: f64,
+    /// v2: subjects are `{w1} {w2} {component}` from two pools of ordinary
+    /// words instead of a coined name, so no token is unique to a note.
+    pub shared_vocab: bool,
+    /// v2: every tested fact carries a fourth, crossed question.
+    pub crossed: bool,
 }
 
 /// Sessions hold 5..=10 notes. A working session is a handful of notes, not
@@ -1449,6 +1576,33 @@ pub fn corpus_chained(
     .0
 }
 
+/// `corpus_chained` under a shape — the v2 worlds' entry point.
+#[allow(clippy::too_many_arguments)]
+pub fn corpus_chained_shaped(
+    tested: usize,
+    distractors: usize,
+    seed: u64,
+    profile: &Profile,
+    type_mix: &[(Kind, u32)],
+    n_chains: usize,
+    chain_len: usize,
+    shape: CorpusShape,
+) -> Corpus {
+    assert!(chain_len >= 2, "a chain needs something to supersede");
+    corpus_impl(
+        tested,
+        distractors,
+        seed,
+        profile,
+        type_mix,
+        n_chains,
+        chain_len,
+        None,
+        shape,
+    )
+    .0
+}
+
 #[allow(clippy::too_many_arguments)]
 fn corpus_impl(
     tested: usize,
@@ -1463,7 +1617,7 @@ fn corpus_impl(
 ) -> (Corpus, Vec<SessionCluster>) {
     let mut rng = Rng::new(seed);
     let vocab = Vocab::new(&mut rng);
-    let mut names = Names::new(&mut rng);
+    let mut names = Names::with_shared(&mut rng, shape.shared_vocab);
 
     let total = tested + distractors;
     let mut facts: Vec<Fact> = Vec::with_capacity(total);
@@ -1496,9 +1650,11 @@ fn corpus_impl(
 
         let (c, s1, s2) = vocab.slots(j);
         let component = COMPONENTS[c];
-        let subject = format!("{} {component}", coined(name_idx));
+        let subject = format!("{} {component}", names.word(name_idx));
         let slots = Slots {
             component,
+            component_desc: COMPONENT_DESC[c],
+            crossed: shape.crossed,
             s1,
             s2,
             j,
@@ -1724,6 +1880,8 @@ fn colliders(
             subject,
             Slots {
                 component: COMPONENTS[component],
+                component_desc: COMPONENT_DESC[component],
+                crossed: false,
                 s1,
                 s2,
                 j,
@@ -1775,7 +1933,8 @@ fn session_clusters(
         let j = used + ci;
         let (c, s1, s2) = vocab.slots(j);
         let component = COMPONENTS[c];
-        let subject = format!("{} {component}", coined(names.next()));
+        let idx = names.next();
+        let subject = format!("{} {component}", names.word(idx));
 
         let mut members = Vec::new();
         let mut aspects = Vec::new();
@@ -1789,6 +1948,8 @@ fn session_clusters(
                 subject.clone(),
                 Slots {
                     component,
+                    component_desc: "",
+                    crossed: false,
                     s1,
                     s2,
                     j,
@@ -1878,7 +2039,8 @@ fn chains(
         let j = used + ci;
         let (c, s1, s2) = vocab.slots(j);
         let component = COMPONENTS[c];
-        let subject = format!("{} {component}", coined(names.next()));
+        let idx = names.next();
+        let subject = format!("{} {component}", names.word(idx));
         let (param, unit, param_desc) = PARAMS[s1];
         let (constraint, constraint_desc) = CONSTRAINTS[s2];
 
@@ -2046,6 +2208,10 @@ fn edges(facts: &[Fact], profile: &Profile, rng: &mut Rng) -> Vec<GeneratedEdge>
 /// numeric value a Decision commits to).
 struct Slots<'a> {
     component: &'a str,
+    /// What the component is, for the crossed question.
+    component_desc: &'a str,
+    /// Generate the fourth, crossed question (v2).
+    crossed: bool,
     s1: usize,
     s2: usize,
     j: usize,
@@ -2064,6 +2230,8 @@ fn build(
 ) -> Fact {
     let Slots {
         component,
+        component_desc,
+        crossed,
         s1,
         s2,
         j,
@@ -2095,6 +2263,13 @@ fn build(
                              {constraint_desc}?"
                         ),
                     ),
+                    (
+                        Phrasing::Crossed,
+                        format!(
+                            "{component_desc} — which one picked {param_desc} around the \
+                             fact that {constraint_desc}?"
+                        ),
+                    ),
                 ],
             )
         }
@@ -2118,6 +2293,10 @@ fn build(
                         Phrasing::Oblique,
                         format!("which {component} {failure_desc} once {trigger_desc}?"),
                     ),
+                    (
+                        Phrasing::Crossed,
+                        format!("{component_desc} — which one {failure_desc} once {trigger_desc}?"),
+                    ),
                 ],
             )
         }
@@ -2140,6 +2319,13 @@ fn build(
                         format!(
                             "which {component} is barred from {forbidden_desc} because \
                              {reason_desc}?"
+                        ),
+                    ),
+                    (
+                        Phrasing::Crossed,
+                        format!(
+                            "{component_desc} — which one is barred from {forbidden_desc} \
+                             because {reason_desc}?"
                         ),
                     ),
                 ],
@@ -2166,6 +2352,10 @@ fn build(
                         Phrasing::Oblique,
                         format!("which {component} {symptom_desc} {condition_desc}?"),
                     ),
+                    (
+                        Phrasing::Crossed,
+                        format!("{component_desc} — which one {symptom_desc} {condition_desc}?"),
+                    ),
                 ],
             )
         }
@@ -2187,11 +2377,23 @@ fn build(
                         Phrasing::Oblique,
                         format!("which {component} {behaviour_desc} because {cause_desc}?"),
                     ),
+                    (
+                        Phrasing::Crossed,
+                        format!(
+                            "{component_desc} — which one {behaviour_desc} because {cause_desc}?"
+                        ),
+                    ),
                 ],
             )
         }
     };
 
+    // The crossed question exists only under the v2 shape; dropping it here
+    // keeps every v1 corpus byte-identical.
+    let questions: Vec<(Phrasing, String)> = questions
+        .into_iter()
+        .filter(|(p, _)| crossed || *p != Phrasing::Crossed)
+        .collect();
     let oblique_key = questions
         .iter()
         .find(|(p, _)| *p == Phrasing::Oblique)
@@ -2357,6 +2559,31 @@ fn apply_type_mix(facts: &mut [Fact], mix: &[(Kind, u32)], seed: u64) {
 
 /// Questions shaped like the answerable ones, about subjects that were never
 /// written. Any hit here is a false positive.
+/// A natural null (v2 abstention): a question about a REAL subject, in the
+/// paraphrase template of a kind that subject has no note of. Every word in
+/// it was written — the subject's, the template's — and the answer was not:
+/// the subject has exactly one fact, and it is of another kind. Which kind
+/// is asked about rotates with the fact's own, so no template is the tell.
+pub fn natural_null(f: &Fact, salt: usize) -> String {
+    let s = &f.subject;
+    match f.kind {
+        Kind::Decision => format!("what is still broken in the {s}?"),
+        Kind::Caution => {
+            let (param, _, _) = PARAMS[salt % PARAMS.len()];
+            format!("what {param} did we settle on for the {s}?")
+        }
+        Kind::Principle => {
+            let (behaviour, _) = BEHAVIOURS[salt % BEHAVIOURS.len()];
+            format!("what explains why the {s} {behaviour}?")
+        }
+        Kind::Problem => {
+            let (forbidden, _) = FORBIDDEN[salt % FORBIDDEN.len()];
+            format!("is it acceptable to {forbidden} in the {s}?")
+        }
+        Kind::Insight => format!("what goes wrong with the {s}?"),
+    }
+}
+
 fn controls(tested: usize, names: &mut Names) -> (Vec<Question>, Vec<String>) {
     let n = (tested / 4).max(1);
     let mut questions = Vec::with_capacity(n);
@@ -2364,13 +2591,16 @@ fn controls(tested: usize, names: &mut Names) -> (Vec<Question>, Vec<String>) {
 
     for i in 0..n {
         let component = COMPONENTS[i % COMPONENTS.len()];
-        let subject = format!("{} {component}", coined(names.next()));
+        let idx = names.next();
+        let subject = format!("{} {component}", names.word(idx));
         let phrasing = PHRASINGS[i % PHRASINGS.len()];
         questions.push(Question {
             text: match phrasing {
                 Phrasing::Lexical => format!("{subject} retry budget"),
                 Phrasing::Paraphrase => format!("what did we decide about the {subject}?"),
-                Phrasing::Oblique => format!("who owns the {subject} these days?"),
+                Phrasing::Oblique | Phrasing::Crossed => {
+                    format!("who owns the {subject} these days?")
+                }
             },
             phrasing,
             gold: None,
@@ -3144,6 +3374,7 @@ mod tests {
             CorpusShape {
                 history: true,
                 collision: 1.0,
+                ..Default::default()
             },
         );
         assert_eq!(full.facts.len(), 3000);

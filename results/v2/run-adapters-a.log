@@ -1,0 +1,43 @@
+=== langmem 500-seed1 start 2026-09-16T10:03:55Z
+  4250/4286 ops
+wrote adapters/out/langmem-500-seed1-v2.json (3041 replies, 106s)
+=== langmem 500-seed1 end 2026-09-16T10:05:42Z
+  arm       posed attempted passed  success   of att. composite     S  mult   score  standing    tok/q
+  langmem  success  53% = 1600 passed of 3042 posed (attempted 2754/3042,  58% of those passed)   composite 0.448   S 0.11 ×1.1   score 376   standing 0 tok   2359 tok/query
+           v2 score 376 = families 359 + signal 8 + tokens 9 (billed 2360 tok/query)
+=== langmem 1500-seed1 start 2026-09-16T10:05:43Z
+  12500/12737 ops
+wrote adapters/out/langmem-1500-seed1-v2.json (9012 replies, 270s)
+=== langmem 1500-seed1 end 2026-09-16T10:10:13Z
+  arm       posed attempted passed  success   of att. composite     S  mult   score  standing    tok/q
+  langmem  success  48% = 4281 passed of 9008 posed (attempted 8150/9008,  53% of those passed)   composite 0.425   S 0.12 ×1.2   score 359   standing 0 tok   2201 tok/query
+           v2 score 359 = families 340 + signal 7 + tokens 11 (billed 2201 tok/query)
+=== mem0 500-seed1 start 2026-09-16T10:10:14Z
+  4250/4286 ops
+wrote adapters/out/mem0-500-seed1-v2.json (3041 replies, 156s)
+=== mem0 500-seed1 end 2026-09-16T10:12:52Z
+  arm       posed attempted passed  success   of att. composite     S  mult   score  standing    tok/q
+  mem0     success  47% = 1427 passed of 3042 posed (attempted 2754/3042,  52% of those passed)   composite 0.418   S 0.11 ×1.1   score 347   standing 0 tok   2567 tok/query
+           v2 score 347 = families 334 + signal 7 + tokens 6 (billed 2567 tok/query)
+=== mem0 1500-seed1 start 2026-09-16T10:12:53Z
+  12500/12737 ops
+wrote adapters/out/mem0-1500-seed1-v2.json (9012 replies, 836s)
+=== mem0 1500-seed1 end 2026-09-16T10:26:53Z
+  arm       posed attempted passed  success   of att. composite     S  mult   score  standing    tok/q
+  mem0     success  44% = 4001 passed of 9008 posed (attempted 8150/9008,  49% of those passed)   composite 0.417   S 0.11 ×1.1   score 348   standing 0 tok   2437 tok/query
+           v2 score 348 = families 333 + signal 6 + tokens 8 (billed 2438 tok/query)
+=== cognee 500-seed1 start 2026-09-16T10:27:01Z
+
+wrote adapters/out/cognee-500-seed1-v2.json (3041 replies, 1000s)
+=== cognee 500-seed1 end 2026-09-16T10:43:46Z
+  arm       posed attempted passed  success   of att. composite     S  mult   score  standing    tok/q
+  cognee   success  48% = 1455 passed of 3042 posed (attempted 2629/3042,  55% of those passed)   composite 0.324   S 0.12 ×1.2   score 281   standing 0 tok   2053 tok/query
+           v2 score 281 = families 259 + signal 8 + tokens 14 (billed 2053 tok/query)
+=== cognee 1500-seed1 start 2026-09-16T10:43:47Z
+
+wrote adapters/out/cognee-1500-seed1-v2.json (9012 replies, 5939s)
+=== cognee 1500-seed1 end 2026-09-16T12:22:51Z
+  arm       posed attempted passed  success   of att. composite     S  mult   score  standing    tok/q
+  cognee   success  43% = 3836 passed of 9008 posed (attempted 7775/9008,  49% of those passed)   composite 0.299   S 0.12 ×1.2   score 263   standing 0 tok   1933 tok/query
+           v2 score 263 = families 240 + signal 8 + tokens 16 (billed 1934 tok/query)
+=== CHAIN A DONE
