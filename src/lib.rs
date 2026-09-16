@@ -2,7 +2,7 @@
 //! software development.
 //!
 //! One seeded world of invented project knowledge is poured into a memory
-//! system through an eleven-operation protocol and then questioned, re-decided,
+//! system through a twelve-operation protocol and then questioned, re-decided,
 //! contradicted, retired and asked again. Every probe is a task with a
 //! pass/fail rule the script fixed before the question was asked; the
 //! headline is the mean success over every task posed,
@@ -137,6 +137,21 @@ mod tests {
         // Title-only snippets carry the answer for every kind, so the
         // readable rule does not zero a lexical hit.
         assert!(col(&g, "retrieval", "lexical_r@5") > 0.5);
+
+        // The path read: grep greps the file for the path and finds every
+        // bound note; the lexical arm only sees the path's words.
+        let mut grep = FlatArm::new(Mode::Grep, None);
+        let t = runner::run(&v2, &mut grep).unwrap();
+        let gg = grade::grade(&v2, &t).unwrap();
+        assert!(col(&gg, "retrieval", "path_r@5") > 0.9);
+        assert!(col(&gg, "retrieval", "path_cover") > 0.5);
+        assert!(col(&g, "retrieval", "path_r@5") <= col(&gg, "retrieval", "path_r@5"));
+        // A dump covers every file it holds notes for, and no more than that.
+        let mut whole = FlatArm::new(Mode::Whole, None);
+        let t = runner::run(&v2, &mut whole).unwrap();
+        let gw = grade::grade(&v2, &t).unwrap();
+        assert!((col(&gw, "retrieval", "path_cover") - 1.0).abs() < 1e-9);
+        assert!((col(&gw, "retrieval", "path_r@5") - 1.0).abs() < 1e-9);
 
         let v1 = world::build(&world::WorldConfig {
             size: 66,

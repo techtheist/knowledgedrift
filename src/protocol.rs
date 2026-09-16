@@ -305,6 +305,14 @@ pub trait Memory {
 
     fn recall(&self, query: &str, k: usize, window: Option<Window>) -> anyhow::Result<Recalled>;
 
+    /// The path-shaped read (v2): what a caller about to touch `path` should
+    /// see. A system with a file channel (an edit hook, a code-ref index)
+    /// answers from it; the default hands the path to `recall` as a query,
+    /// which is what a store without one would do.
+    fn recall_path(&self, path: &str, k: usize) -> anyhow::Result<Recalled> {
+        self.recall(path, k, None)
+    }
+
     /// Every disagreement the system currently wants a person to judge.
     /// `None` = the system has no such concept.
     fn suspects(&mut self) -> anyhow::Result<Option<Vec<SuspectPair>>>;

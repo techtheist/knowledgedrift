@@ -988,6 +988,55 @@ pub fn build(cfg: &WorldConfig) -> Script {
         }
     }
 
+    // v2: the path-shaped read. Every file the world's code refs name is
+    // asked once, as a path — what a caller about to edit it should see.
+    // Gold is every live, truthful note bound to the file: the non-chain
+    // facts (tested or not — a distractor bound to a file is still what an
+    // editor should know) and the chain heads. A stale sibling shares its
+    // fact's refs but is neither gold nor penalised.
+    let mut path_n = 0usize;
+    if v2 {
+        let live: Vec<&Fact> = facts
+            .iter()
+            .copied()
+            .chain(c.chains.iter().map(|ch| by_key[ch.head()]))
+            .collect();
+        let mut paths: Vec<&str> = Vec::new();
+        let mut bound: HashMap<&str, Vec<&Fact>> = HashMap::new();
+        for f in &live {
+            for p in &f.code_refs {
+                if !bound.contains_key(p.as_str()) {
+                    paths.push(p);
+                }
+                let golds = bound.entry(p.as_str()).or_default();
+                // A note may name the same file twice in its refs.
+                if !golds.iter().any(|g| g.key == f.key) {
+                    golds.push(f);
+                }
+            }
+        }
+        for p in paths {
+            let golds = &bound[p];
+            path_n += 1;
+            let id = format!("P{path_n}");
+            ops.push(Op::RecallPath {
+                id: id.clone(),
+                path: p.to_string(),
+                k: cfg.k,
+            });
+            probes.push(Probe {
+                id,
+                family: Family::Retrieval,
+                expect: Expect::Bound {
+                    path: p.to_string(),
+                    gold: golds.iter().map(|f| f.key.clone()).collect(),
+                    answers: golds.iter().map(|f| answer_of(f)).collect(),
+                },
+            });
+        }
+    }
+    let _ = path_n;
+
     // Contradiction plan first: transitive cases borrow phantom subjects
     // from the END of the control list, and those controls are dropped.
     let targets: Vec<(usize, &Fact)> = facts
@@ -1499,9 +1548,10 @@ mod tests {
             .iter()
             .filter_map(|op| match op {
                 Op::Inscribe { id: Some(id), .. } => Some(id.as_str()),
-                Op::Recall { id, .. } | Op::Suspects { id } | Op::Lineage { id, .. } => {
-                    Some(id.as_str())
-                }
+                Op::Recall { id, .. }
+                | Op::RecallPath { id, .. }
+                | Op::Suspects { id }
+                | Op::Lineage { id, .. } => Some(id.as_str()),
                 _ => None,
             })
             .collect();
@@ -1769,6 +1819,48 @@ mod tests {
         }
         assert_eq!(crossed, 60, "one crossed question per tested fact");
         assert_eq!(natural, 15);
+        // The path reads: one per file the code refs name, every gold a
+        // live record, every path an op of its own.
+        let keys: HashSet<&str> = v2
+            .ops
+            .iter()
+            .filter_map(|op| match op {
+                Op::Inscribe { record, .. } | Op::Supersede { new: record, .. } => {
+                    Some(record.key.as_str())
+                }
+                _ => None,
+            })
+            .collect();
+        let mut bound = 0;
+        for p in &v2.probes {
+            if let Expect::Bound {
+                path,
+                gold,
+                answers,
+            } = &p.expect
+            {
+                bound += 1;
+                assert!(path.starts_with("src/"), "{path}");
+                assert!(!gold.is_empty() && gold.len() == answers.len());
+                assert!(gold.iter().all(|g| keys.contains(g.as_str())));
+                assert!(
+                    gold.iter().all(|g| !g.starts_with("s-")),
+                    "siblings are not gold"
+                );
+                let unique: HashSet<&str> = gold.iter().map(String::as_str).collect();
+                assert_eq!(unique.len(), gold.len(), "a note is bound once: {path}");
+                assert!(v2.ops.iter().any(
+                    |op| matches!(op, Op::RecallPath { id, path: p2, .. } if *id == p.id && p2 == path)
+                ));
+            }
+        }
+        assert!(bound > 0, "v2 poses path reads");
+        assert!(
+            v1.probes
+                .iter()
+                .all(|p| !matches!(p.expect, Expect::Bound { .. })),
+            "v1 has no path reads"
+        );
         assert!(phantom > 0);
         for s in ["reworded", "clause", "synonym"] {
             assert!(shapes.contains(s), "v2 shape {s} missing");

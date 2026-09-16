@@ -1,6 +1,6 @@
 # The protocol
 
-Eleven operations (`src/protocol.rs`; mirrored for Python in
+Twelve operations (`src/protocol.rs`; mirrored for Python in
 `adapters/adapter.py`). An adapter implements them against its system's
 native API; the harness never reaches around them.
 
@@ -14,6 +14,7 @@ native API; the harness never reaches around them.
 | `endorse(key, by)` | someone vouches for the note on one rung of the authority ladder: `retrieval` (it was delivered and used), `assistant` (confirmed still true), `user` (the owner approved it), `supervisor` (pinned above every other signal); a rung may repeat | nothing (`endorse_*: false`) |
 | `settle()` | a session boundary: calibration, sweeps, consolidation | nothing |
 | `recall(query, k, window?)` | top-k, optionally scoped to a capture-time window | rank, filter by date if it has one |
+| `recall_path(path, k)` | (v2) the path-shaped read: what a caller about to touch `path` should see — an edit hook's channel, a code-ref index | hand the path to `recall` as a query (the default) |
 | `suspects()` | every disagreement the system wants a person to judge | `None` (`suspects: false`) |
 | `lineage(key)` | the supersession history reachable from a note | `None` |
 | `standing_tokens()` | what the system costs every session before a question is asked | 0 (a file: its size) |
@@ -75,6 +76,7 @@ them (`docs/scoring.md`).
     { "op": "settle" },
     { "op": "recall", "id": "R1", "query": "Vanor lease broker retry budget", "k": 10 },
     { "op": "recall", "id": "R77", "query": "...", "k": 10, "window": { "after": 1781000000, "before": 1781900000 } },
+    { "op": "recall_path", "id": "P1", "path": "src/lease_broker/state.rs", "k": 10 },
     { "op": "inscribe", "id": "W1", "record": { "key": "c0a", "...": "..." }, "mode": "write" },
     { "op": "suspects", "id": "S" },
     { "op": "release", "key": "f0004", "reason": "no longer applies after the lease broker rework" },
@@ -83,6 +85,7 @@ them (`docs/scoring.md`).
   ],
   "probes": [
     { "id": "R1", "family": "retrieval", "expect": "gold", "gold": "f0000", "phrasing": "lexical", "stale": "s-f0000" },
+    { "id": "P1", "family": "retrieval", "expect": "bound", "path": "src/lease_broker/state.rs", "gold": ["f0000", "f0140"], "answers": ["retry budget of 3", "..."] },
     { "id": "C0", "family": "contradiction", "expect": "case", "gold": "f0000", "planted": ["c0a"], "witness": "c0a", "tier": 1, "shape": "value", "positive": true },
     { "id": "R412", "family": "authority", "expect": "ranked", "winner": "a3a", "losers": ["a3b", "f0011"], "order": false, "layer": 2, "scenario": "approve_vs_confirm", "needs": ["endorse_user"] }
   ] }
@@ -92,8 +95,9 @@ The operation order is load-bearing and the same in every world:
 
 1. import the world (notes, links, stale siblings, supersession chains);
 2. settle — a session boundary;
-3. probe retrieval, abstention, currency, rationale, temporal on the
-   untouched world, so no family's plantings crowd another's questions;
+3. probe retrieval (on v2, every file the code refs name is also read by
+   path), abstention, currency, rationale, temporal on the untouched world,
+   so no family's plantings crowd another's questions;
 4. plant the contradiction cases as assistant-style writes;
 5. settle, then ask for the suspect queue (contradiction + drift);
 6. release and purge the deletion targets, probe them, write them back;

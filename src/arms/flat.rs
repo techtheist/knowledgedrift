@@ -66,6 +66,7 @@ struct Rec {
     title: String,
     body: String,
     created_at: Option<i64>,
+    code_refs: Vec<String>,
 }
 
 impl Rec {
@@ -119,6 +120,7 @@ impl FlatArm {
             title: r.title.clone(),
             body: r.body.clone(),
             created_at: r.created_at,
+            code_refs: r.code_refs.clone(),
         });
         Ok(())
     }
@@ -333,6 +335,29 @@ impl Memory for FlatArm {
             }
             Mode::Whole | Mode::Curated(_) => unreachable!("dumps returned above"),
         };
+        Ok(Recalled {
+            hits,
+            declined: false,
+            dump: false,
+        })
+    }
+
+    /// The path-shaped read. `grep` greps: every note whose file mentions
+    /// the path (its code refs are in the file), in file order, no ranking.
+    /// Every other mode hands the path to its recall — a vector store
+    /// embeds it, a dump dumps.
+    fn recall_path(&self, path: &str, k: usize) -> anyhow::Result<Recalled> {
+        if self.mode != Mode::Grep {
+            return self.recall(path, k, None);
+        }
+        let needle = path.trim();
+        let hits = self
+            .recs
+            .iter()
+            .filter(|r| !needle.is_empty() && r.code_refs.iter().any(|c| c.contains(needle)))
+            .take(k)
+            .map(|r| Self::hit(r, r.text(), Some(1.0)))
+            .collect();
         Ok(Recalled {
             hits,
             declined: false,

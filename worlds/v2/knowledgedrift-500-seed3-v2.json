@@ -13,7 +13,7 @@
     "notes": 641,
     "edges": 530
   },
-  "digest": "d002e68522b9bc7e",
+  "digest": "cdbbbcf8710e192e",
   "ops": [
     {
       "op": "inscribe",
@@ -24401,6 +24401,384 @@
       "op": "recall",
       "id": "R2000",
       "query": "the drain that collects randomness — which one rotates errors evenly instead of isolating them because randomness was pinned once and forgotten?",
+      "k": 10
+    },
+    {
+      "op": "recall_path",
+      "id": "P1",
+      "path": "src/ingest_job/state.rs",
+      "k": 10
+    },
+    {
+      "op": "recall_path",
+      "id": "P2",
+      "path": "src/ingest_job/config.rs",
+      "k": 10
+    },
+    {
+      "op": "recall_path",
+      "id": "P3",
+      "path": "src/ingest_job/mod.rs",
+      "k": 10
+    },
+    {
+      "op": "recall_path",
+      "id": "P4",
+      "path": "src/edge_cache/handler.rs",
+      "k": 10
+    },
+    {
+      "op": "recall_path",
+      "id": "P5",
+      "path": "src/edge_cache/config.rs",
+      "k": 10
+    },
+    {
+      "op": "recall_path",
+      "id": "P6",
+      "path": "src/edge_cache/state.rs",
+      "k": 10
+    },
+    {
+      "op": "recall_path",
+      "id": "P7",
+      "path": "src/edge_cache/mod.rs",
+      "k": 10
+    },
+    {
+      "op": "recall_path",
+      "id": "P8",
+      "path": "src/entropy_siphon/config.rs",
+      "k": 10
+    },
+    {
+      "op": "recall_path",
+      "id": "P9",
+      "path": "src/entropy_siphon/mod.rs",
+      "k": 10
+    },
+    {
+      "op": "recall_path",
+      "id": "P10",
+      "path": "src/entropy_siphon/handler.rs",
+      "k": 10
+    },
+    {
+      "op": "recall_path",
+      "id": "P11",
+      "path": "src/entropy_siphon/state.rs",
+      "k": 10
+    },
+    {
+      "op": "recall_path",
+      "id": "P12",
+      "path": "src/token_vault/state.rs",
+      "k": 10
+    },
+    {
+      "op": "recall_path",
+      "id": "P13",
+      "path": "src/token_vault/config.rs",
+      "k": 10
+    },
+    {
+      "op": "recall_path",
+      "id": "P14",
+      "path": "src/token_vault/handler.rs",
+      "k": 10
+    },
+    {
+      "op": "recall_path",
+      "id": "P15",
+      "path": "src/token_vault/mod.rs",
+      "k": 10
+    },
+    {
+      "op": "recall_path",
+      "id": "P16",
+      "path": "src/escrow_chamber/config.rs",
+      "k": 10
+    },
+    {
+      "op": "recall_path",
+      "id": "P17",
+      "path": "src/replay_buffer/config.rs",
+      "k": 10
+    },
+    {
+      "op": "recall_path",
+      "id": "P18",
+      "path": "src/replay_buffer/mod.rs",
+      "k": 10
+    },
+    {
+      "op": "recall_path",
+      "id": "P19",
+      "path": "src/replay_buffer/handler.rs",
+      "k": 10
+    },
+    {
+      "op": "recall_path",
+      "id": "P20",
+      "path": "src/replay_buffer/state.rs",
+      "k": 10
+    },
+    {
+      "op": "recall_path",
+      "id": "P21",
+      "path": "src/escrow_chamber/handler.rs",
+      "k": 10
+    },
+    {
+      "op": "recall_path",
+      "id": "P22",
+      "path": "src/escrow_chamber/mod.rs",
+      "k": 10
+    },
+    {
+      "op": "recall_path",
+      "id": "P23",
+      "path": "src/escrow_chamber/state.rs",
+      "k": 10
+    },
+    {
+      "op": "recall_path",
+      "id": "P24",
+      "path": "src/lease_broker/handler.rs",
+      "k": 10
+    },
+    {
+      "op": "recall_path",
+      "id": "P25",
+      "path": "src/lease_broker/state.rs",
+      "k": 10
+    },
+    {
+      "op": "recall_path",
+      "id": "P26",
+      "path": "src/lease_broker/config.rs",
+      "k": 10
+    },
+    {
+      "op": "recall_path",
+      "id": "P27",
+      "path": "src/lease_broker/mod.rs",
+      "k": 10
+    },
+    {
+      "op": "recall_path",
+      "id": "P28",
+      "path": "src/index_writer/state.rs",
+      "k": 10
+    },
+    {
+      "op": "recall_path",
+      "id": "P29",
+      "path": "src/index_writer/config.rs",
+      "k": 10
+    },
+    {
+      "op": "recall_path",
+      "id": "P30",
+      "path": "src/index_writer/mod.rs",
+      "k": 10
+    },
+    {
+      "op": "recall_path",
+      "id": "P31",
+      "path": "src/sweep_worker/config.rs",
+      "k": 10
+    },
+    {
+      "op": "recall_path",
+      "id": "P32",
+      "path": "src/sweep_worker/handler.rs",
+      "k": 10
+    },
+    {
+      "op": "recall_path",
+      "id": "P33",
+      "path": "src/calibration_bench/state.rs",
+      "k": 10
+    },
+    {
+      "op": "recall_path",
+      "id": "P34",
+      "path": "src/calibration_bench/config.rs",
+      "k": 10
+    },
+    {
+      "op": "recall_path",
+      "id": "P35",
+      "path": "src/calibration_bench/mod.rs",
+      "k": 10
+    },
+    {
+      "op": "recall_path",
+      "id": "P36",
+      "path": "src/quorum_relay/mod.rs",
+      "k": 10
+    },
+    {
+      "op": "recall_path",
+      "id": "P37",
+      "path": "src/quorum_relay/handler.rs",
+      "k": 10
+    },
+    {
+      "op": "recall_path",
+      "id": "P38",
+      "path": "src/quorum_relay/config.rs",
+      "k": 10
+    },
+    {
+      "op": "recall_path",
+      "id": "P39",
+      "path": "src/calibration_bench/handler.rs",
+      "k": 10
+    },
+    {
+      "op": "recall_path",
+      "id": "P40",
+      "path": "src/shard_router/config.rs",
+      "k": 10
+    },
+    {
+      "op": "recall_path",
+      "id": "P41",
+      "path": "src/shard_router/state.rs",
+      "k": 10
+    },
+    {
+      "op": "recall_path",
+      "id": "P42",
+      "path": "src/shard_router/handler.rs",
+      "k": 10
+    },
+    {
+      "op": "recall_path",
+      "id": "P43",
+      "path": "src/ingest_job/handler.rs",
+      "k": 10
+    },
+    {
+      "op": "recall_path",
+      "id": "P44",
+      "path": "src/assay_station/mod.rs",
+      "k": 10
+    },
+    {
+      "op": "recall_path",
+      "id": "P45",
+      "path": "src/assay_station/config.rs",
+      "k": 10
+    },
+    {
+      "op": "recall_path",
+      "id": "P46",
+      "path": "src/assay_station/state.rs",
+      "k": 10
+    },
+    {
+      "op": "recall_path",
+      "id": "P47",
+      "path": "src/sweep_worker/state.rs",
+      "k": 10
+    },
+    {
+      "op": "recall_path",
+      "id": "P48",
+      "path": "src/provenance_ledger/config.rs",
+      "k": 10
+    },
+    {
+      "op": "recall_path",
+      "id": "P49",
+      "path": "src/provenance_ledger/mod.rs",
+      "k": 10
+    },
+    {
+      "op": "recall_path",
+      "id": "P50",
+      "path": "src/provenance_ledger/handler.rs",
+      "k": 10
+    },
+    {
+      "op": "recall_path",
+      "id": "P51",
+      "path": "src/telemetry_mast/config.rs",
+      "k": 10
+    },
+    {
+      "op": "recall_path",
+      "id": "P52",
+      "path": "src/index_writer/handler.rs",
+      "k": 10
+    },
+    {
+      "op": "recall_path",
+      "id": "P53",
+      "path": "src/shard_router/mod.rs",
+      "k": 10
+    },
+    {
+      "op": "recall_path",
+      "id": "P54",
+      "path": "src/assay_station/handler.rs",
+      "k": 10
+    },
+    {
+      "op": "recall_path",
+      "id": "P55",
+      "path": "src/telemetry_mast/handler.rs",
+      "k": 10
+    },
+    {
+      "op": "recall_path",
+      "id": "P56",
+      "path": "src/provenance_ledger/state.rs",
+      "k": 10
+    },
+    {
+      "op": "recall_path",
+      "id": "P57",
+      "path": "src/telemetry_mast/mod.rs",
+      "k": 10
+    },
+    {
+      "op": "recall_path",
+      "id": "P58",
+      "path": "src/telemetry_mast/state.rs",
+      "k": 10
+    },
+    {
+      "op": "recall_path",
+      "id": "P59",
+      "path": "src/sweep_worker/mod.rs",
+      "k": 10
+    },
+    {
+      "op": "recall_path",
+      "id": "P60",
+      "path": "src/specimen_locker/handler.rs",
+      "k": 10
+    },
+    {
+      "op": "recall_path",
+      "id": "P61",
+      "path": "src/specimen_locker/state.rs",
+      "k": 10
+    },
+    {
+      "op": "recall_path",
+      "id": "P62",
+      "path": "src/specimen_locker/config.rs",
+      "k": 10
+    },
+    {
+      "op": "recall_path",
+      "id": "P63",
+      "path": "src/specimen_locker/mod.rs",
       "k": 10
     },
     {
@@ -49701,6 +50079,1434 @@
       "gold": "f0499",
       "phrasing": "crossed",
       "answer": "the seed never varies between runs"
+    },
+    {
+      "id": "P1",
+      "family": "retrieval",
+      "expect": "bound",
+      "path": "src/ingest_job/state.rs",
+      "gold": [
+        "f0001",
+        "f0140",
+        "f0141",
+        "f0149",
+        "f0181",
+        "f0492",
+        "f0493"
+      ],
+      "answers": [
+        "starves its consumers",
+        "367 entries",
+        "forgets its offsets",
+        "the warm path is gated on a flag nobody sets",
+        "mislabels its vials",
+        "promote an unverified backup",
+        "inflates its estimates"
+      ]
+    },
+    {
+      "id": "P2",
+      "family": "retrieval",
+      "expect": "bound",
+      "path": "src/ingest_job/config.rs",
+      "gold": [
+        "f0003",
+        "f0140",
+        "f0143",
+        "f0146",
+        "f0149",
+        "f0181",
+        "f0184",
+        "f0216",
+        "f0219",
+        "f0492"
+      ],
+      "answers": [
+        "flaps its liveness",
+        "367 entries",
+        "clips its bursts",
+        "overruns its dwell",
+        "the warm path is gated on a flag nobody sets",
+        "mislabels its vials",
+        "the sensor sums shadow and signal alike",
+        "garbles its telemetry",
+        "integer division truncates the interval",
+        "promote an unverified backup"
+      ]
+    },
+    {
+      "id": "P3",
+      "family": "retrieval",
+      "expect": "bound",
+      "path": "src/ingest_job/mod.rs",
+      "gold": [
+        "f0004",
+        "f0140",
+        "f0144",
+        "f0149",
+        "f0184",
+        "f0216",
+        "f0492"
+      ],
+      "answers": [
+        "the probe pool is sized from the old topology",
+        "367 entries",
+        "the feature flag defaults on in exactly one environment",
+        "the warm path is gated on a flag nobody sets",
+        "the sensor sums shadow and signal alike",
+        "garbles its telemetry",
+        "promote an unverified backup"
+      ]
+    },
+    {
+      "id": "P4",
+      "family": "retrieval",
+      "expect": "bound",
+      "path": "src/edge_cache/handler.rs",
+      "gold": [
+        "f0006",
+        "f0009",
+        "f0010",
+        "f0030",
+        "f0114",
+        "f0170",
+        "f0294",
+        "f0298",
+        "f0402",
+        "f0458"
+      ],
+      "answers": [
+        "double-counts rows",
+        "the warm path is gated on a flag nobody sets",
+        "29 branches",
+        "81 percent",
+        "the pool hands out connections newest-first",
+        "445 records",
+        "the fence release rides the same lock as the write",
+        "misplaces its permits",
+        "widen the voting circle mid-ballot",
+        "duplicates its fence"
+      ]
+    },
+    {
+      "id": "P5",
+      "family": "retrieval",
+      "expect": "bound",
+      "path": "src/edge_cache/config.rs",
+      "gold": [
+        "f0006",
+        "f0007",
+        "f0009",
+        "f0012",
+        "f0111",
+        "f0114",
+        "f0117",
+        "f0172",
+        "f0291",
+        "f0294",
+        "f0295",
+        "f0297",
+        "f0402",
+        "f0419",
+        "f0455",
+        "f0457"
+      ],
+      "answers": [
+        "double-counts rows",
+        "write before the fence lands",
+        "the warm path is gated on a flag nobody sets",
+        "retry inside the lock",
+        "skips the fsync",
+        "the pool hands out connections newest-first",
+        "splice two lineages",
+        "widen the fence without a drain",
+        "overruns its dwell",
+        "the fence release rides the same lock as the write",
+        "770 requests",
+        "rewind a shared cursor",
+        "widen the voting circle mid-ballot",
+        "the config loader keeps its first answer forever",
+        "209 milliseconds",
+        "ack before the segment seals"
+      ]
+    },
+    {
+      "id": "P6",
+      "family": "retrieval",
+      "expect": "bound",
+      "path": "src/edge_cache/state.rs",
+      "gold": [
+        "f0006",
+        "f0009",
+        "f0013",
+        "f0033",
+        "f0117",
+        "f0173",
+        "f0297",
+        "f0417",
+        "f0457"
+      ],
+      "answers": [
+        "double-counts rows",
+        "the warm path is gated on a flag nobody sets",
+        "spins on backoff",
+        "staggers its heartbeats",
+        "splice two lineages",
+        "thrashes the cache",
+        "rewind a shared cursor",
+        "suppress a failing healthcheck",
+        "ack before the segment seals"
+      ]
+    },
+    {
+      "id": "P7",
+      "family": "retrieval",
+      "expect": "bound",
+      "path": "src/edge_cache/mod.rs",
+      "gold": [
+        "f0012",
+        "f0111",
+        "f0112",
+        "f0172",
+        "f0292",
+        "f0400"
+      ],
+      "answers": [
+        "retry inside the lock",
+        "skips the fsync",
+        "reuse a spill file",
+        "widen the fence without a drain",
+        "skip the blank control",
+        "66 records"
+      ]
+    },
+    {
+      "id": "P8",
+      "family": "retrieval",
+      "expect": "bound",
+      "path": "src/entropy_siphon/config.rs",
+      "gold": [
+        "f0015",
+        "f0018",
+        "f0367",
+        "f0411",
+        "f0475",
+        "f0483",
+        "f0495",
+        "f0498",
+        "c016g2",
+        "c017g2"
+      ],
+      "answers": [
+        "42 percent",
+        "staggers its heartbeats",
+        "write before the fence lands",
+        "clones its timers",
+        "261 attempts",
+        "splits its brain",
+        "313 percent",
+        "staggers its heartbeats",
+        "801 hours",
+        "814 percent"
+      ]
+    },
+    {
+      "id": "P9",
+      "family": "retrieval",
+      "expect": "bound",
+      "path": "src/entropy_siphon/mod.rs",
+      "gold": [
+        "f0016",
+        "f0368",
+        "f0484",
+        "f0496"
+      ],
+      "answers": [
+        "swallows its errors",
+        "leaks handles",
+        "the config loader keeps its first answer forever",
+        "swallows its errors"
+      ]
+    },
+    {
+      "id": "P10",
+      "family": "retrieval",
+      "expect": "bound",
+      "path": "src/entropy_siphon/handler.rs",
+      "gold": [
+        "f0018",
+        "f0126",
+        "f0414",
+        "f0478",
+        "f0483",
+        "f0495",
+        "f0498",
+        "c016g2"
+      ],
+      "answers": [
+        "staggers its heartbeats",
+        "desyncs its mirrors",
+        "the probe pool is sized from the old topology",
+        "stalls",
+        "splits its brain",
+        "313 percent",
+        "staggers its heartbeats",
+        "801 hours"
+      ]
+    },
+    {
+      "id": "P11",
+      "family": "retrieval",
+      "expect": "bound",
+      "path": "src/entropy_siphon/state.rs",
+      "gold": [
+        "f0018",
+        "f0129",
+        "f0365",
+        "f0481",
+        "c017g2"
+      ],
+      "answers": [
+        "staggers its heartbeats",
+        "the retry queue and the dead-letter queue share a disk",
+        "952 seconds",
+        "desyncs its mirrors",
+        "814 percent"
+      ]
+    },
+    {
+      "id": "P12",
+      "family": "retrieval",
+      "expect": "bound",
+      "path": "src/token_vault/state.rs",
+      "gold": [
+        "f0021",
+        "f0045",
+        "f0073",
+        "f0193",
+        "f0233",
+        "f0289",
+        "f0301"
+      ],
+      "answers": [
+        "fragments its heap",
+        "120 segments",
+        "staggers its heartbeats",
+        "echoes its own commands",
+        "inflates its estimates",
+        "the sensor sums shadow and signal alike",
+        "skips the fsync"
+      ]
+    },
+    {
+      "id": "P13",
+      "family": "retrieval",
+      "expect": "bound",
+      "path": "src/token_vault/config.rs",
+      "gold": [
+        "f0021",
+        "f0024",
+        "f0047",
+        "f0056",
+        "f0059",
+        "f0070",
+        "f0071",
+        "f0073",
+        "f0131",
+        "f0134",
+        "f0230",
+        "f0231",
+        "f0233",
+        "f0300",
+        "f0303",
+        "c023g2"
+      ],
+      "answers": [
+        "fragments its heap",
+        "the manifest cache is per-thread and never shared",
+        "archive an open incident",
+        "mislabels its vials",
+        "the migration left a shadow column behind",
+        "185 percent",
+        "swallows its errors",
+        "staggers its heartbeats",
+        "poisons its snapshot",
+        "the calibration constant was transcribed by hand",
+        "601 minutes",
+        "shreds its manifest",
+        "inflates its estimates",
+        "783 megabytes",
+        "starves the drain",
+        "892 records"
+      ]
+    },
+    {
+      "id": "P14",
+      "family": "retrieval",
+      "expect": "bound",
+      "path": "src/token_vault/handler.rs",
+      "gold": [
+        "f0021",
+        "f0070",
+        "f0074",
+        "f0131",
+        "f0134",
+        "f0190",
+        "f0230",
+        "f0234",
+        "f0286",
+        "f0300"
+      ],
+      "answers": [
+        "fragments its heap",
+        "185 percent",
+        "the lock is advisory and one caller ignores it",
+        "poisons its snapshot",
+        "the calibration constant was transcribed by hand",
+        "497 days",
+        "601 minutes",
+        "the fence release rides the same lock as the write",
+        "loses its cursor",
+        "783 megabytes"
+      ]
+    },
+    {
+      "id": "P15",
+      "family": "retrieval",
+      "expect": "bound",
+      "path": "src/token_vault/mod.rs",
+      "gold": [
+        "f0024",
+        "f0048",
+        "f0056",
+        "f0132",
+        "f0233",
+        "f0300",
+        "f0304"
+      ],
+      "answers": [
+        "the manifest cache is per-thread and never shared",
+        "lags its dashboard",
+        "mislabels its vials",
+        "rewind a shared cursor",
+        "inflates its estimates",
+        "783 megabytes",
+        "the retry queue and the dead-letter queue share a disk"
+      ]
+    },
+    {
+      "id": "P16",
+      "family": "retrieval",
+      "expect": "bound",
+      "path": "src/escrow_chamber/config.rs",
+      "gold": [
+        "f0027",
+        "f0050",
+        "f0053",
+        "f0082",
+        "f0155",
+        "f0245",
+        "f0248",
+        "f0355",
+        "f0358",
+        "f0359",
+        "f0425",
+        "f0428"
+      ],
+      "answers": [
+        "archive an open incident",
+        "133 milliseconds",
+        "reorders acks",
+        "rewind a shared cursor",
+        "406 generations",
+        "640 branches",
+        "spins on backoff",
+        "926 hours",
+        "churns its connections",
+        "integer division truncates the interval",
+        "131 records",
+        "splits its brain"
+      ]
+    },
+    {
+      "id": "P17",
+      "family": "retrieval",
+      "expect": "bound",
+      "path": "src/replay_buffer/config.rs",
+      "gold": [
+        "f0035",
+        "f0038",
+        "f0039",
+        "f0041",
+        "f0044",
+        "f0076",
+        "f0079",
+        "f0262",
+        "f0263",
+        "f0437",
+        "f0451",
+        "f0454",
+        "f0486",
+        "f0487",
+        "f0489",
+        "c020g2"
+      ],
+      "answers": [
+        "94 hours",
+        "saturates its detector",
+        "the quota counts retired entries",
+        "poisons its snapshot",
+        "the warm path is gated on a flag nobody sets",
+        "inverts its polarity",
+        "the metric averages away the spikes",
+        "hot-patch the verifier itself",
+        "misfiles its alerts",
+        "bypass the admission meter",
+        "garbles its telemetry",
+        "the health probe tests the proxy, not the service",
+        "forgets its offsets",
+        "bypass the admission meter",
+        "the fence release rides the same lock as the write",
+        "853 seconds"
+      ]
+    },
+    {
+      "id": "P18",
+      "family": "retrieval",
+      "expect": "bound",
+      "path": "src/replay_buffer/mod.rs",
+      "gold": [
+        "f0036",
+        "f0038",
+        "f0044",
+        "f0076",
+        "f0260",
+        "f0452",
+        "f0454"
+      ],
+      "answers": [
+        "mislabels its vials",
+        "saturates its detector",
+        "the warm path is gated on a flag nobody sets",
+        "inverts its polarity",
+        "679 ticks",
+        "hand-tune the weights mid-flight",
+        "the health probe tests the proxy, not the service"
+      ]
+    },
+    {
+      "id": "P19",
+      "family": "retrieval",
+      "expect": "bound",
+      "path": "src/replay_buffer/handler.rs",
+      "gold": [
+        "f0038",
+        "f0042",
+        "f0262",
+        "f0454",
+        "f0486",
+        "c020g2",
+        "c024g2"
+      ],
+      "answers": [
+        "saturates its detector",
+        "rewind a shared cursor",
+        "hot-patch the verifier itself",
+        "the health probe tests the proxy, not the service",
+        "forgets its offsets",
+        "853 seconds",
+        "905 hours"
+      ]
+    },
+    {
+      "id": "P20",
+      "family": "retrieval",
+      "expect": "bound",
+      "path": "src/replay_buffer/state.rs",
+      "gold": [
+        "f0041",
+        "f0077",
+        "f0079",
+        "f0262",
+        "f0437",
+        "f0489"
+      ],
+      "answers": [
+        "poisons its snapshot",
+        "splice two lineages",
+        "the metric averages away the spikes",
+        "hot-patch the verifier itself",
+        "bypass the admission meter",
+        "the fence release rides the same lock as the write"
+      ]
+    },
+    {
+      "id": "P21",
+      "family": "retrieval",
+      "expect": "bound",
+      "path": "src/escrow_chamber/handler.rs",
+      "gold": [
+        "f0050",
+        "f0082",
+        "f0158",
+        "f0358",
+        "f0426"
+      ],
+      "answers": [
+        "133 milliseconds",
+        "rewind a shared cursor",
+        "overfills its journal",
+        "churns its connections",
+        "desyncs its mirrors"
+      ]
+    },
+    {
+      "id": "P22",
+      "family": "retrieval",
+      "expect": "bound",
+      "path": "src/escrow_chamber/mod.rs",
+      "gold": [
+        "f0050",
+        "f0080",
+        "f0248",
+        "f0356",
+        "f0428"
+      ],
+      "answers": [
+        "133 milliseconds",
+        "211 requests",
+        "spins on backoff",
+        "blackholes its retries",
+        "splits its brain"
+      ]
+    },
+    {
+      "id": "P23",
+      "family": "retrieval",
+      "expect": "bound",
+      "path": "src/escrow_chamber/state.rs",
+      "gold": [
+        "f0053",
+        "f0245",
+        "f0425",
+        "f0429"
+      ],
+      "answers": [
+        "reorders acks",
+        "640 branches",
+        "131 records",
+        "the cleanup job holds the same lock as intake"
+      ]
+    },
+    {
+      "id": "P24",
+      "family": "retrieval",
+      "expect": "bound",
+      "path": "src/lease_broker/handler.rs",
+      "gold": [
+        "f0062",
+        "f0326",
+        "f0330",
+        "f0382"
+      ],
+      "answers": [
+        "widen the voting circle mid-ballot",
+        "loses its cursor",
+        "861 minutes",
+        "mutate a sealed segment"
+      ]
+    },
+    {
+      "id": "P25",
+      "family": "retrieval",
+      "expect": "bound",
+      "path": "src/lease_broker/state.rs",
+      "gold": [
+        "f0065",
+        "f0067",
+        "f0237",
+        "f0329",
+        "f0333"
+      ],
+      "answers": [
+        "172 milliseconds",
+        "trust the replica clock",
+        "suppress a failing healthcheck",
+        "integer division truncates the interval",
+        "inflates its estimates"
+      ]
+    },
+    {
+      "id": "P26",
+      "family": "retrieval",
+      "expect": "bound",
+      "path": "src/lease_broker/config.rs",
+      "gold": [
+        "f0067",
+        "f0120",
+        "f0123",
+        "f0236",
+        "f0239",
+        "f0326",
+        "f0327",
+        "f0329",
+        "f0332"
+      ],
+      "answers": [
+        "trust the replica clock",
+        "315 percent",
+        "staggers its heartbeats",
+        "fragments its heap",
+        "the ranker keys on arrival order rather than freshness",
+        "loses its cursor",
+        "trust the replica clock",
+        "integer division truncates the interval",
+        "promote an unverified backup"
+      ]
+    },
+    {
+      "id": "P27",
+      "family": "retrieval",
+      "expect": "bound",
+      "path": "src/lease_broker/mod.rs",
+      "gold": [
+        "f0068",
+        "f0120",
+        "f0236",
+        "f0332"
+      ],
+      "answers": [
+        "reorders acks",
+        "315 percent",
+        "fragments its heap",
+        "promote an unverified backup"
+      ]
+    },
+    {
+      "id": "P28",
+      "family": "retrieval",
+      "expect": "bound",
+      "path": "src/index_writer/state.rs",
+      "gold": [
+        "f0085",
+        "f0201",
+        "f0257",
+        "f0397",
+        "c021g2"
+      ],
+      "answers": [
+        "224 days",
+        "hoards its scratch pages",
+        "share a cursor between shards",
+        "suppress a failing healthcheck",
+        "866 ticks"
+      ]
+    },
+    {
+      "id": "P29",
+      "family": "retrieval",
+      "expect": "bound",
+      "path": "src/index_writer/config.rs",
+      "gold": [
+        "f0085",
+        "f0088",
+        "f0201",
+        "f0204",
+        "f0259",
+        "f0396",
+        "f0399",
+        "c021g2"
+      ],
+      "answers": [
+        "224 days",
+        "echoes its own commands",
+        "hoards its scratch pages",
+        "the fence release rides the same lock as the write",
+        "the backoff timer starts only after the first success",
+        "fragments its heap",
+        "the batch size was tuned for the old hardware",
+        "866 ticks"
+      ]
+    },
+    {
+      "id": "P30",
+      "family": "retrieval",
+      "expect": "bound",
+      "path": "src/index_writer/mod.rs",
+      "gold": [
+        "f0088",
+        "f0204",
+        "f0259",
+        "f0396"
+      ],
+      "answers": [
+        "echoes its own commands",
+        "the fence release rides the same lock as the write",
+        "the backoff timer starts only after the first success",
+        "fragments its heap"
+      ]
+    },
+    {
+      "id": "P31",
+      "family": "retrieval",
+      "expect": "bound",
+      "path": "src/sweep_worker/config.rs",
+      "gold": [
+        "f0091",
+        "f0166",
+        "f0167",
+        "f0169",
+        "f0335",
+        "f0338",
+        "f0370",
+        "f0373",
+        "f0431",
+        "f0434",
+        "c018g2"
+      ],
+      "answers": [
+        "swallows its errors",
+        "hoards its scratch pages",
+        "archive an open incident",
+        "the pool hands out connections newest-first",
+        "874 percent",
+        "staggers its heartbeats",
+        "965 megabytes",
+        "starves the drain",
+        "stalls the queue",
+        "the seed never varies between runs",
+        "827 megabytes"
+      ]
+    },
+    {
+      "id": "P32",
+      "family": "retrieval",
+      "expect": "bound",
+      "path": "src/sweep_worker/handler.rs",
+      "gold": [
+        "f0094",
+        "f0166",
+        "f0338",
+        "f0370",
+        "f0373",
+        "f0434",
+        "c018g2"
+      ],
+      "answers": [
+        "the estimator never saw a leap year",
+        "hoards its scratch pages",
+        "staggers its heartbeats",
+        "965 megabytes",
+        "starves the drain",
+        "the seed never varies between runs",
+        "827 megabytes"
+      ]
+    },
+    {
+      "id": "P33",
+      "family": "retrieval",
+      "expect": "bound",
+      "path": "src/calibration_bench/state.rs",
+      "gold": [
+        "f0097",
+        "f0105",
+        "f0109",
+        "f0161",
+        "f0274",
+        "f0449"
+      ],
+      "answers": [
+        "skip the blank control",
+        "276 requests",
+        "the lock is advisory and one caller ignores it",
+        "loses its cursor",
+        "the seed never varies between runs",
+        "the migration left a shadow column behind"
+      ]
+    },
+    {
+      "id": "P34",
+      "family": "retrieval",
+      "expect": "bound",
+      "path": "src/calibration_bench/config.rs",
+      "gold": [
+        "f0099",
+        "f0105",
+        "f0108",
+        "f0163",
+        "f0271",
+        "f0274",
+        "f0347",
+        "c022g2"
+      ],
+      "answers": [
+        "the metric averages away the spikes",
+        "276 requests",
+        "misplaces its permits",
+        "reorders acks",
+        "hoards its scratch pages",
+        "the seed never varies between runs",
+        "write before the fence lands",
+        "879 records"
+      ]
+    },
+    {
+      "id": "P35",
+      "family": "retrieval",
+      "expect": "bound",
+      "path": "src/calibration_bench/mod.rs",
+      "gold": [
+        "f0099",
+        "f0108",
+        "f0164",
+        "f0271",
+        "f0272",
+        "c022g2"
+      ],
+      "answers": [
+        "the metric averages away the spikes",
+        "misplaces its permits",
+        "the feature flag defaults on in exactly one environment",
+        "hoards its scratch pages",
+        "archive an open incident",
+        "879 records"
+      ]
+    },
+    {
+      "id": "P36",
+      "family": "retrieval",
+      "expect": "bound",
+      "path": "src/quorum_relay/mod.rs",
+      "gold": [
+        "f0100"
+      ],
+      "answers": [
+        "263 hours"
+      ]
+    },
+    {
+      "id": "P37",
+      "family": "retrieval",
+      "expect": "bound",
+      "path": "src/quorum_relay/handler.rs",
+      "gold": [
+        "f0102"
+      ],
+      "answers": [
+        "recalibrate against a live specimen"
+      ]
+    },
+    {
+      "id": "P38",
+      "family": "retrieval",
+      "expect": "bound",
+      "path": "src/quorum_relay/config.rs",
+      "gold": [
+        "f0102",
+        "f0103",
+        "c015g2"
+      ],
+      "answers": [
+        "recalibrate against a live specimen",
+        "saturates its detector",
+        "788 segments"
+      ]
+    },
+    {
+      "id": "P39",
+      "family": "retrieval",
+      "expect": "bound",
+      "path": "src/calibration_bench/handler.rs",
+      "gold": [
+        "f0106",
+        "f0274",
+        "f0446",
+        "c022g2"
+      ],
+      "answers": [
+        "poisons its snapshot",
+        "the seed never varies between runs",
+        "inverts its polarity",
+        "879 records"
+      ]
+    },
+    {
+      "id": "P40",
+      "family": "retrieval",
+      "expect": "bound",
+      "path": "src/shard_router/config.rs",
+      "gold": [
+        "f0135",
+        "f0137",
+        "f0210",
+        "f0213",
+        "f0265",
+        "f0268",
+        "f0306",
+        "f0309",
+        "f0466",
+        "f0469"
+      ],
+      "answers": [
+        "354 percent",
+        "fork the settlement record",
+        "549 records",
+        "thrashes the cache",
+        "692 seconds",
+        "leaks handles",
+        "overruns its dwell",
+        "the cleanup job holds the same lock as intake",
+        "double-counts rows",
+        "the config loader keeps its first answer forever"
+      ]
+    },
+    {
+      "id": "P41",
+      "family": "retrieval",
+      "expect": "bound",
+      "path": "src/shard_router/state.rs",
+      "gold": [
+        "f0137",
+        "f0213",
+        "f0265",
+        "f0269",
+        "f0309",
+        "f0469"
+      ],
+      "answers": [
+        "fork the settlement record",
+        "thrashes the cache",
+        "692 seconds",
+        "the seed never varies between runs",
+        "the cleanup job holds the same lock as intake",
+        "the config loader keeps its first answer forever"
+      ]
+    },
+    {
+      "id": "P42",
+      "family": "retrieval",
+      "expect": "bound",
+      "path": "src/shard_router/handler.rs",
+      "gold": [
+        "f0138",
+        "f0210",
+        "f0266",
+        "f0306",
+        "f0466"
+      ],
+      "answers": [
+        "staggers its heartbeats",
+        "549 records",
+        "double-counts rows",
+        "overruns its dwell",
+        "double-counts rows"
+      ]
+    },
+    {
+      "id": "P43",
+      "family": "retrieval",
+      "expect": "bound",
+      "path": "src/ingest_job/handler.rs",
+      "gold": [
+        "f0143",
+        "f0146",
+        "f0490"
+      ],
+      "answers": [
+        "clips its bursts",
+        "overruns its dwell",
+        "300 minutes"
+      ]
+    },
+    {
+      "id": "P44",
+      "family": "retrieval",
+      "expect": "bound",
+      "path": "src/assay_station/mod.rs",
+      "gold": [
+        "f0152",
+        "f0208",
+        "f0228",
+        "f0312",
+        "f0393"
+      ],
+      "answers": [
+        "bypass the admission meter",
+        "reorders acks",
+        "spins on backoff",
+        "hot-patch the verifier itself",
+        "shadows its primary"
+      ]
+    },
+    {
+      "id": "P45",
+      "family": "retrieval",
+      "expect": "bound",
+      "path": "src/assay_station/config.rs",
+      "gold": [
+        "f0152",
+        "f0207",
+        "f0227",
+        "f0312",
+        "f0390",
+        "f0391",
+        "f0393"
+      ],
+      "answers": [
+        "bypass the admission meter",
+        "trust the replica clock",
+        "retry inside the lock",
+        "hot-patch the verifier itself",
+        "40 milliseconds",
+        "fragments its heap",
+        "shadows its primary"
+      ]
+    },
+    {
+      "id": "P46",
+      "family": "retrieval",
+      "expect": "bound",
+      "path": "src/assay_station/state.rs",
+      "gold": [
+        "f0152",
+        "f0205",
+        "f0225",
+        "f0393"
+      ],
+      "answers": [
+        "bypass the admission meter",
+        "536 milliseconds",
+        "588 branches",
+        "shadows its primary"
+      ]
+    },
+    {
+      "id": "P47",
+      "family": "retrieval",
+      "expect": "bound",
+      "path": "src/sweep_worker/state.rs",
+      "gold": [
+        "f0169",
+        "f0335",
+        "f0373"
+      ],
+      "answers": [
+        "the pool hands out connections newest-first",
+        "874 percent",
+        "starves the drain"
+      ]
+    },
+    {
+      "id": "P48",
+      "family": "retrieval",
+      "expect": "bound",
+      "path": "src/provenance_ledger/config.rs",
+      "gold": [
+        "f0175",
+        "f0178",
+        "f0195",
+        "f0198",
+        "f0199",
+        "f0242",
+        "f0277",
+        "f0315",
+        "f0341",
+        "f0344",
+        "f0422",
+        "f0423",
+        "c019g2"
+      ],
+      "answers": [
+        "458 entries",
+        "clips its bursts",
+        "510 records",
+        "thrashes the cache",
+        "the feature flag defaults on in exactly one environment",
+        "suppress a failing healthcheck",
+        "reuse a burned nonce",
+        "822 ticks",
+        "inverts its polarity",
+        "the budget is computed before the drain, not after",
+        "widen the fence without a drain",
+        "thrashes the cache",
+        "840 requests"
+      ]
+    },
+    {
+      "id": "P49",
+      "family": "retrieval",
+      "expect": "bound",
+      "path": "src/provenance_ledger/mod.rs",
+      "gold": [
+        "f0176",
+        "f0196",
+        "f0198",
+        "f0240",
+        "f0344",
+        "f0420"
+      ],
+      "answers": [
+        "forgets its offsets",
+        "re-emits duplicates",
+        "thrashes the cache",
+        "627 milliseconds",
+        "the budget is computed before the drain, not after",
+        "118 records"
+      ]
+    },
+    {
+      "id": "P50",
+      "family": "retrieval",
+      "expect": "bound",
+      "path": "src/provenance_ledger/handler.rs",
+      "gold": [
+        "f0178",
+        "f0198",
+        "f0242",
+        "f0318",
+        "f0422"
+      ],
+      "answers": [
+        "clips its bursts",
+        "thrashes the cache",
+        "suppress a failing healthcheck",
+        "misfiles its alerts",
+        "widen the fence without a drain"
+      ]
+    },
+    {
+      "id": "P51",
+      "family": "retrieval",
+      "expect": "bound",
+      "path": "src/telemetry_mast/config.rs",
+      "gold": [
+        "f0187",
+        "f0251",
+        "f0280",
+        "f0283",
+        "f0323",
+        "f0376",
+        "f0379",
+        "f0387",
+        "f0405",
+        "f0408",
+        "f0440",
+        "f0443",
+        "f0472"
+      ],
+      "answers": [
+        "cache the lease token",
+        "hoards its scratch pages",
+        "731 segments",
+        "lags its dashboard",
+        "clips its bursts",
+        "drops writes",
+        "the health probe tests the proxy, not the service",
+        "splice two lineages",
+        "79 attempts",
+        "stalls",
+        "170 milliseconds",
+        "reorders acks",
+        "mutate a sealed segment"
+      ]
+    },
+    {
+      "id": "P52",
+      "family": "retrieval",
+      "expect": "bound",
+      "path": "src/index_writer/handler.rs",
+      "gold": [
+        "f0202"
+      ],
+      "answers": [
+        "archive an open incident"
+      ]
+    },
+    {
+      "id": "P53",
+      "family": "retrieval",
+      "expect": "bound",
+      "path": "src/shard_router/mod.rs",
+      "gold": [
+        "f0210",
+        "f0268",
+        "f0466"
+      ],
+      "answers": [
+        "549 records",
+        "leaks handles",
+        "double-counts rows"
+      ]
+    },
+    {
+      "id": "P54",
+      "family": "retrieval",
+      "expect": "bound",
+      "path": "src/assay_station/handler.rs",
+      "gold": [
+        "f0222",
+        "f0312",
+        "f0390",
+        "f0394"
+      ],
+      "answers": [
+        "fork the settlement record",
+        "hot-patch the verifier itself",
+        "40 milliseconds",
+        "the metric averages away the spikes"
+      ]
+    },
+    {
+      "id": "P55",
+      "family": "retrieval",
+      "expect": "bound",
+      "path": "src/telemetry_mast/handler.rs",
+      "gold": [
+        "f0254"
+      ],
+      "answers": [
+        "the feature flag defaults on in exactly one environment"
+      ]
+    },
+    {
+      "id": "P56",
+      "family": "retrieval",
+      "expect": "bound",
+      "path": "src/provenance_ledger/state.rs",
+      "gold": [
+        "f0277",
+        "f0341"
+      ],
+      "answers": [
+        "reuse a burned nonce",
+        "inverts its polarity"
+      ]
+    },
+    {
+      "id": "P57",
+      "family": "retrieval",
+      "expect": "bound",
+      "path": "src/telemetry_mast/mod.rs",
+      "gold": [
+        "f0280",
+        "f0324",
+        "f0376",
+        "f0388",
+        "f0405",
+        "f0408",
+        "f0440",
+        "f0472"
+      ],
+      "answers": [
+        "731 segments",
+        "the ranker keys on arrival order rather than freshness",
+        "drops writes",
+        "skews its baseline",
+        "79 attempts",
+        "stalls",
+        "170 milliseconds",
+        "mutate a sealed segment"
+      ]
+    },
+    {
+      "id": "P58",
+      "family": "retrieval",
+      "expect": "bound",
+      "path": "src/telemetry_mast/state.rs",
+      "gold": [
+        "f0321",
+        "f0323",
+        "f0385",
+        "f0405"
+      ],
+      "answers": [
+        "forgets its offsets",
+        "clips its bursts",
+        "27 readings",
+        "79 attempts"
+      ]
+    },
+    {
+      "id": "P59",
+      "family": "retrieval",
+      "expect": "bound",
+      "path": "src/sweep_worker/mod.rs",
+      "gold": [
+        "f0336",
+        "f0432",
+        "c018g2"
+      ],
+      "answers": [
+        "swallows its errors",
+        "retry inside the lock",
+        "827 megabytes"
+      ]
+    },
+    {
+      "id": "P60",
+      "family": "retrieval",
+      "expect": "bound",
+      "path": "src/specimen_locker/handler.rs",
+      "gold": [
+        "f0350",
+        "f0361",
+        "f0362"
+      ],
+      "answers": [
+        "913 segments",
+        "swallows its errors",
+        "fork the settlement record"
+      ]
+    },
+    {
+      "id": "P61",
+      "family": "retrieval",
+      "expect": "bound",
+      "path": "src/specimen_locker/state.rs",
+      "gold": [
+        "f0353",
+        "f0361",
+        "f0461"
+      ],
+      "answers": [
+        "lags its dashboard",
+        "swallows its errors",
+        "desyncs its mirrors"
+      ]
+    },
+    {
+      "id": "P62",
+      "family": "retrieval",
+      "expect": "bound",
+      "path": "src/specimen_locker/config.rs",
+      "gold": [
+        "f0361",
+        "f0364",
+        "f0460",
+        "f0463"
+      ],
+      "answers": [
+        "swallows its errors",
+        "the cleanup job holds the same lock as intake",
+        "222 records",
+        "splits its brain"
+      ]
+    },
+    {
+      "id": "P63",
+      "family": "retrieval",
+      "expect": "bound",
+      "path": "src/specimen_locker/mod.rs",
+      "gold": [
+        "f0364",
+        "f0460",
+        "f0464"
+      ],
+      "answers": [
+        "the cleanup job holds the same lock as intake",
+        "222 records",
+        "the ranker keys on arrival order rather than freshness"
+      ]
     },
     {
       "id": "R2001",

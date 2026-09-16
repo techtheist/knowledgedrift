@@ -1,12 +1,12 @@
 == 500 tested facts, 630 notes, v2 ==
   arm       posed attempted passed  success   of att. composite     S  mult   score  standing    tok/q
-  mem0       2979      2691   1386      47%       52%     0.417  0.10   1.0     346         0     2574
+  mem0       3042      2754   1427      47%       52%     0.418  0.11   1.1     347         0     2567
   arm      families   signal  tokens   score    billed
-  mem0          334        7       6     346      2574
-  mem0     success  47% = 1386 passed of 2979 posed (attempted 2691/2979,  52% of those passed)   composite 0.417   S 0.10 ×1.0   score 346   standing 0 tok   2574 tok/query
-           v2 score 346 = families 334 + signal 7 + tokens 6 (billed 2574 tok/query)
-    retrieval      2000   56%  r@1 0.48  r@5 0.59  lexical_r@5 1.00  paraphrase_r@5 1.00  oblique_r@5 0.29  crossed_r@5 0.06  stale_above 0.30  hedge 0.00  noise 0.93
-    abstention      238    0%  fp 1.00  phantom_fp 1.00  natural_fp 1.00  answered 1.00  declined 0.00  separation 0.60
+  mem0          334        7       6     347      2567
+  mem0     success  47% = 1427 passed of 3042 posed (attempted 2754/3042,  52% of those passed)   composite 0.418   S 0.11 ×1.1   score 347   standing 0 tok   2567 tok/query
+           v2 score 347 = families 334 + signal 7 + tokens 6 (billed 2567 tok/query)
+    retrieval      2063   56%  r@1 0.48  r@5 0.59  lexical_r@5 1.00  paraphrase_r@5 1.00  oblique_r@5 0.29  crossed_r@5 0.06  path_r@5 0.65  path_cover 0.33  stale_above 0.30  hedge 0.00  noise 0.93
+    abstention      238    0%  fp 1.00  phantom_fp 1.00  natural_fp 1.00  answered 1.00  declined 0.00  separation 0.59
     currency         75   73%  head_r@1 0.72  head_r@5 0.73  pollution 0.00
     contradiction     -  n/a — no suspect nomination
     drift             -  n/a — no suspect nomination

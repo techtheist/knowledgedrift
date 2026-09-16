@@ -69,6 +69,9 @@ def replay(script: dict, mem: MemoryAdapter, limit_ops: int | None = None, progr
         elif kind == "recall":
             result = mem.recall(op["query"], op["k"], op.get("window"))
             replies.append({"reply": "recall", "id": op["id"], "result": result.to_json()})
+        elif kind == "recall_path":
+            result = mem.recall_path(op["path"], op["k"])
+            replies.append({"reply": "recall", "id": op["id"], "result": result.to_json()})
         elif kind == "suspects":
             pairs = mem.suspects()
             r: dict = {"reply": "suspects", "id": op["id"]}

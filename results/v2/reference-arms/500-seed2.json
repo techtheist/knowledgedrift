@@ -23,9 +23,9 @@
         "notes": 607,
         "edges": 530
       },
-      "digest": "26d02df0921f1f29",
-      "probes": 2984,
-      "ops": 4187,
+      "digest": "f19851acdf7c3043",
+      "probes": 3048,
+      "ops": 4251,
       "arms": [
         {
           "arm": "engram",
@@ -42,42 +42,44 @@
             "endorse_user": true,
             "endorse_supervisor": true
           },
-          "script_digest": "26d02df0921f1f29",
-          "settle_note": "auto-tune left the defaults; weak line 0.912; sweep queued 1",
-          "tasks": 2943,
-          "attempted": 2943,
-          "passed": 2060,
-          "success": 0.6999660210669385,
-          "attempted_success": 0.6999660210669385,
-          "composite": 0.7850294993668944,
-          "signal_share": 0.6521335996420292,
-          "multiplier": 6.521335996420293,
-          "score": 736.8439978026654,
+          "script_digest": "f19851acdf7c3043",
+          "settle_note": "auto-tune left the defaults; weak line 0.928; sweep queued 1",
+          "tasks": 3007,
+          "attempted": 3007,
+          "passed": 2124,
+          "success": 0.7063518456933822,
+          "attempted_success": 0.7063518456933822,
+          "composite": 0.7864849257234835,
+          "signal_share": 0.6670074109661275,
+          "multiplier": 6.670074109661275,
+          "score": 736.3433493725805,
           "edition": 2,
-          "family_points": 628.0235994935155,
-          "signal_score": 34.44854385071175,
-          "token_score": 74.37185445843816,
-          "tokens_billed": 400.3505,
+          "family_points": 629.1879405787868,
+          "signal_score": 36.0672078611114,
+          "token_score": 71.08820093268226,
+          "tokens_billed": 437.58168604651166,
           "flags": [],
           "families": [
             {
               "family": "retrieval",
-              "posed": 2000,
-              "tasks": 2000,
-              "passed": 1249,
-              "pass_rate": 0.6245,
+              "posed": 2064,
+              "tasks": 2064,
+              "passed": 1313,
+              "pass_rate": 0.6361434108527132,
               "columns": {
                 "crossed_r@5": 0.04,
-                "hedge": 0.4167893961708395,
+                "hedge": 0.4040758959943781,
                 "lexical_r@5": 1.0,
-                "mrr": 0.5745253968253974,
-                "noise": 0.4911464285714261,
+                "mrr": 0.5746003968253973,
+                "noise": 0.4771467792543351,
                 "oblique_r@5": 0.512,
                 "paraphrase_r@5": 0.992,
+                "path_cover": 0.996875,
+                "path_r@5": 1.0,
                 "r@1": 0.5295,
                 "r@5": 0.636,
                 "stale_above": 0.21875,
-                "tokens": 205.9505,
+                "tokens": 243.18168604651163,
                 "weighted_r@5": 0.636
               }
             },
@@ -93,7 +95,7 @@
                 "fp": 0.0,
                 "natural_fp": 0.0,
                 "phantom_fp": 0.0,
-                "separation": 0.7005
+                "separation": 0.6942829457364341
               }
             },
             {
@@ -186,59 +188,64 @@
             }
           ],
           "attention": {
-            "focus": 0.6521335996420292,
-            "noise": 0.4911464285714261,
-            "tokens_per_query": 205.9505
+            "focus": 0.6670074109661275,
+            "noise": 0.4771467792543351,
+            "tokens_per_query": 243.18168604651163
           },
           "cost": {
-            "inscribe_ms": 120.19638973349625,
-            "lineage_ms": 0.022668439999999998,
-            "link_ms": 0.053660767924528306,
-            "purge_ms": 5.164976756097561,
-            "recall_ms": 176.4341535563852,
-            "release_ms": 46.30658449999999,
-            "settle_ms": 14167.7421875,
+            "inscribe_ms": 149.65309164669935,
+            "lineage_ms": 0.026231640000000004,
+            "link_ms": 0.12425070754716991,
+            "purge_ms": 5.128246902439023,
+            "recall_ms": 241.21451143875964,
+            "recall_path_ms": 1.1605292968750003,
+            "release_ms": 45.397605142857145,
+            "settle_ms": 18757.3938955,
             "standing_tokens": 3888.0,
-            "supersede_ms": 107.37546082,
-            "suspects_ms": 4373.351458,
-            "tokens_per_query": 205.9505
+            "supersede_ms": 153.49310736000004,
+            "suspects_ms": 4363.5740829999995,
+            "tokens_per_query": 243.18168604651163
           },
           "timing": {
             "inscribe": {
               "count": 818,
-              "total_ms": 98320.64680199993
+              "total_ms": 122416.22896700008
             },
             "lineage": {
               "count": 25,
-              "total_ms": 0.566711
+              "total_ms": 0.6557910000000001
             },
             "link": {
               "count": 530,
-              "total_ms": 28.440207
+              "total_ms": 65.85287500000005
             },
             "purge": {
               "count": 41,
-              "total_ms": 211.76404699999998
+              "total_ms": 210.25812299999996
             },
             "recall": {
               "count": 2678,
-              "total_ms": 472490.6632239996
+              "total_ms": 645972.4616329983
+            },
+            "recall_path": {
+              "count": 64,
+              "total_ms": 74.27387500000002
             },
             "release": {
               "count": 42,
-              "total_ms": 1944.8765489999996
+              "total_ms": 1906.6994160000002
             },
             "settle": {
               "count": 2,
-              "total_ms": 28335.484375
+              "total_ms": 37514.787791
             },
             "supersede": {
               "count": 50,
-              "total_ms": 5368.773041
+              "total_ms": 7674.6553680000015
             },
             "suspects": {
               "count": 1,
-              "total_ms": 4373.351458
+              "total_ms": 4363.5740829999995
             }
           },
           "failed": [
@@ -1142,41 +1149,43 @@
             "endorse_user": false,
             "endorse_supervisor": false
           },
-          "script_digest": "26d02df0921f1f29",
-          "tasks": 2943,
-          "attempted": 2678,
-          "passed": 1604,
-          "success": 0.54502208630649,
-          "attempted_success": 0.5989544436146378,
-          "composite": 0.45000172505307856,
-          "signal_share": 0.10433973863892906,
-          "multiplier": 1.0433973863892907,
-          "score": 375.1653538265712,
+          "script_digest": "f19851acdf7c3043",
+          "tasks": 3007,
+          "attempted": 2742,
+          "passed": 1646,
+          "success": 0.5473894246757566,
+          "attempted_success": 0.600291757840992,
+          "composite": 0.44998137621586926,
+          "signal_share": 0.10861890989567036,
+          "multiplier": 1.0861890989567036,
+          "score": 375.418380807574,
           "edition": 2,
-          "family_points": 360.00138004246287,
-          "signal_score": 7.742008607008536,
-          "token_score": 7.421965177099813,
-          "tokens_billed": 2453.7605,
+          "family_points": 359.98510097269536,
+          "signal_score": 8.019875973158099,
+          "token_score": 7.413403861720534,
+          "tokens_billed": 2454.329457364341,
           "flags": [],
           "families": [
             {
               "family": "retrieval",
-              "posed": 2000,
-              "tasks": 2000,
-              "passed": 1323,
-              "pass_rate": 0.6615,
+              "posed": 2064,
+              "tasks": 2064,
+              "passed": 1365,
+              "pass_rate": 0.6613372093023255,
               "columns": {
                 "crossed_r@5": 0.174,
                 "hedge": 0.0,
                 "lexical_r@5": 0.998,
                 "mrr": 0.5978605158730163,
-                "noise": 0.9258000000000233,
+                "noise": 0.9218023255814184,
                 "oblique_r@5": 0.546,
                 "paraphrase_r@5": 0.988,
+                "path_cover": 0.3553013392857144,
+                "path_r@5": 0.65625,
                 "r@1": 0.538,
                 "r@5": 0.6765,
                 "stale_above": 0.2421875,
-                "tokens": 2453.7605,
+                "tokens": 2454.329457364341,
                 "weighted_r@5": 0.6765
               }
             },
@@ -1192,7 +1201,7 @@
                 "fp": 1.0,
                 "natural_fp": 1.0,
                 "phantom_fp": 1.0,
-                "separation": 0.6139789915966387
+                "separation": 0.6088162008989643
               }
             },
             {
@@ -1273,59 +1282,64 @@
             }
           ],
           "attention": {
-            "focus": 0.10433973863892906,
-            "noise": 0.9258000000000233,
-            "tokens_per_query": 2453.7605
+            "focus": 0.10861890989567036,
+            "noise": 0.9218023255814184,
+            "tokens_per_query": 2454.329457364341
           },
           "cost": {
-            "inscribe_ms": 21.716076246943786,
-            "lineage_ms": 0.00024508,
-            "link_ms": 0.00002751320754716987,
-            "purge_ms": 0.007726609756097561,
-            "recall_ms": 7.091333880507842,
-            "release_ms": 0.007911714285714286,
-            "settle_ms": 0.0003955,
+            "inscribe_ms": 22.83277920904645,
+            "lineage_ms": 0.00024832,
+            "link_ms": 0.00002665471698113214,
+            "purge_ms": 0.008730658536585367,
+            "recall_ms": 7.06472404891712,
+            "recall_path_ms": 6.1218958125,
+            "release_ms": 0.008576380952380952,
+            "settle_ms": 0.0005835,
             "standing_tokens": 0.0,
-            "supersede_ms": 25.974907619999996,
-            "suspects_ms": 0.00025,
-            "tokens_per_query": 2453.7605
+            "supersede_ms": 25.88200836,
+            "suspects_ms": 0.000625,
+            "tokens_per_query": 2454.329457364341
           },
           "timing": {
             "inscribe": {
               "count": 818,
-              "total_ms": 17763.750370000016
+              "total_ms": 18677.213392999995
             },
             "lineage": {
               "count": 25,
-              "total_ms": 0.006127
+              "total_ms": 0.006208
             },
             "link": {
               "count": 530,
-              "total_ms": 0.01458200000000003
+              "total_ms": 0.014127000000000034
             },
             "purge": {
               "count": 41,
-              "total_ms": 0.316791
+              "total_ms": 0.357957
             },
             "recall": {
               "count": 2678,
-              "total_ms": 18990.592132
+              "total_ms": 18919.331003000047
+            },
+            "recall_path": {
+              "count": 64,
+              "total_ms": 391.801332
             },
             "release": {
               "count": 42,
-              "total_ms": 0.33229200000000003
+              "total_ms": 0.360208
             },
             "settle": {
               "count": 2,
-              "total_ms": 0.000791
+              "total_ms": 0.001167
             },
             "supersede": {
               "count": 50,
-              "total_ms": 1298.7453809999997
+              "total_ms": 1294.100418
             },
             "suspects": {
               "count": 1,
-              "total_ms": 0.00025
+              "total_ms": 0.000625
             }
           },
           "failed": [
@@ -2006,6 +2020,28 @@
             "R1996",
             "R1999",
             "R2000",
+            "P3",
+            "P4",
+            "P7",
+            "P17",
+            "P24",
+            "P25",
+            "P27",
+            "P30",
+            "P31",
+            "P35",
+            "P36",
+            "P38",
+            "P40",
+            "P41",
+            "P44",
+            "P46",
+            "P48",
+            "P53",
+            "P57",
+            "P58",
+            "P62",
+            "P64",
             "R2001",
             "R2002",
             "R2003",
@@ -2420,41 +2456,43 @@
             "endorse_user": false,
             "endorse_supervisor": false
           },
-          "script_digest": "26d02df0921f1f29",
-          "tasks": 2943,
-          "attempted": 2678,
-          "passed": 1281,
-          "success": 0.4352701325178389,
-          "attempted_success": 0.47834204630321137,
-          "composite": 0.40107603503184713,
-          "signal_share": 0.09959675045492378,
-          "multiplier": 0.9959675045492378,
-          "score": 328.7955451106972,
+          "script_digest": "f19851acdf7c3043",
+          "tasks": 3007,
+          "attempted": 2742,
+          "passed": 1345,
+          "success": 0.44728965746591287,
+          "attempted_success": 0.49051787016776077,
+          "composite": 0.4029771978225449,
+          "signal_share": 0.1463950025744235,
+          "multiplier": 1.463950025744235,
+          "score": 333.79433377873517,
           "edition": 2,
-          "family_points": 320.8608280254777,
-          "signal_score": 5.7467325012491015,
-          "token_score": 2.187984583970442,
-          "tokens_billed": 2827.4085,
+          "family_points": 322.38175825803586,
+          "signal_score": 8.639007419362782,
+          "token_score": 2.7735681013365556,
+          "tokens_billed": 2782.9253875968993,
           "flags": [],
           "families": [
             {
               "family": "retrieval",
-              "posed": 2000,
-              "tasks": 2000,
-              "passed": 1019,
-              "pass_rate": 0.5095,
+              "posed": 2064,
+              "tasks": 2064,
+              "passed": 1083,
+              "pass_rate": 0.5247093023255814,
               "columns": {
                 "crossed_r@5": 0.01,
                 "hedge": 0.0,
                 "lexical_r@5": 1.0,
                 "mrr": 0.506409126984127,
-                "noise": 0.9423000000000168,
+                "noise": 0.9145533407161475,
                 "oblique_r@5": 0.146,
                 "paraphrase_r@5": 1.0,
+                "path_cover": 0.9904513888888888,
+                "path_r@5": 1.0,
                 "r@1": 0.4765,
                 "r@5": 0.539,
                 "stale_above": 0.4609375,
-                "tokens": 2827.4085,
+                "tokens": 2782.9253875968993,
                 "weighted_r@5": 0.5389999999999999
               }
             },
@@ -2470,7 +2508,7 @@
                 "fp": 1.0,
                 "natural_fp": 1.0,
                 "phantom_fp": 1.0,
-                "separation": 0.7169474789915966
+                "separation": 0.7255288743404339
               }
             },
             {
@@ -2551,59 +2589,64 @@
             }
           ],
           "attention": {
-            "focus": 0.09959675045492378,
-            "noise": 0.9423000000000168,
-            "tokens_per_query": 2827.4085
+            "focus": 0.1463950025744235,
+            "noise": 0.9145533407161475,
+            "tokens_per_query": 2782.9253875968993
           },
           "cost": {
-            "inscribe_ms": 0.00030609413202933893,
-            "lineage_ms": 0.00012156,
-            "link_ms": 0.000027352830188679298,
-            "purge_ms": 0.0034034878048780502,
-            "recall_ms": 0.9499413752800585,
-            "release_ms": 0.0037798333333333334,
-            "settle_ms": 0.0002915,
+            "inscribe_ms": 0.0003015293398532984,
+            "lineage_ms": 0.00011000000000000002,
+            "link_ms": 0.00002720188679245289,
+            "purge_ms": 0.0030244146341463435,
+            "recall_ms": 0.9500327912621335,
+            "recall_path_ms": 0.007755875,
+            "release_ms": 0.003234047619047619,
+            "settle_ms": 0.0003125,
             "standing_tokens": 0.0,
-            "supersede_ms": 0.0005401000000000003,
-            "suspects_ms": 0.002208,
-            "tokens_per_query": 2827.4085
+            "supersede_ms": 0.0006065800000000002,
+            "suspects_ms": 0.000334,
+            "tokens_per_query": 2782.9253875968993
           },
           "timing": {
             "inscribe": {
               "count": 818,
-              "total_ms": 0.25038499999999925
+              "total_ms": 0.2466509999999981
             },
             "lineage": {
               "count": 25,
-              "total_ms": 0.003039
+              "total_ms": 0.0027500000000000003
             },
             "link": {
               "count": 530,
-              "total_ms": 0.014497000000000029
+              "total_ms": 0.014417000000000032
             },
             "purge": {
               "count": 41,
-              "total_ms": 0.13954300000000006
+              "total_ms": 0.12400100000000008
             },
             "recall": {
               "count": 2678,
-              "total_ms": 2543.9430029999967
+              "total_ms": 2544.1878149999934
+            },
+            "recall_path": {
+              "count": 64,
+              "total_ms": 0.496376
             },
             "release": {
               "count": 42,
-              "total_ms": 0.158753
+              "total_ms": 0.13583
             },
             "settle": {
               "count": 2,
-              "total_ms": 0.000583
+              "total_ms": 0.000625
             },
             "supersede": {
               "count": 50,
-              "total_ms": 0.027005000000000015
+              "total_ms": 0.030329000000000012
             },
             "suspects": {
               "count": 1,
-              "total_ms": 0.002208
+              "total_ms": 0.000334
             }
           },
           "failed": [
@@ -4021,37 +4064,39 @@
             "endorse_user": false,
             "endorse_supervisor": false
           },
-          "script_digest": "26d02df0921f1f29",
-          "tasks": 2943,
-          "attempted": 2553,
-          "passed": 242,
-          "success": 0.08222901800883452,
-          "attempted_success": 0.09479044261652958,
-          "composite": 0.1547468152866242,
-          "signal_share": 0.028018364810136778,
-          "multiplier": 0.28018364810136775,
-          "score": 124.80943931695946,
+          "script_digest": "f19851acdf7c3043",
+          "tasks": 3007,
+          "attempted": 2617,
+          "passed": 264,
+          "success": 0.08779514466245428,
+          "attempted_success": 0.10087886893389378,
+          "composite": 0.1558233656742211,
+          "signal_share": 0.029274848351496685,
+          "multiplier": 0.29274848351496685,
+          "score": 125.70425484514278,
           "edition": 2,
-          "family_points": 123.79745222929935,
-          "signal_score": 0.1905248807089301,
+          "family_points": 124.65869253937687,
+          "signal_score": 0.22410009881475176,
           "token_score": 0.8214622069511672,
           "tokens_billed": 2934.0,
           "flags": [],
           "families": [
             {
               "family": "retrieval",
-              "posed": 2000,
-              "tasks": 2000,
-              "passed": 132,
-              "pass_rate": 0.066,
+              "posed": 2064,
+              "tasks": 2064,
+              "passed": 154,
+              "pass_rate": 0.07461240310077519,
               "columns": {
                 "crossed_r@5": 0.068,
                 "hedge": 0.0,
                 "lexical_r@5": 0.068,
                 "mrr": 0.068,
-                "noise": 0.9982105263157874,
+                "noise": 0.9978962668298631,
                 "oblique_r@5": 0.068,
                 "paraphrase_r@5": 0.068,
+                "path_cover": 0.07297247023809524,
+                "path_r@5": 0.34375,
                 "r@1": 0.068,
                 "r@5": 0.068,
                 "stale_above": 0.125,
@@ -4150,55 +4195,60 @@
             }
           ],
           "attention": {
-            "focus": 0.028018364810136778,
-            "noise": 0.9982105263157874,
+            "focus": 0.029274848351496685,
+            "noise": 0.9978962668298631,
             "tokens_per_query": 2934.0
           },
           "cost": {
-            "inscribe_ms": 0.00031654400977994973,
-            "lineage_ms": 0.00024340000000000012,
-            "link_ms": 0.00002633773584905666,
-            "purge_ms": 0.003729585365853659,
-            "recall_ms": 0.42741399066467445,
-            "release_ms": 0.003994071428571428,
-            "settle_ms": 0.00010400000000000001,
+            "inscribe_ms": 0.0003147493887530549,
+            "lineage_ms": 0.00009667999999999998,
+            "link_ms": 0.00002736792452830195,
+            "purge_ms": 0.003907512195121952,
+            "recall_ms": 0.4231087490664671,
+            "recall_path_ms": 0.41784695312500014,
+            "release_ms": 0.004572452380952381,
+            "settle_ms": 0.0003125,
             "standing_tokens": 2997.0,
-            "supersede_ms": 0.0005566000000000002,
+            "supersede_ms": 0.0005782800000000001,
             "suspects_ms": 0.000375,
             "tokens_per_query": 2934.0
           },
           "timing": {
             "inscribe": {
               "count": 818,
-              "total_ms": 0.25893299999999886
+              "total_ms": 0.2574649999999989
             },
             "lineage": {
               "count": 25,
-              "total_ms": 0.006085000000000003
+              "total_ms": 0.0024169999999999994
             },
             "link": {
               "count": 530,
-              "total_ms": 0.01395900000000003
+              "total_ms": 0.014505000000000033
             },
             "purge": {
               "count": 41,
-              "total_ms": 0.15291300000000002
+              "total_ms": 0.16020800000000002
             },
             "recall": {
               "count": 2678,
-              "total_ms": 1144.6146669999982
+              "total_ms": 1133.085229999999
+            },
+            "recall_path": {
+              "count": 64,
+              "total_ms": 26.74220500000001
             },
             "release": {
               "count": 42,
-              "total_ms": 0.167751
+              "total_ms": 0.19204300000000002
             },
             "settle": {
               "count": 2,
-              "total_ms": 0.00020800000000000001
+              "total_ms": 0.000625
             },
             "supersede": {
               "count": 50,
-              "total_ms": 0.027830000000000008
+              "total_ms": 0.02891400000000001
             },
             "suspects": {
               "count": 1,
@@ -6074,6 +6124,48 @@
             "R1998",
             "R1999",
             "R2000",
+            "P4",
+            "P5",
+            "P6",
+            "P7",
+            "P8",
+            "P9",
+            "P10",
+            "P11",
+            "P12",
+            "P13",
+            "P14",
+            "P15",
+            "P18",
+            "P20",
+            "P21",
+            "P22",
+            "P23",
+            "P24",
+            "P25",
+            "P27",
+            "P28",
+            "P35",
+            "P37",
+            "P38",
+            "P39",
+            "P41",
+            "P44",
+            "P45",
+            "P46",
+            "P47",
+            "P49",
+            "P50",
+            "P51",
+            "P54",
+            "P55",
+            "P56",
+            "P57",
+            "P58",
+            "P61",
+            "P62",
+            "P63",
+            "P64",
             "R2001",
             "R2002",
             "R2003",
@@ -6534,37 +6626,39 @@
             "endorse_user": false,
             "endorse_supervisor": false
           },
-          "script_digest": "26d02df0921f1f29",
-          "tasks": 2943,
-          "attempted": 2553,
-          "passed": 2187,
-          "success": 0.7431192660550459,
-          "attempted_success": 0.8566392479435958,
-          "composite": 0.492,
-          "signal_share": 0.0018874907475943813,
+          "script_digest": "f19851acdf7c3043",
+          "tasks": 3007,
+          "attempted": 2617,
+          "passed": 2251,
+          "success": 0.7485866311938809,
+          "attempted_success": 0.8601452044325564,
+          "composite": 0.49224806201550386,
+          "signal_share": 0.0021800894722331103,
           "multiplier": 0.1,
-          "score": 393.78874907475944,
+          "score": 394.0164585596264,
           "edition": 2,
-          "family_points": 393.6,
-          "signal_score": 0.1887490747594381,
+          "family_points": 393.7984496124031,
+          "signal_score": 0.21800894722331104,
           "token_score": 0.0,
           "tokens_billed": 133749.0,
           "flags": [],
           "families": [
             {
               "family": "retrieval",
-              "posed": 2000,
-              "tasks": 2000,
-              "passed": 1872,
-              "pass_rate": 0.936,
+              "posed": 2064,
+              "tasks": 2064,
+              "passed": 1936,
+              "pass_rate": 0.937984496124031,
               "columns": {
                 "crossed_r@5": 1.0,
                 "hedge": 0.0,
                 "lexical_r@5": 1.0,
                 "mrr": 1.0,
-                "noise": 0.9982046678635477,
+                "noise": 0.9979132743239594,
                 "oblique_r@5": 1.0,
                 "paraphrase_r@5": 1.0,
+                "path_cover": 1.0,
+                "path_r@5": 1.0,
                 "r@1": 1.0,
                 "r@5": 1.0,
                 "stale_above": 1.0,
@@ -6663,59 +6757,64 @@
             }
           ],
           "attention": {
-            "focus": 0.0018874907475943813,
-            "noise": 0.9982046678635477,
+            "focus": 0.0021800894722331103,
+            "noise": 0.9979132743239594,
             "tokens_per_query": 133749.0
           },
           "cost": {
-            "inscribe_ms": 0.00042350855745721235,
-            "lineage_ms": 0.00017832000000000007,
-            "link_ms": 0.00002743584905660383,
-            "purge_ms": 0.003055926829268294,
-            "recall_ms": 0.2593885709484689,
-            "release_ms": 0.0029672619047619066,
-            "settle_ms": 0.0001875,
+            "inscribe_ms": 0.0003596760391198036,
+            "lineage_ms": 0.00041332000000000006,
+            "link_ms": 0.000028062264150943452,
+            "purge_ms": 0.0038628292682926827,
+            "recall_ms": 0.2070725108289773,
+            "recall_path_ms": 0.255117140625,
+            "release_ms": 0.004711380952380953,
+            "settle_ms": 0.000167,
             "standing_tokens": 141514.0,
-            "supersede_ms": 0.0005016400000000001,
-            "suspects_ms": 0.000542,
+            "supersede_ms": 0.0006115600000000003,
+            "suspects_ms": 0.00045900000000000004,
             "tokens_per_query": 133749.0
           },
           "timing": {
             "inscribe": {
               "count": 818,
-              "total_ms": 0.3464299999999997
+              "total_ms": 0.29421499999999934
             },
             "lineage": {
               "count": 25,
-              "total_ms": 0.004458000000000002
+              "total_ms": 0.010333000000000002
             },
             "link": {
               "count": 530,
-              "total_ms": 0.01454100000000003
+              "total_ms": 0.01487300000000003
             },
             "purge": {
               "count": 41,
-              "total_ms": 0.12529300000000004
+              "total_ms": 0.158376
             },
             "recall": {
               "count": 2678,
-              "total_ms": 694.6425929999997
+              "total_ms": 554.5401840000012
+            },
+            "recall_path": {
+              "count": 64,
+              "total_ms": 16.327497
             },
             "release": {
               "count": 42,
-              "total_ms": 0.12462500000000007
+              "total_ms": 0.19787800000000003
             },
             "settle": {
               "count": 2,
-              "total_ms": 0.000375
+              "total_ms": 0.000334
             },
             "supersede": {
               "count": 50,
-              "total_ms": 0.025082000000000007
+              "total_ms": 0.030578000000000015
             },
             "suspects": {
               "count": 1,
-              "total_ms": 0.000542
+              "total_ms": 0.00045900000000000004
             }
           },
           "failed": [
@@ -7102,41 +7201,43 @@
             "endorse_user": false,
             "endorse_supervisor": false
           },
-          "script_digest": "26d02df0921f1f29",
-          "tasks": 2943,
-          "attempted": 2678,
-          "passed": 113,
-          "success": 0.038396194359497114,
-          "attempted_success": 0.042195668409260645,
-          "composite": 0.13429339171974522,
-          "signal_share": 0.09678520505548405,
-          "multiplier": 0.9678520505548405,
-          "score": 115.77890533666007,
+          "script_digest": "f19851acdf7c3043",
+          "tasks": 3007,
+          "attempted": 2742,
+          "passed": 115,
+          "success": 0.03824409710675091,
+          "attempted_success": 0.041940189642596645,
+          "composite": 0.13437381807633436,
+          "signal_share": 0.09503888354093334,
+          "multiplier": 0.9503888354093335,
+          "score": 115.83628154172413,
           "edition": 2,
-          "family_points": 107.43471337579618,
-          "signal_score": 0.2129274511220649,
-          "token_score": 8.131264509741824,
-          "tokens_billed": 2407.078,
+          "family_points": 107.4990544610675,
+          "signal_score": 0.21618110426066062,
+          "token_score": 8.121045976395974,
+          "tokens_billed": 2407.7441860465115,
           "flags": [],
           "families": [
             {
               "family": "retrieval",
-              "posed": 2000,
-              "tasks": 2000,
-              "passed": 21,
-              "pass_rate": 0.0105,
+              "posed": 2064,
+              "tasks": 2064,
+              "passed": 23,
+              "pass_rate": 0.011143410852713179,
               "columns": {
                 "crossed_r@5": 0.016,
                 "hedge": 0.0,
                 "lexical_r@5": 0.006,
                 "mrr": 0.007434126984126981,
-                "noise": 0.9978000000000011,
+                "noise": 0.9975775193798463,
                 "oblique_r@5": 0.012,
                 "paraphrase_r@5": 0.008,
+                "path_cover": 0.01814236111111111,
+                "path_r@5": 0.03125,
                 "r@1": 0.0035,
                 "r@5": 0.0105,
                 "stale_above": 0.0234375,
-                "tokens": 2407.078,
+                "tokens": 2407.7441860465115,
                 "weighted_r@5": 0.0105
               }
             },
@@ -7233,59 +7334,64 @@
             }
           ],
           "attention": {
-            "focus": 0.09678520505548405,
-            "noise": 0.9978000000000011,
-            "tokens_per_query": 2407.078
+            "focus": 0.09503888354093334,
+            "noise": 0.9975775193798463,
+            "tokens_per_query": 2407.7441860465115
           },
           "cost": {
-            "inscribe_ms": 0.0003784779951100177,
-            "lineage_ms": 0.00016508000000000007,
-            "link_ms": 0.000026339622641509494,
-            "purge_ms": 0.0023720000000000013,
-            "recall_ms": 0.005822085138162859,
-            "release_ms": 0.0023600952380952393,
-            "settle_ms": 0.000146,
+            "inscribe_ms": 0.0012339926650366856,
+            "lineage_ms": 0.00010659999999999998,
+            "link_ms": 0.000027116981132075526,
+            "purge_ms": 0.0027825365853658556,
+            "recall_ms": 0.005555597460791712,
+            "recall_path_ms": 0.005154281250000001,
+            "release_ms": 0.002852166666666668,
+            "settle_ms": 0.0000835,
             "standing_tokens": 0.0,
-            "supersede_ms": 0.0005324200000000001,
-            "suspects_ms": 0.000375,
-            "tokens_per_query": 2407.078
+            "supersede_ms": 0.0005875000000000003,
+            "suspects_ms": 0.000417,
+            "tokens_per_query": 2407.7441860465115
           },
           "timing": {
             "inscribe": {
               "count": 818,
-              "total_ms": 0.3095949999999945
+              "total_ms": 1.009406000000009
             },
             "lineage": {
               "count": 25,
-              "total_ms": 0.004127000000000001
+              "total_ms": 0.0026649999999999994
             },
             "link": {
               "count": 530,
-              "total_ms": 0.013960000000000031
+              "total_ms": 0.014372000000000029
             },
             "purge": {
               "count": 41,
-              "total_ms": 0.09725200000000006
+              "total_ms": 0.11408400000000007
             },
             "recall": {
               "count": 2678,
-              "total_ms": 15.591544000000136
+              "total_ms": 14.877890000000205
+            },
+            "recall_path": {
+              "count": 64,
+              "total_ms": 0.32987400000000006
             },
             "release": {
               "count": 42,
-              "total_ms": 0.09912400000000005
+              "total_ms": 0.11979100000000006
             },
             "settle": {
               "count": 2,
-              "total_ms": 0.000292
+              "total_ms": 0.000167
             },
             "supersede": {
               "count": 50,
-              "total_ms": 0.026621000000000006
+              "total_ms": 0.029375000000000016
             },
             "suspects": {
               "count": 1,
-              "total_ms": 0.000375
+              "total_ms": 0.000417
             }
           },
           "failed": [
@@ -9268,6 +9374,68 @@
             "R1998",
             "R1999",
             "R2000",
+            "P1",
+            "P2",
+            "P3",
+            "P4",
+            "P5",
+            "P6",
+            "P7",
+            "P8",
+            "P9",
+            "P10",
+            "P11",
+            "P12",
+            "P14",
+            "P15",
+            "P16",
+            "P17",
+            "P18",
+            "P19",
+            "P20",
+            "P21",
+            "P22",
+            "P23",
+            "P24",
+            "P25",
+            "P26",
+            "P27",
+            "P28",
+            "P29",
+            "P30",
+            "P31",
+            "P32",
+            "P33",
+            "P34",
+            "P35",
+            "P36",
+            "P37",
+            "P38",
+            "P39",
+            "P40",
+            "P41",
+            "P42",
+            "P43",
+            "P44",
+            "P45",
+            "P46",
+            "P47",
+            "P48",
+            "P50",
+            "P51",
+            "P52",
+            "P53",
+            "P54",
+            "P55",
+            "P56",
+            "P57",
+            "P58",
+            "P59",
+            "P60",
+            "P61",
+            "P62",
+            "P63",
+            "P64",
             "R2001",
             "R2002",
             "R2003",
@@ -9871,42 +10039,44 @@
             "endorse_user": false,
             "endorse_supervisor": false
           },
-          "script_digest": "26d02df0921f1f29",
+          "script_digest": "f19851acdf7c3043",
           "settle_note": "token differencing nominated 148 pairs",
-          "tasks": 2943,
-          "attempted": 2876,
-          "passed": 1351,
-          "success": 0.45905538566089027,
-          "attempted_success": 0.46974965229485394,
-          "composite": 0.5493993473895582,
-          "signal_share": 0.8421166841595182,
-          "multiplier": 8.421166841595182,
-          "score": 584.6990380168047,
+          "tasks": 3007,
+          "attempted": 2940,
+          "passed": 1379,
+          "success": 0.45859660791486534,
+          "attempted_success": 0.46904761904761905,
+          "composite": 0.5492094249089381,
+          "signal_share": 0.8166877457786182,
+          "multiplier": 8.166877457786182,
+          "score": 583.4465872857643,
           "edition": 2,
-          "family_points": 439.5194779116466,
-          "signal_score": 45.17956010515815,
+          "family_points": 439.36753992715046,
+          "signal_score": 44.0790473586138,
           "token_score": 100.0,
-          "tokens_billed": 135.436,
+          "tokens_billed": 140.37403100775194,
           "flags": [],
           "families": [
             {
               "family": "retrieval",
-              "posed": 2000,
-              "tasks": 2000,
-              "passed": 973,
-              "pass_rate": 0.4865,
+              "posed": 2064,
+              "tasks": 2064,
+              "passed": 1001,
+              "pass_rate": 0.48498062015503873,
               "columns": {
                 "crossed_r@5": 0.004,
                 "hedge": 0.0,
                 "lexical_r@5": 0.986,
                 "mrr": 0.4897303571428572,
-                "noise": 0.5555753968253963,
+                "noise": 0.5654262027808538,
                 "oblique_r@5": 0.074,
                 "paraphrase_r@5": 0.988,
+                "path_cover": 0.23594990079365077,
+                "path_r@5": 0.4375,
                 "r@1": 0.4675,
                 "r@5": 0.513,
                 "stale_above": 0.7109375,
-                "tokens": 135.436,
+                "tokens": 140.37403100775194,
                 "weighted_r@5": 0.513
               }
             },
@@ -9922,7 +10092,7 @@
                 "fp": 1.0,
                 "natural_fp": 1.0,
                 "phantom_fp": 1.0,
-                "separation": 0.6871932773109244
+                "separation": 0.6808676959155755
               }
             },
             {
@@ -10013,59 +10183,64 @@
             }
           ],
           "attention": {
-            "focus": 0.8421166841595182,
-            "noise": 0.5555753968253963,
-            "tokens_per_query": 135.436
+            "focus": 0.8166877457786182,
+            "noise": 0.5654262027808538,
+            "tokens_per_query": 140.37403100775194
           },
           "cost": {
-            "inscribe_ms": 0.08179187286063569,
-            "lineage_ms": 0.0004215199999999999,
-            "link_ms": 0.00002806415094339629,
-            "purge_ms": 0.00947858536585366,
-            "recall_ms": 5.268480151605668,
-            "release_ms": 0.010197380952380954,
-            "settle_ms": 125.830062,
+            "inscribe_ms": 0.07987082640586794,
+            "lineage_ms": 0.00010664000000000002,
+            "link_ms": 0.000026569811320754776,
+            "purge_ms": 0.009212243902439021,
+            "recall_ms": 5.246507953323376,
+            "recall_path_ms": 5.390324203124999,
+            "release_ms": 0.01118054761904762,
+            "settle_ms": 125.2770625,
             "standing_tokens": 0.0,
-            "supersede_ms": 0.025103339999999995,
-            "suspects_ms": 0.013958,
-            "tokens_per_query": 135.436
+            "supersede_ms": 0.024334119999999994,
+            "suspects_ms": 0.010458,
+            "tokens_per_query": 140.37403100775194
           },
           "timing": {
             "inscribe": {
               "count": 818,
-              "total_ms": 66.90575199999999
+              "total_ms": 65.33433599999998
             },
             "lineage": {
               "count": 25,
-              "total_ms": 0.010537999999999997
+              "total_ms": 0.0026660000000000004
             },
             "link": {
               "count": 530,
-              "total_ms": 0.014874000000000033
+              "total_ms": 0.014082000000000032
             },
             "purge": {
               "count": 41,
-              "total_ms": 0.388622
+              "total_ms": 0.37770199999999987
             },
             "recall": {
               "count": 2678,
-              "total_ms": 14108.989845999979
+              "total_ms": 14050.148299
+            },
+            "recall_path": {
+              "count": 64,
+              "total_ms": 344.98074899999995
             },
             "release": {
               "count": 42,
-              "total_ms": 0.42829000000000006
+              "total_ms": 0.46958300000000003
             },
             "settle": {
               "count": 2,
-              "total_ms": 251.660124
+              "total_ms": 250.554125
             },
             "supersede": {
               "count": 50,
-              "total_ms": 1.2551669999999997
+              "total_ms": 1.2167059999999996
             },
             "suspects": {
               "count": 1,
-              "total_ms": 0.013958
+              "total_ms": 0.010458
             }
           },
           "failed": [
@@ -11096,6 +11271,42 @@
             "R1996",
             "R1999",
             "R2000",
+            "P1",
+            "P2",
+            "P3",
+            "P5",
+            "P6",
+            "P8",
+            "P9",
+            "P10",
+            "P12",
+            "P13",
+            "P14",
+            "P15",
+            "P18",
+            "P19",
+            "P20",
+            "P28",
+            "P29",
+            "P30",
+            "P32",
+            "P34",
+            "P35",
+            "P36",
+            "P37",
+            "P39",
+            "P41",
+            "P42",
+            "P43",
+            "P45",
+            "P52",
+            "P53",
+            "P56",
+            "P57",
+            "P58",
+            "P60",
+            "P61",
+            "P64",
             "R2001",
             "R2002",
             "R2003",

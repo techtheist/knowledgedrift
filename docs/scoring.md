@@ -95,8 +95,8 @@ The v2 score is a sum:
   (N/A = 0): 0–800. The authority family, when the world poses it, is
   reported beside this and not summed.
 - **signal score** = 100 × the mean **focus** over **every** retrieval
-  probe: the share of delivered tokens that belonged to the answering
-  record, counted as zero when the answer was not delivered, was delivered
+  probe (the path reads included): the share of delivered tokens that
+  belonged to the answering record, counted as zero when the answer was not delivered, was delivered
   without its value readable in the text, or was delivered under a decline
   — a miss is noise, and so is hedging on a question the memory could
   answer. 0–100.
@@ -122,6 +122,9 @@ Two rules that hold only on v2 worlds:
   hit whose delivered text does not contain it is a miss, however well it
   is keyed. A title-only snippet that names the note but not its value
   earns nothing.
+- **A file is a query.** Every file the world's code refs name is read by
+  path through `recall_path`; a system without a file channel searches the
+  path string. `path_r@5` and `path_cover` sit in the retrieval family.
 - **Declared capabilities are checked against their columns.** `trace`
   with no marker ever delivered, `verdict` with no recall ever declined,
   `suspects` with an empty queue, `history` with no lineage walk,

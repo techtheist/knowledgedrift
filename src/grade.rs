@@ -367,6 +367,87 @@ pub fn grade(script: &Script, t: &Transcript) -> anyhow::Result<Graded> {
                 e.1 += 1;
                 answerable_scores.push(top_score(r));
             }
+            Expect::Bound { gold, answers, .. } => {
+                let r = recall_reply(t, &p.id)?;
+                dump_seen |= r.dump;
+                declined_any |= r.declined;
+                let answer_of = |key: &str| -> &str {
+                    gold.iter()
+                        .position(|g| g == key)
+                        .and_then(|i| answers.get(i))
+                        .map_or("", String::as_str)
+                };
+                // The best-ranked bound note the reader can actually read.
+                let best = gold
+                    .iter()
+                    .filter(|g| readable(r, g, answer_of(g)))
+                    .filter_map(|g| rank_of(r, g))
+                    .min();
+                let pass = best.is_some_and(|k| k <= 5);
+                acc.task(&p.id, Family::Retrieval, pass);
+                acc.col(Family::Retrieval, "path_r@5", b(pass));
+                // Coverage: of the notes bound to the file, how many the
+                // top-k delivered (a dump delivers what it holds).
+                let k = script.spec.k.max(1);
+                let delivered: Vec<&str> = r
+                    .hits
+                    .iter()
+                    .filter(|h| !h.tombstone)
+                    .take(if r.dump { usize::MAX } else { k })
+                    .filter_map(|h| h.key.as_deref())
+                    .collect();
+                // A dump delivers every bound note; more than k of them
+                // is still a full top-k.
+                let covered = gold
+                    .iter()
+                    .filter(|g| delivered.contains(&g.as_str()))
+                    .count()
+                    .min(k);
+                acc.col(
+                    Family::Retrieval,
+                    "path_cover",
+                    covered as f64 / gold.len().min(k).max(1) as f64,
+                );
+                let returned = r.hits.len();
+                let gold_hits = r
+                    .hits
+                    .iter()
+                    .filter(|h| {
+                        h.key
+                            .as_deref()
+                            .is_some_and(|k| gold.iter().any(|g| g == k))
+                    })
+                    .count();
+                let noise = if returned == 0 {
+                    0.0
+                } else {
+                    (returned - gold_hits) as f64 / returned as f64
+                };
+                acc.col(Family::Retrieval, "noise", noise);
+                acc.col(Family::Retrieval, "tokens", delivered_tokens(r) as f64);
+                if gold_hits > 0 {
+                    let total = delivered_tokens(r).max(1);
+                    let signal: usize = r
+                        .hits
+                        .iter()
+                        .filter(|h| {
+                            h.key
+                                .as_deref()
+                                .is_some_and(|k| gold.iter().any(|g| g == k))
+                        })
+                        .map(|h| tokens(&h.text))
+                        .sum();
+                    let f = signal as f64 / total as f64;
+                    focus_sum += f;
+                    focus_n += 1;
+                    acc.col(Family::Retrieval, "hedge", b(r.declined));
+                    if pass && !r.declined {
+                        focus2_sum += f;
+                    }
+                }
+                focus2_n += 1;
+                answerable_scores.push(top_score(r));
+            }
             Expect::Control { natural } => {
                 let r = recall_reply(t, &p.id)?;
                 declined_any |= r.declined;

@@ -1,16 +1,16 @@
 == 500 tested facts, 630 notes, v2 ==
   arm       posed attempted passed  success   of att. composite     S  mult   score  standing    tok/q
-  memcontinuum   2979      2591   1238      42%       48%     0.300  0.10   1.0     295         0      822
+  memcontinuum   3042      2654   1463      48%       55%     0.421  0.14   1.4     392         0      852
   arm      families   signal  tokens   score    billed
-  memcontinuum      240        7      48     295       823
-  memcontinuum success  42% = 1238 passed of 2979 posed (attempted 2591/2979,  48% of those passed)   composite 0.300   S 0.10 ×1.0   score 295   standing 0 tok   822 tok/query
-           v2 score 295 = families 240 + signal 7 + tokens 48 (billed 823 tok/query)
-    retrieval      2000   53%  r@1 0.47  r@5 0.59  lexical_r@5 1.00  paraphrase_r@5 1.00  oblique_r@5 0.31  crossed_r@5 0.05  stale_above 0.62  hedge 0.00  noise 0.93
+  memcontinuum      337        9      46     392       852
+  memcontinuum success  48% = 1463 passed of 3042 posed (attempted 2654/3042,  55% of those passed)   composite 0.421   S 0.14 ×1.4   score 392   standing 0 tok   852 tok/query
+           v2 score 392 = families 337 + signal 9 + tokens 46 (billed 852 tok/query)
+    retrieval      2063   55%  r@1 0.47  r@5 0.59  lexical_r@5 1.00  paraphrase_r@5 1.00  oblique_r@5 0.31  crossed_r@5 0.05  path_r@5 1.00  path_cover 0.95  stale_above 0.62  hedge 0.00  noise 0.91
     abstention      238    0%  fp 1.00  phantom_fp 1.00  natural_fp 1.00  answered 1.00  declined 0.00  separation 0.50
     currency        100   82%  head_r@1 0.69  head_r@5 0.76  pollution 0.00  lineage 1.00
     contradiction     -  n/a — no suspect nomination
     drift             -  n/a — no suspect nomination
     deletion         83  100%  released_gone 1.00  purged_gone 1.00  resurrection_warned 0.00  purged_rewrite_warned 0.00
-    rationale       170    5%  direct_r@5 0.05  assisted_r@5 0.05  structure_only 0.00
+    rationale       170  100%  direct_r@5 0.05  assisted_r@5 1.00  structure_only 0.95
     temporal          -  n/a — no capture-time scoping
 wrote results/v2/memcontinuum-0.2.0rc5/500-seed1.json

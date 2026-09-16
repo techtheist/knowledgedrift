@@ -16,6 +16,7 @@ the benchmark is about:
 | re-decided subjects | max(4, N/20) chains of `--chain-len` generations, a month apart | currency: is the head current, is the history reachable |
 | **pollution** | `--pollution` share of tested subjects (default **10%**), shaped by `--pollution-shape` | a stale sibling of the fact — same subject, flipped value — imported and **never superseded by anyone** |
 | capture times | spread over 60 days | temporal scoping; the world's "now" is 2026-09-01 |
+| code refs | on ~40% of notes, one to three paths `src/<component>/{mod,state,handler,config}.rs` | v2: the path-shaped read — every file is asked once, by path |
 | controls | N/4 subjects that are never written | abstention |
 | planted contradictions | max(6, N/3) cases across eleven shapes | the contradiction ladder |
 | deletions | max(4, N/6) victims, half released with a reason, half purged | deletion honesty |
@@ -58,6 +59,18 @@ names the subject, shares no content vocabulary). On a v2 world a fourth,
 (`the service that hands out grants — which one picked …`), so the question
 shares no content word at all with the note that answers it. Rank of the
 gold among live hits; a dump delivers what it holds at rank 1.
+
+On a v2 world the family also poses the **path** read: every file the
+world's code refs name is asked once through `recall_path`, as a path and
+no question — what a caller about to edit the file should see. Gold is
+every live, truthful note bound to the file (chain heads and distractors
+included: an editor should see them; a stale sibling bound to the same
+file is neither gold nor penalised). A system with a file channel — an
+edit hook, a code-ref index — answers from it; one without searches the
+path string. *Pass:* a bound note readable in the top five. Columns:
+`path_r@5`, `path_cover` (of the notes bound to the file, the share the
+top-k delivered, capped at k). The path reads count in the family's pass
+rate and in the signal score, not in `weighted_r@5`.
 
 *Pass:* gold in the top five **and not outranked by its stale sibling**
 when the subject was polluted (a dump holding both is ambiguous and

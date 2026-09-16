@@ -329,23 +329,40 @@ benchmark judge-free and changes what it rewards:
   `clause`, `synonym`.
 - **Capability flags** — a declared capability whose column never showed
   is named in the receipt.
+- **A path-shaped read** (2026-09-16) — every file the code refs name is
+  asked once, by path, through a twelfth operation `recall_path`; a system
+  with a file channel (an edit hook, a code-ref index) answers from it,
+  one without searches the path string. `path_r@5` and `path_cover` in
+  the retrieval family.
 
-Measured (`results/v2/`, seven in-process arms, no external adapter yet):
-at 500 over three seeds engram 738 (737–739) at 69% success, tfidf 583
-(576–587) at 44%, the whole file 390, rag 375, grep 329, curated 122,
-chance 116; at 1500 engram 721, tfidf 580, whole 390, rag 359,
-grep 323. The score is a sum of means, so it is stable to a point per
-arm across seeds. The lexical arm keeps what it honestly earns (100 token
-points, ~40 signal points, the families it attempts) and loses the
-oracles: phantom and natural false positives 1.00, crossed recall 0.00,
-the stale sibling above the truth 70% of the time.
+Measured (`results/v2/`, seven in-process arms): at 500 over three seeds
+engram 739 (736–741) at 70% success, tfidf 581 (574–586) at 44%, the
+whole file 390, rag 375, grep 334, curated 123, chance 116; at 1500
+engram 718, tfidf 580, whole 390, rag 359, grep 325. The score is a sum
+of means, so it is stable to a point per arm across seeds. The lexical
+arm keeps what it honestly earns (100 token points, ~40 signal points,
+the families it attempts) and loses the oracles: phantom and natural
+false positives 1.00, crossed recall 0.00, the stale sibling above the
+truth 70% of the time, the path read at 0.21.
 
-The four external systems on one seed (`results/v2/`): LangMem 375 / 359
-(= `rag` to the digit, as on v1), Mem0 346 / 347, MemContinuum 295 / 287,
-cognee 281 / 263 at 500 / 1500. Every flat store answers every natural
-null and every phantom, reaches the crossed question at r@5 ≤ 0.2, and
-none earns a bonus worth having except MemContinuum's snippets (48 token
-points).
+The four external systems on one seed (`results/v2/`): MemContinuum
+392 / 380, LangMem 376 / 359 (= `rag` to the digit, as on v1), Mem0
+347 / 348, cognee 281 / 263 at 500 / 1500. Every flat store
+answers every natural null and every phantom, reaches the crossed
+question at r@5 ≤ 0.2, and none earns a bonus worth having except
+MemContinuum's chain text (46 token points). MemContinuum is the one
+adapter revised for v2, after its author replied that the bench had
+measured `search` where the agent reads `for-path`/`chain`: with the
+schema's typed edges written on `link` and delivered as a hit's
+neighbours, and `for-path` behind the path read, its rationale family
+went from 5% to 100% (all of it carried as context, `structure_only`
+0.95) and the path read is 1.00 / 0.95 — a hundred points, the one family
+the author disputed, while the columns the author did not dispute stayed
+where they were (`stale_above` 0.62, abstention 0%, no suspect queue).
+The path read separates three kinds of system: a file channel (engram,
+grep, MemContinuum: `path_r@5` 1.00, cover 0.87–1.00), a vector store
+handed a path (rag, LangMem, Mem0, cognee: 0.56–0.68, cover ≤ 0.36),
+and a title index (tfidf: 0.08–0.44).
 
 Still owed: a `collider`-style negative for every family; authority
 scenarios with judged evidence and endorsements spread across sessions;

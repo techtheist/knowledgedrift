@@ -97,6 +97,14 @@ pub enum Op {
         #[serde(default, skip_serializing_if = "Option::is_none")]
         window: Option<Window>,
     },
+    /// v2: the path-shaped read — what a caller about to touch `path`
+    /// should see. Answered by `Reply::Recall` like any recall.
+    #[serde(rename = "recall_path")]
+    RecallPath {
+        id: String,
+        path: String,
+        k: usize,
+    },
     Suspects {
         id: String,
     },
@@ -124,6 +132,17 @@ pub enum Expect {
         /// value is a miss. Empty on v1 worlds (key-based credit).
         #[serde(default, skip_serializing_if = "String::is_empty")]
         answer: String,
+    },
+    /// v2: a path-shaped read. `gold` is every live, truthful note bound to
+    /// `path` through its code refs (a stale sibling bound to the same file
+    /// is neither gold nor penalised); `answers` is index-aligned with
+    /// `gold`. Pass = at least one gold delivered readably in the top five;
+    /// `path_cover` is the share of the bound notes the top-k delivered.
+    Bound {
+        path: String,
+        gold: Vec<String>,
+        #[serde(default, skip_serializing_if = "Vec::is_empty")]
+        answers: Vec<String>,
     },
     /// A recall about a subject that was never written. Pass = nothing
     /// delivered, or delivered under the system's own decline signal.

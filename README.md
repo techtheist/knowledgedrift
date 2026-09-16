@@ -3,7 +3,7 @@
 An offline, judge-free benchmark for AI memory in software development.
 
 One seeded world of invented project knowledge is poured into a memory
-system through an eleven-operation protocol, and then the system is questioned,
+system through a twelve-operation protocol, and then the system is questioned,
 re-decided, contradicted, asked to forget, endorsed, and asked again. Every probe is a
 **task** with a pass/fail rule fixed before the question was asked. The
 headline is the **v2 score**: every family's pass rate as points out of
@@ -14,25 +14,29 @@ language model, and nothing asks a model whether a model did well.
 
 | system (v2, 500 tested facts, 3 seeds)                     | success | families | signal | tokens | **v2 score** | tok / answer |
 |------------------------------------------------------------|---|---|---|---|---|---|
-| TF-IDF over titles, one snippet per answer (`tfidf`)       | 44% (43–46) | 440 | 43 | 100 | **583 (576–587)** | ~140 |
-| the whole file in context                                  | 71% (69–74) | 390 | 0 | 0 | **390 (387–394)** | ~134,000 |
-| vector top-k (`rag`)                                       | 53% (52–55) | 358 | 8 | 9 | **375 (374–375)** | ~2,400 |
-| LangMem 0.0.30 (store + semantic index), 1 seed            | 52% | 359 | 8 | 9 | **375** | ~2,400 |
-| Mem0 2.0.20 (`infer=False`), 1 seed                        | 47% | 334 | 7 | 6 | **346** | ~2,600 |
-| keyword overlap (`grep`)                                   | 42% (40–44) | 320 | 6 | 3 | **329 (328–330)** | ~2,800 |
-| MemContinuum 0.2.0rc5 (append-only topics), 1 seed         | 42% | 240 | 7 | 48 | **295** | ~800 |
+| TF-IDF over titles, one snippet per answer (`tfidf`)       | 44% (43–46) | 439 | 42 | 100 | **581 (574–586)** | ~140 |
+| MemContinuum 0.2.0rc5 (topics + `for-path` chains), 1 seed | 48% | 337 | 9 | 46 | **392** | ~850 |
+| the whole file in context                                  | 72% (70–75) | 390 | 0 | 0 | **390 (387–394)** | ~134,000 |
+| LangMem 0.0.30 (store + semantic index), 1 seed            | 53% | 359 | 8 | 9 | **376** | ~2,400 |
+| vector top-k (`rag`)                                       | 53% (52–55) | 358 | 8 | 9 | **375 (374–376)** | ~2,400 |
+| Mem0 2.0.20 (`infer=False`), 1 seed                        | 47% | 334 | 7 | 6 | **347** | ~2,600 |
+| keyword overlap (`grep`)                                   | 43% (41–45) | 322 | 9 | 3 | **334 (332–335)** | ~2,700 |
 | cognee 1.5.4 (no LLM: chunk store), 1 seed                 | 48% | 259 | 8 | 14 | **281** | ~2,100 |
-| a curated 3,000-token file                                 | 8% (7–8) | 122 | 0 | 1 | **122 (119–125)** | ~2,900 |
-| chance                                                     | 4% (3–4) | 106 | 0 | 9 | **116 (115–117)** | ~2,300 |
-| [Engram Alpha](https://github.com/techtheist/engram) 0.9.4 | 69% (69–70) | 630 | 34 | 74 | **738 (737–739)** | ~400 (218 + a 3,900-token brief over 20 questions) |
+| a curated 3,000-token file                                 | 8% (8–9) | 122 | 0 | 1 | **123 (120–126)** | ~2,900 |
+| chance                                                     | 4% (3–4) | 107 | 0 | 9 | **116 (116–117)** | ~2,300 |
+| [Engram Alpha](https://github.com/techtheist/engram) 0.9.4 | 70% (70–71) | 632 | 36 | 71 | **739 (736–741)** | ~440 (256 + a 3,900-token brief over 20 questions) |
 
-At 1500 tested facts (seed 1): Engram Alpha 721, `tfidf` 580, the whole file 390, `rag` 359, LangMem 359, Mem0 347, `grep` 323, MemContinuum 287, cognee 263.
+At 1500 tested facts (seed 1): Engram Alpha 718, `tfidf` 580, the whole file 390, MemContinuum 380, `rag` 359, LangMem 359, Mem0 348, `grep` 325, cognee 263, the curated file 109, chance 112.
 
 The v2 worlds have shared-vocabulary subjects, a fourth question phrasing
 that shares no content word with its note, natural-null abstention
-controls, and contradiction shapes that a token diff cannot separate —
-`docs/families.md`. The four external systems ran the v2 500 and 1500 worlds on one seed
-each (`results/v2/`); their v1 rows are below.
+controls, contradiction shapes that a token diff cannot separate, and a
+path-shaped read for every file the code refs name — `docs/families.md`. The four external systems ran the v2 500 and 1500 worlds on one seed
+each (`results/v2/`); their v1 rows are below. MemContinuum's adapter was
+revised for v2 after its author's review — typed edges on `link`, hits
+carrying their edge-neighbours, `for-path` for the path read — and its
+rationale family went from 5% to 100%: the chain the author described,
+measured (`results/v2/README.md`).
 
 ### v1 (frozen 2026-09-14; composite × attention multiplier)
 
@@ -52,7 +56,7 @@ each (`results/v2/`); their v1 rows are below.
 answer scored 823 on it at 76% success — above the reference system — by
 riding the ×10 attention multiplier and the coined subject names. The
 `tfidf` arm reproduces that on v1 (564 at 61%, against 511 at 85%) and
-lands 155 points under the reference system on v2, with every mechanism it
+lands 158 points under the reference system on v2, with every mechanism it
 rode visible as a column. v1's worlds and receipts are frozen and kept;
 v2 is the benchmark — `docs/scoring.md` for the score, `results/v2/` for
 the receipts.
@@ -148,7 +152,7 @@ The official ladder is **500 and 1500 tested facts**, seed 1, pollution
 
 ## The protocol
 
-Eleven operations an adapter implements against its native API
+Twelve operations an adapter implements against its native API
 ([`docs/protocol.md`](docs/protocol.md) has the wire format):
 
 | op | meaning |
@@ -161,6 +165,7 @@ Eleven operations an adapter implements against its native API
 | `endorse(key, by)` | someone vouches for a note: `retrieval` (delivered and used), `assistant` (confirmed still true), `user` (the owner approved it), `supervisor` (pinned) |
 | `settle()` | a session boundary: calibration, sweeps, consolidation |
 | `recall(query, k, window?)` | top-k, optionally scoped to a capture-time window |
+| `recall_path(path, k)` | (v2) what a caller about to touch a file should see — an edit hook's channel; without one, the path is searched as a query |
 | `suspects()` | every disagreement the system wants a person to judge |
 | `lineage(key)` | the supersession history reachable from a note |
 | `standing_tokens()` | what the system costs every session before a question is asked |
@@ -180,7 +185,7 @@ Eight families — nine with `--authority` — each with one rule per task
 
 | family | asks | pass |
 |---|---|---|
-| **retrieval** | three questions per fact — its own words, a paraphrase, an oblique one that never names the subject | gold in the top five, and not outranked by its stale sibling |
+| **retrieval** | three questions per fact — its own words, a paraphrase, an oblique one that never names the subject (v2: a crossed one that shares no content word, and every file the code refs name, read by path) | gold in the top five, and not outranked by its stale sibling; for a path, a bound note in the top five |
 | **abstention** | a question about a subject that was never written | nothing delivered, or delivered under the system's own decline |
 | **currency** | the current state of a re-decided subject; the history behind it | the head in the top five and no retired generation delivered; the walk reaches every generation |
 | **contradiction** | after a planted note contradicts (or only seems to contradict) an existing one | raised for a person to judge; a negative never raised, or raised with a clearing label |

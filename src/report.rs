@@ -55,6 +55,8 @@ pub fn print_arm(g: &Graded) {
                 "paraphrase_r@5",
                 "oblique_r@5",
                 "crossed_r@5",
+                "path_r@5",
+                "path_cover",
                 "stale_above",
                 "hedge",
                 "noise",

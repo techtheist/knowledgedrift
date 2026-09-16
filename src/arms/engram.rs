@@ -316,6 +316,36 @@ impl Memory for EngramArm {
         })
     }
 
+    /// The file channel: the same code-ref match the file-read hook
+    /// serves — every live note whose refs cover the path, trust first,
+    /// the note delivered whole (no query, so no snippet window).
+    fn recall_path(&self, path: &str, k: usize) -> anyhow::Result<Recalled> {
+        let cfg = self.engine.graph_config();
+        let tombstones: Vec<String> = cfg
+            .tombstone_types()
+            .iter()
+            .map(|t| t.to_string())
+            .collect();
+        let hits = self
+            .engine
+            .match_code_refs(path, k)?
+            .into_iter()
+            .map(|n| Hit {
+                key: self.keys.get(&n.id).cloned(),
+                text: format!("## {}\n{}", n.title, n.body.as_deref().unwrap_or("")),
+                score: Some(n.trust),
+                tombstone: tombstones.iter().any(|t| t == n.node_type.as_str()),
+                created_at: Some(n.created_at),
+                neighbors: Vec::new(),
+            })
+            .collect();
+        Ok(Recalled {
+            hits,
+            declined: false,
+            dump: false,
+        })
+    }
+
     fn suspects(&mut self) -> anyhow::Result<Option<Vec<SuspectPair>>> {
         self.engine.scan_conflicts()?;
         let pairs = self

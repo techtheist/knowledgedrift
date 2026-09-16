@@ -30,6 +30,7 @@ import io
 import json
 import os
 import shutil
+import sqlite3
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -202,7 +203,7 @@ class Adapter(MemoryAdapter):
 
     def capabilities(self) -> dict[str, bool]:
         return {
-            "link": False,  # typed edges exist on links but search never reads them
+            "link": True,  # typed edges on links; a hit carries its edge-neighbours (see recall)
             "history": True,  # the chain: memidx chain / the topic's own link list
             "trace": False,  # a historical ruling leaves the file but default search hides it
             "suspects": False,
@@ -248,8 +249,32 @@ class Adapter(MemoryAdapter):
         self._write(topic)
         return Inscribed()
 
+    # The schema's seven edge relations have no "because"; each harness
+    # verb is written as the one true reading the vocabulary allows, on the
+    # side whose sentence it is:
+    #   X because Y    -> Y led_to X       (the reason led to the decision)
+    #   R answers P    -> P led_to R       (the problem led to the resolution)
+    #   X builds-on Y  -> Y led_to X
+    #   X about Y      -> X applies_to Y
+    EDGE_OF = {
+        "because": ("led_to", True),
+        "answers": ("led_to", True),
+        "builds-on": ("led_to", True),
+        "about": ("applies_to", False),
+    }
+
     def link(self, from_key: str, to_key: str, verb: str) -> bool:
-        return False
+        rel, reverse = self.EDGE_OF.get(verb, (None, False))
+        if rel is None:
+            return False
+        src, dst = (to_key, from_key) if reverse else (from_key, to_key)
+        topic, target = self._topic_of(src), self._topic_of(dst)
+        link = topic.link_for_key(src)
+        if link is None:
+            raise KeyError(f"link: {src} has no link in topic {topic.id}")
+        link.setdefault("edges", []).append({"rel": rel, "to": target.id})
+        self._write(topic)
+        return True
 
     def supersede(self, old_key: str, new_record: dict[str, Any]) -> None:
         topic = self._topic_of(old_key)
@@ -369,6 +394,7 @@ class Adapter(MemoryAdapter):
             if payload.get("embedding"):
                 raise RuntimeError(f"memcontinuum search degraded: {payload}")
             payload = payload.get("results", [])
+        neighbours = self._edge_neighbours([entry["id"] for entry in payload])
         hits: list[Hit] = []
         for entry in payload:
             topic = self.topics.get(entry["id"])
@@ -389,6 +415,84 @@ class Adapter(MemoryAdapter):
                     text=f"{entry['title']}\n{entry.get('snippet', '')}",
                     score=float(entry["score"]),
                     created_at=created,
+                    neighbors=neighbours.get(entry["id"], []),
+                )
+            )
+        return Recalled(hits=hits)
+
+    def _current_key(self, topic_id: str) -> Optional[str]:
+        topic = self.topics.get(topic_id)
+        if topic is None:
+            return None
+        link = topic.current()
+        return topic.key_of.get(link["link"]) if link is not None else None
+
+    def _edge_neighbours(self, topic_ids: list[str]) -> dict[str, list[str]]:
+        """The typed edges touching each topic, read off the index's own
+        ``edges`` table in both directions (``chain --json`` shows a link's
+        outgoing edges; the incoming side is the same table queried by
+        ``to_ref``). A neighbour is delivered as its topic's current key."""
+        if not topic_ids:
+            return {}
+        conn = sqlite3.connect(self.db)
+        try:
+            marks = ",".join("?" * len(topic_ids))
+            rows = conn.execute(
+                f"SELECT from_ref, to_ref FROM edges WHERE project=? AND "
+                f"(substr(from_ref, 1, instr(from_ref, '/') - 1) IN ({marks}) OR to_ref IN ({marks}))",
+                (PROJECT, *topic_ids, *topic_ids),
+            ).fetchall()
+        finally:
+            conn.close()
+        out: dict[str, list[str]] = {}
+        for from_ref, to_ref in rows:
+            a = from_ref.split("/", 1)[0]
+            b = to_ref.split("/", 1)[0].split("#", 1)[0]
+            for me, other in ((a, b), (b, a)):
+                if me in topic_ids and other != me:
+                    key = self._current_key(other)
+                    if key is not None and key not in out.setdefault(me, []):
+                        out[me].append(key)
+        return out
+
+    def recall_path(self, path: str, k: int) -> Recalled:
+        """The system's primary channel: ``for-path``, what the pre-edit hook
+        injects for a file — every topic whose ``code_refs`` cover the path,
+        each delivered as its chain text (the exact lines the hook prints),
+        in index order, unranked. The first ``k`` are returned."""
+        self._reindex()
+        out, err = io.StringIO(), io.StringIO()
+        args = self._args(root=str(self.root), file_path=path, json=True, with_chain_text=True)
+        with contextlib.redirect_stdout(out), contextlib.redirect_stderr(err):
+            rc = memidx.cmd_for_path(args)
+        if rc not in (0, 4):
+            raise RuntimeError(f"memcontinuum for-path failed ({rc}): {err.getvalue()}")
+        payload = json.loads(out.getvalue() or "{}")
+        results = payload.get("results", []) if isinstance(payload, dict) else payload
+        chain_text = payload.get("chain_text", "") if isinstance(payload, dict) else ""
+        # The hook's text, split back into one block per topic: a topic's
+        # block starts with its unindented head line.
+        blocks: dict[str, str] = {}
+        current: Optional[str] = None
+        for line in chain_text.splitlines():
+            if line and not line.startswith(" "):
+                current = line.split(" ", 1)[0]
+                blocks[current] = line
+            elif current is not None:
+                blocks[current] += "\n" + line
+        topic_ids = [r["id"] for r in results if r.get("kind") != "concept"][:k]
+        neighbours = self._edge_neighbours(topic_ids)
+        hits: list[Hit] = []
+        for tid in topic_ids:
+            topic = self.topics.get(tid)
+            link = topic.current() if topic is not None else None
+            hits.append(
+                Hit(
+                    key=self._current_key(tid),
+                    text=blocks.get(tid, tid),
+                    score=None,
+                    created_at=_day_unix(link["date"]) if link is not None else None,
+                    neighbors=neighbours.get(tid, []),
                 )
             )
         return Recalled(hits=hits)
