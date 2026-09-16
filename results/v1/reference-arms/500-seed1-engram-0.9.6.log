@@ -1,0 +1,21 @@
+    Finished `release` profile [optimized] target(s) in 0.55s
+     Running `target/release/knowledgedrift --sizes 500 --seed 1 --arms engram --json /private/tmp/claude-501/-Users-techtheist-IdeaProjects-engram/fb3d9cbc-9dd7-4f7a-a7d6-e2f86d44cacf/scratchpad/ladder/v1-500-seed1.json`
+knowledgedrift 1.0.0 — embedder bge-small-en-v1.5, reranker jina-reranker-v1-turbo-en, nli deberta-v3-small-tasksource-nli, seed 1, pollution 10% (stale)
+world 500: 630 notes, 530 edges, 3593 ops, 2387 probes
+  engram: 2346 tasks, success 0.861, 515s
+    settle: auto-tune left the defaults; weak line 0.824; sweep queued 0
+
+== 500 tested facts, 630 notes ==
+  arm       posed attempted passed  success   of att. composite     S  mult   score  standing    tok/q
+  engram     2346      2346   2019      86%       86%     0.917  0.56   5.6     518      3900      263
+  engram   success  86% = 2019 passed of 2346 posed (attempted 2346/2346,  86% of those passed)   composite 0.917   S 0.56 ×5.6   score 518   standing 3900 tok   263 tok/query
+    retrieval      1500   82%  r@1 0.70  r@5 0.84  lexical_r@5 1.00  paraphrase_r@5 0.99  oblique_r@5 0.54  stale_above 0.21  hedge 0.40  noise 0.50
+    abstention      110   99%  fp 0.01  answered 1.00  declined 0.99  separation 0.76
+    currency        100   87%  head_r@1 0.69  head_r@5 0.83  pollution 0.00  lineage 1.00
+    contradiction   166   75%  t1_recall 0.94  t2_recall 0.97  t3_recall 0.00  t2_false_alarm 0.03  t3_false_alarm 0.24  queued 0.60  flagged 0.57  absorbed 0.01
+    drift            55   91%  noticed 0.91  flagged 0.69
+    deletion        125  100%  released_gone 1.00  purged_gone 1.00  trace 1.00  marker_leak 1.00  resurrection_warned 1.00  purged_rewrite_warned 0.00
+    rationale       165  100%  direct_r@5 0.00  assisted_r@5 1.00  structure_only 1.00
+    temporal        125   99%  in_window_r@5 0.99  leak 0.00
+
+wrote /private/tmp/claude-501/-Users-techtheist-IdeaProjects-engram/fb3d9cbc-9dd7-4f7a-a7d6-e2f86d44cacf/scratchpad/ladder/v1-500-seed1.json

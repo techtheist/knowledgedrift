@@ -26,12 +26,16 @@ seeds at 500.
 | cognee 1.5.4 (1 seed) | 281 | 263 | 48% | 43% |
 | curated | 123 (120–126) | 109 | 8% | 5% |
 | chance | 116 (116–117) | 112 | 4% | 3% |
-| engram | **739 (736–741)** | 718 | **70%** | 66% |
+| engram 0.9.5 | 739 (736–741) | 718 | 70% | 66% |
+| **engram 0.9.6** | **816 (813–818)** | 801 | **73%** | 69% |
 
 **Environment.** One Apple-silicon laptop (macOS), CPU only, 2026-09-16,
 Rust stable; `BAAI/bge-small-en-v1.5` for every embedding arm, the engram
 arm with `jina-reranker-v1-turbo-en` and `deberta-v3-small-tasksource-nli`
-(engram-core at the revision `Cargo.toml` pins — the v1 stack, untouched).
+(engram-core at the revision `Cargo.toml` pins — Engram Alpha 0.9.6). The
+0.9.5 receipts, taken earlier the same day on the same worlds, are under
+`reference-arms/0.9.5/`; the baseline arms reproduce to the digit between
+the two runs.
 
 ```sh
 cargo run --release --features fastembed -- --v2 --sizes 500 [--seed N] \
@@ -40,7 +44,8 @@ cargo run --release --features fastembed -- --v2 --sizes 500 [--seed N] \
 ```
 
 Wall-clock, all seven arms, with the three external chains running beside
-them: 14–18 minutes per 500 world, 63 minutes for the 1500 rung.
+them: 14–18 minutes per 500 world, 63 minutes for the 1500 rung (the 0.9.6
+run: 12 minutes and 45 minutes, beside a compiler and a running daemon).
 
 ## Three seeds at 500 (`reference-arms/500-seed{1,2,3}.json`)
 
@@ -55,7 +60,8 @@ sum of means, not a product.
 | grep | 43% (41–45) | 322 (320–323) | 9 | 3 (3–4) | **334 (332–335)** |
 | curated (3k) | 8% (8–9) | 122 (120–125) | 0 | 1 | **123 (120–126)** |
 | chance | 4% (3–4) | 107 (106–107) | 0 | 9 (8–10) | **116 (116–117)** |
-| **engram** | **70% (70–71)** | **632 (629–636)** | 36 (35–37) | 71 (70–71) | **739 (736–741)** |
+| engram 0.9.5 | 70% (70–71) | 632 (629–636) | 36 (35–37) | 71 (70–71) | 739 (736–741) |
+| **engram 0.9.6** | **73% (72–73)** | **709 (705–711)** | 36 (35–37) | 71 (70–71) | **816 (813–818)** |
 
 | arm | retrieval | abstention | currency | contradiction | drift | deletion | rationale | temporal |
 |---|---|---|---|---|---|---|---|---|
@@ -65,15 +71,20 @@ sum of means, not a product.
 | whole | 90% (87–94) | 0% | 100% | n/a | n/a | 100% | 100% | n/a |
 | curated | 7% | 0% | 0% | n/a | n/a | 100% | 15% (13–17) | n/a |
 | chance | 1% | 0% | 0% | n/a | n/a | 100% | 1% (0–3) | 5% (3–6) |
-| engram | 63% (62–64) | 100% (99–100) | 88% | 46% | 44% (41–47) | 93% (91–94) | 98% (97–99) | 100% |
+| engram 0.9.5 | 63% (62–64) | 100% (99–100) | 88% | 46% | 44% (41–47) | 93% (91–94) | 98% (97–99) | 100% |
+| engram 0.9.6 | 63% (62–64) | 99% (98–100) | 88% | 70% (68–72) | 91% | 100% (99–100) | 98% (97–99) | 100% |
 
 The path read, by seed (`path_r@5` / `path_cover`): engram 1.00 / 0.99–1.00,
 grep 1.00 / 0.97–0.99, whole 1.00 / 1.00, rag 0.60–0.68 / 0.34–0.36,
 tfidf 0.21–0.44 / 0.22–0.24, curated 0.34–0.40 / 0.07–0.09, chance
-0.03–0.10 / 0.02–0.03. Under the engram row, by seed: `crossed_r@5`
-0.02 / 0.04 / 0.02, `hedge` 0.40 / 0.40 / 0.39, `stale_above` 0.15 / 0.22 /
-0.19, `natural_fp` 0.00 / 0.00 / 0.02, `phantom_fp` 0.01 / 0.00 / 0.00,
-tier-1 contradiction recall 0.04 / 0.04 / 0.00. Under tfidf: `crossed_r@5`
+0.03–0.10 / 0.02–0.03. Under the engram 0.9.6 row, by seed: `crossed_r@5`
+0.02 / 0.04 / 0.02, `hedge` 0.39 / 0.40 / 0.38, `stale_above` 0.15 / 0.22 /
+0.19, `natural_fp` 0.02 / 0.00 / 0.02, `phantom_fp` 0.01 / 0.00 / 0.00,
+tier-1 contradiction recall 0.83 / 0.79 / 0.75, tier-2 0.56 / 0.58 / 0.54,
+tier-3 0.12 / 0.04 / 0.04, tier-3 false alarm 0.05 / 0.05 / 0.05, drift
+noticed 0.91 on every seed, `resurrection_warned` 1.00 / 0.98 / 1.00 (0.9.5:
+`hedge` 0.40 / 0.40 / 0.39, tier-1 recall 0.04 / 0.04 / 0.00, drift 0.47 /
+0.41 / 0.44). Under tfidf: `crossed_r@5`
 0.00 / 0.00 / 0.01, `stale_above` 0.70 / 0.71 / 0.71, `natural_fp` and
 `phantom_fp` 1.00 on every seed, tier-1 recall 0.38 on every seed.
 
@@ -90,14 +101,16 @@ All seven arms in 63 minutes beside the external chains.
 | grep | 41% | 3,651 / 8,150 | 315 | 6 | 3 | **325** | 2,766 |
 | chance | 3% | 285 / 8,150 | 103 | 0 | 9 | **112** | 2,333 |
 | curated (3k) | 5% | 424 / 7,775 | 108 | 0 | 1 | **109** | 2,959 |
-| **engram** | 66% | 5,927 / 9,008 | 616 | 32 | 69 | **718** | 457 |
+| engram 0.9.5 | 66% | 5,927 / 9,008 | 616 | 32 | 69 | 718 | 457 |
+| **engram 0.9.6** | **69%** | 6,177 / 9,008 | **700** | 32 | 69 | **801** | 457 |
 
 | arm | retrieval | abstention | currency | contradiction | drift | deletion | rationale | temporal |
 |---|---|---|---|---|---|---|---|---|
 | tfidf | 45% | 0% | 67% | 58% | 73% | 100% | 0% | 100% |
 | rag | 57% | 0% | 80% | n/a | n/a | 100% | 4% | 99% |
 | grep | 47% | 0% | 67% | n/a | n/a | 100% | 1% | 100% |
-| engram | 57% | 96% | 81% | 47% | 48% | 87% | 99% | 100% |
+| engram 0.9.5 | 57% | 96% | 81% | 47% | 48% | 87% | 99% | 100% |
+| engram 0.9.6 | 57% | 99% | 81% | 70% | 93% | 100% | 99% | 100% |
 
 Path read at 1500 (`path_r@5` / `path_cover`): engram 1.00 / 0.98, grep
 1.00 / 0.92, whole 1.00 / 1.00, rag 0.56 / 0.18, curated 0.33 / 0.05,
@@ -105,11 +118,14 @@ chance 0.11 / 0.02, tfidf 0.08 / 0.03 — a file binds up to 53 notes at
 1500, and the embedding of a path finds the component, not the file.
 tfidf at 1500: `crossed_r@5` 0.00, `oblique_r@5` 0.01, `stale_above` 0.63,
 `phantom_fp` 1.00, `natural_fp` 1.00, tier-1 recall 0.42, tier-3 false
-alarm 0.13, drift noticed 0.73. engram at 1500: `crossed_r@5` 0.02,
-`oblique_r@5` 0.32, `hedge` 0.34, `stale_above` 0.17, `natural_fp` 0.06,
-tier-1 recall 0.04. The ordering is the 500 ordering, and every gap holds:
-the reference system leads the lexical arm by 138 points at 1500 and 158
-at 500.
+alarm 0.13, drift noticed 0.73. engram 0.9.6 at 1500: `crossed_r@5` 0.02,
+`oblique_r@5` 0.32, `hedge` 0.35, `stale_above` 0.17, `natural_fp` 0.02,
+tier-1 recall 0.85, tier-2 0.52, tier-3 0.08, tier-3 false alarm 0.06,
+drift noticed 0.93, `resurrection_warned` 1.00 (0.9.5: `hedge` 0.34,
+`natural_fp` 0.06, tier-1 recall 0.04, drift 0.48, `resurrection_warned`
+0.87). The ordering is the 500 ordering, and every gap holds: the
+reference system leads the lexical arm by 221 points at 1500 and 235 at
+500 (138 and 158 for its 0.9.5 rows).
 
 ## 500 tested facts, seed 1 (`reference-arms/500-seed1.json`)
 
@@ -125,7 +141,8 @@ contradiction, 55 drift, 125 deletion, 170 rationale, 125 temporal).
 | grep | 43% | 1,313 / 2,754 | 323 | 9 | 3 | **335** | 2,730 |
 | curated (3k) | 9% | 262 / 2,629 | 123 | 0 | 1 | **123** | 2,959 |
 | chance | 4% | 112 / 2,754 | 106 | 0 | 9 | **116** | 2,322 |
-| **engram** | **70%** | 2,140 / 3,042 | **636** | 35 | 70 | **741** | 450 |
+| engram 0.9.5 | 70% | 2,140 / 3,042 | 636 | 35 | 70 | 741 | 450 |
+| **engram 0.9.6** | **73%** | 2,211 / 3,042 | **710** | 35 | 70 | **816** | 453 |
 
 Per family (pass rate; the v1 500 seed-1 number in brackets where the
 family is comparable):
@@ -135,7 +152,8 @@ family is comparable):
 | tfidf | 45% | 0% | 69% | 59% | 60% | 100% | 0% | 100% |
 | rag | 64% [80%] | 0% | 91% | n/a | n/a | 100% | 4% | 100% |
 | grep | 51% [65%] | 0% | 69% | n/a | n/a | 100% | 2% | 100% |
-| engram | 63% [81%] | 100% [100%] | 88% [89%] | 46% [75%] | 47% [91%] | 94% [90%] | 98% [99%] | 100% |
+| engram 0.9.5 | 63% [81%] | 100% [100%] | 88% [89%] | 46% [75%] | 47% [91%] | 94% [90%] | 98% [99%] | 100% |
+| engram 0.9.6 | 63% | 98% | 88% | 72% | 91% | 100% | 98% | 100% |
 
 Columns worth reading (`500-seed1.log` has them all):
 
@@ -144,7 +162,8 @@ Columns worth reading (`500-seed1.log` has them all):
 | tfidf | 0.00 | 0.05 | 0.21 | 0.22 | 1.00 | 1.00 | 0.70 | 0.00 | 0.38 | 0.04 |
 | rag | 0.17 | 0.51 | 0.68 | 0.34 | 1.00 | 1.00 | 0.27 | 0.00 | – | – |
 | grep | 0.01 | 0.15 | 1.00 | 0.99 | 1.00 | 1.00 | 0.44 | 0.00 | – | – |
-| engram | 0.02 | 0.52 | 1.00 | 0.99 | 0.01 | 0.00 | 0.15 | 0.40 | 0.04 | 0.00 |
+| engram 0.9.5 | 0.02 | 0.52 | 1.00 | 0.99 | 0.01 | 0.00 | 0.15 | 0.40 | 0.04 | 0.00 |
+| engram 0.9.6 | 0.02 | 0.52 | 1.00 | 0.99 | 0.01 | 0.02 | 0.15 | 0.39 | 0.83 | 0.00 |
 
 ## The path read
 
@@ -196,28 +215,37 @@ a fair share of drift. That is where the additive score puts a lexical
 system: above the flat stores that show ten whole notes, well under a
 memory that knows what it knows.
 
-## What v2 did to the reference system
+## Two versions of the reference system
 
-Its v2 number is not a v1 number regraded. Three columns moved, and each
-is a finding about the product, not the bench:
+The reference row is Engram Alpha **0.9.6**; 0.9.5 was measured first, on
+the same worlds and the same day, and its receipts stay under
+`reference-arms/0.9.5/`. Its v2 number was not a v1 number regraded: three
+columns had moved against v1, and each was a finding about the product,
+not the bench —
 
 1. **`crossed_r@5` 0.02** (rag 0.17): a question sharing no content word
-   with its note is where the keyword channel and the reranker vote have
-   nothing to hold, and the hybrid lands under pure cosine.
-2. **`hedge` 0.40**: the calibrated "not in memory" line, fitted on v1's
-   register, declines 40% of answerable v2 questions. On v2 a decline on
-   an answerable question is zero signal, so the signal score is 36 where
-   the retrieval focus alone would give about 60.
+   with its note is where a hybrid ranker lands under pure cosine.
+2. **`hedge` 0.40**: the calibrated "not in memory" line declined 40% of
+   answerable v2 questions. On v2 a decline on an answerable question is
+   zero signal, so the signal score is 36 where the retrieval focus alone
+   would give about 60.
 3. **Contradiction 46% (t1 0.04) and drift 47%** against 75% and 91% on
-   v1: the title-NLI nomination gate barely raises the v2 `value` flips.
-   The three-word lowercase subjects are the suspect — the gate's subject
-   guard was tuned on capitalised coined names — and that is a product
-   question for engram, recorded in its graph, not a v2 knob.
+   v1: the title-nomination gate barely raised the v2 `value` flips on
+   three-word lowercase subjects.
+
+Between 0.9.5 and 0.9.6 the third moved and the first two did not:
+contradiction 46% → **70% (68–72)** (tier-1 recall 0.04 → 0.79, tier-2
+0.08 → 0.56, tier-3 false alarm 0.00 → 0.05 on the `historical` trap),
+drift 44% → **91%** on every seed, deletion 93% → **100%**
+(`resurrection_warned` 0.81 → 1.00); `crossed_r@5` stays 0.02, `hedge`
+0.39, abstention 100% → 99% (`natural_fp` 0.00 → 0.02 on two seeds).
+Everything else — retrieval, currency, rationale, temporal, the path read,
+the tokens — is the same to the digit. The score moves 739 → 816 at 500
+and 718 → 801 at 1500.
 
 The path read adds nothing new about it: the code-ref match is the
 mechanism the file-read hook already runs, and it answers every file
-(1.00 / 0.99). None of this is fixed here: the engram arm is the v1 stack
-at the pinned revision, and the v2 branch measures it as it is.
+(1.00 / 0.99).
 
 ## External systems (`{langmem-0.0.30,mem0-2.0.20,memcontinuum-0.2.0rc5,cognee-1.5.4}/`)
 

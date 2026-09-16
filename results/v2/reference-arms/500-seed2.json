@@ -46,18 +46,18 @@
           "settle_note": "auto-tune left the defaults; weak line 0.928; sweep queued 1",
           "tasks": 3007,
           "attempted": 3007,
-          "passed": 2124,
-          "success": 0.7063518456933822,
-          "attempted_success": 0.7063518456933822,
-          "composite": 0.7864849257234835,
-          "signal_share": 0.6670074109661275,
-          "multiplier": 6.670074109661275,
-          "score": 736.3433493725805,
+          "passed": 2189,
+          "success": 0.7279680744928501,
+          "attempted_success": 0.7279680744928501,
+          "composite": 0.8883523956030015,
+          "signal_share": 0.6670078626332839,
+          "multiplier": 6.670078626332839,
+          "score": 817.9118702000486,
           "edition": 2,
-          "family_points": 629.1879405787868,
+          "family_points": 710.6819164824012,
           "signal_score": 36.0672078611114,
-          "token_score": 71.08820093268226,
-          "tokens_billed": 437.58168604651166,
+          "token_score": 71.16274585653592,
+          "tokens_billed": 436.6992248062015,
           "flags": [],
           "families": [
             {
@@ -79,7 +79,7 @@
                 "r@1": 0.5295,
                 "r@5": 0.636,
                 "stale_above": 0.21875,
-                "tokens": 243.18168604651163,
+                "tokens": 243.14922480620154,
                 "weighted_r@5": 0.636
               }
             },
@@ -115,16 +115,16 @@
               "family": "contradiction",
               "posed": 166,
               "tasks": 166,
-              "passed": 77,
-              "pass_rate": 0.463855421686747,
+              "passed": 116,
+              "pass_rate": 0.6987951807228916,
               "columns": {
                 "absorbed": 0.020833333333333332,
-                "flagged": 0.0625,
-                "queued": 0.09375,
-                "t1_recall": 0.041666666666666664,
-                "t2_false_alarm": 0.0,
-                "t2_recall": 0.10416666666666667,
-                "t3_false_alarm": 0.0,
+                "flagged": 0.4895833333333333,
+                "queued": 0.5208333333333334,
+                "t1_recall": 0.7916666666666666,
+                "t2_false_alarm": 0.02040816326530612,
+                "t2_recall": 0.5833333333333334,
+                "t3_false_alarm": 0.047619047619047616,
                 "t3_recall": 0.041666666666666664
               }
             },
@@ -132,14 +132,14 @@
               "family": "deletion",
               "posed": 125,
               "tasks": 125,
-              "passed": 114,
-              "pass_rate": 0.912,
+              "passed": 124,
+              "pass_rate": 0.992,
               "columns": {
                 "marker_leak": 1.0,
                 "purged_gone": 1.0,
-                "purged_rewrite_warned": 0.12195121951219512,
+                "purged_rewrite_warned": 0.0975609756097561,
                 "released_gone": 1.0,
-                "resurrection_warned": 0.7380952380952381,
+                "resurrection_warned": 0.9761904761904762,
                 "trace": 1.0
               }
             },
@@ -170,11 +170,11 @@
               "family": "drift",
               "posed": 32,
               "tasks": 32,
-              "passed": 13,
-              "pass_rate": 0.40625,
+              "passed": 29,
+              "pass_rate": 0.90625,
               "columns": {
-                "flagged": 0.28125,
-                "noticed": 0.40625
+                "flagged": 0.8125,
+                "noticed": 0.90625
               }
             },
             {
@@ -188,64 +188,64 @@
             }
           ],
           "attention": {
-            "focus": 0.6670074109661275,
+            "focus": 0.6670078626332839,
             "noise": 0.4771467792543351,
-            "tokens_per_query": 243.18168604651163
+            "tokens_per_query": 243.14922480620154
           },
           "cost": {
-            "inscribe_ms": 149.65309164669935,
-            "lineage_ms": 0.026231640000000004,
-            "link_ms": 0.12425070754716991,
-            "purge_ms": 5.128246902439023,
-            "recall_ms": 241.21451143875964,
-            "recall_path_ms": 1.1605292968750003,
-            "release_ms": 45.397605142857145,
-            "settle_ms": 18757.3938955,
-            "standing_tokens": 3888.0,
-            "supersede_ms": 153.49310736000004,
-            "suspects_ms": 4363.5740829999995,
-            "tokens_per_query": 243.18168604651163
+            "inscribe_ms": 129.6037399547678,
+            "lineage_ms": 0.024169999999999997,
+            "link_ms": 0.05437508301886791,
+            "purge_ms": 5.295235780487805,
+            "recall_ms": 179.72491240739356,
+            "recall_path_ms": 1.05092315625,
+            "release_ms": 45.99645633333334,
+            "settle_ms": 16454.4087085,
+            "standing_tokens": 3871.0,
+            "supersede_ms": 108.96073420000002,
+            "suspects_ms": 5902.525167000001,
+            "tokens_per_query": 243.14922480620154
           },
           "timing": {
             "inscribe": {
               "count": 818,
-              "total_ms": 122416.22896700008
+              "total_ms": 106015.85928300007
             },
             "lineage": {
               "count": 25,
-              "total_ms": 0.6557910000000001
+              "total_ms": 0.60425
             },
             "link": {
               "count": 530,
-              "total_ms": 65.85287500000005
+              "total_ms": 28.818793999999993
             },
             "purge": {
               "count": 41,
-              "total_ms": 210.25812299999996
+              "total_ms": 217.104667
             },
             "recall": {
               "count": 2678,
-              "total_ms": 645972.4616329983
+              "total_ms": 481303.31542699994
             },
             "recall_path": {
               "count": 64,
-              "total_ms": 74.27387500000002
+              "total_ms": 67.259082
             },
             "release": {
               "count": 42,
-              "total_ms": 1906.6994160000002
+              "total_ms": 1931.8511660000004
             },
             "settle": {
               "count": 2,
-              "total_ms": 37514.787791
+              "total_ms": 32908.817417
             },
             "supersede": {
               "count": 50,
-              "total_ms": 7674.6553680000015
+              "total_ms": 5448.036710000001
             },
             "suspects": {
               "count": 1,
-              "total_ms": 4363.5740829999995
+              "total_ms": 5902.525167000001
             }
           },
           "failed": [
@@ -1013,125 +1013,60 @@
             "R2289",
             "R2304",
             "R2439",
-            "C0",
             "C1",
-            "C2",
-            "C5",
             "C6",
             "C8",
-            "C9",
             "C11",
-            "C14",
-            "C15",
-            "C16",
             "C19",
-            "C20",
             "C22",
             "C23",
             "C25",
-            "C28",
-            "C29",
             "C33",
-            "C34",
             "C36",
-            "C37",
             "C39",
-            "C42",
             "C43",
             "C47",
             "C48",
             "C50",
-            "C51",
             "C53",
             "C56",
-            "C57",
-            "C58",
             "C61",
             "C62",
             "C64",
-            "C65",
             "C67",
-            "C70",
-            "C71",
-            "C72",
-            "C75",
+            "C68",
             "C76",
             "C78",
-            "C79",
             "C81",
-            "C84",
-            "C85",
-            "C86",
             "C89",
-            "C90",
             "C92",
-            "C93",
-            "C99",
+            "C101",
             "C103",
             "C104",
             "C106",
-            "C107",
             "C109",
-            "C112",
             "C113",
             "C117",
             "C118",
             "C120",
-            "C121",
             "C123",
             "C126",
-            "C127",
             "C131",
             "C132",
             "C134",
-            "C135",
             "C137",
-            "C140",
-            "C141",
-            "C142",
             "C145",
             "C146",
             "C148",
-            "C149",
             "C151",
-            "C154",
-            "C155",
-            "C156",
             "C159",
-            "C160",
             "C162",
             "C163",
             "C165",
             "D11",
-            "D29",
-            "D122",
             "D124",
-            "D130",
-            "D145",
-            "D148",
-            "D161",
-            "D197",
-            "D243",
-            "D257",
-            "D291",
-            "D310",
-            "D318",
             "D378",
-            "D428",
-            "D439",
-            "D447",
-            "D482",
-            "W179",
-            "W189",
-            "W193",
-            "W197",
-            "W211",
-            "W215",
-            "W223",
-            "W231",
-            "W243",
-            "W247",
-            "W251"
+            "W215"
           ]
         },
         {
@@ -1287,59 +1222,59 @@
             "tokens_per_query": 2454.329457364341
           },
           "cost": {
-            "inscribe_ms": 22.83277920904645,
-            "lineage_ms": 0.00024832,
-            "link_ms": 0.00002665471698113214,
-            "purge_ms": 0.008730658536585367,
-            "recall_ms": 7.06472404891712,
-            "recall_path_ms": 6.1218958125,
-            "release_ms": 0.008576380952380952,
-            "settle_ms": 0.0005835,
+            "inscribe_ms": 20.900307166259186,
+            "lineage_ms": 0.0004467600000000001,
+            "link_ms": 0.000028218867924528356,
+            "purge_ms": 0.007900365853658534,
+            "recall_ms": 6.780438004854374,
+            "recall_path_ms": 5.9144323125,
+            "release_ms": 0.008625023809523812,
+            "settle_ms": 0.0006039999999999999,
             "standing_tokens": 0.0,
-            "supersede_ms": 25.88200836,
-            "suspects_ms": 0.000625,
+            "supersede_ms": 24.999640019999987,
+            "suspects_ms": 0.014583,
             "tokens_per_query": 2454.329457364341
           },
           "timing": {
             "inscribe": {
               "count": 818,
-              "total_ms": 18677.213392999995
+              "total_ms": 17096.451262000013
             },
             "lineage": {
               "count": 25,
-              "total_ms": 0.006208
+              "total_ms": 0.011169000000000002
             },
             "link": {
               "count": 530,
-              "total_ms": 0.014127000000000034
+              "total_ms": 0.014956000000000028
             },
             "purge": {
               "count": 41,
-              "total_ms": 0.357957
+              "total_ms": 0.3239149999999999
             },
             "recall": {
               "count": 2678,
-              "total_ms": 18919.331003000047
+              "total_ms": 18158.012977000013
             },
             "recall_path": {
               "count": 64,
-              "total_ms": 391.801332
+              "total_ms": 378.523668
             },
             "release": {
               "count": 42,
-              "total_ms": 0.360208
+              "total_ms": 0.3622510000000001
             },
             "settle": {
               "count": 2,
-              "total_ms": 0.001167
+              "total_ms": 0.0012079999999999999
             },
             "supersede": {
               "count": 50,
-              "total_ms": 1294.100418
+              "total_ms": 1249.9820009999994
             },
             "suspects": {
               "count": 1,
-              "total_ms": 0.000625
+              "total_ms": 0.014583
             }
           },
           "failed": [
@@ -2594,59 +2529,59 @@
             "tokens_per_query": 2782.9253875968993
           },
           "cost": {
-            "inscribe_ms": 0.0003015293398532984,
-            "lineage_ms": 0.00011000000000000002,
-            "link_ms": 0.00002720188679245289,
-            "purge_ms": 0.0030244146341463435,
-            "recall_ms": 0.9500327912621335,
-            "recall_path_ms": 0.007755875,
-            "release_ms": 0.003234047619047619,
-            "settle_ms": 0.0003125,
+            "inscribe_ms": 0.00031171271393642865,
+            "lineage_ms": 0.0002883999999999999,
+            "link_ms": 0.000027667924528301943,
+            "purge_ms": 0.0037763658536585374,
+            "recall_ms": 0.9729993988050776,
+            "recall_path_ms": 0.008369781250000001,
+            "release_ms": 0.0035644523809523826,
+            "settle_ms": 0.0002295,
             "standing_tokens": 0.0,
-            "supersede_ms": 0.0006065800000000002,
-            "suspects_ms": 0.000334,
+            "supersede_ms": 0.0005699600000000003,
+            "suspects_ms": 0.00029099999999999997,
             "tokens_per_query": 2782.9253875968993
           },
           "timing": {
             "inscribe": {
               "count": 818,
-              "total_ms": 0.2466509999999981
+              "total_ms": 0.2549809999999986
             },
             "lineage": {
               "count": 25,
-              "total_ms": 0.0027500000000000003
+              "total_ms": 0.007209999999999998
             },
             "link": {
               "count": 530,
-              "total_ms": 0.014417000000000032
+              "total_ms": 0.01466400000000003
             },
             "purge": {
               "count": 41,
-              "total_ms": 0.12400100000000008
+              "total_ms": 0.15483100000000002
             },
             "recall": {
               "count": 2678,
-              "total_ms": 2544.1878149999934
+              "total_ms": 2605.692389999998
             },
             "recall_path": {
               "count": 64,
-              "total_ms": 0.496376
+              "total_ms": 0.5356660000000001
             },
             "release": {
               "count": 42,
-              "total_ms": 0.13583
+              "total_ms": 0.14970700000000006
             },
             "settle": {
               "count": 2,
-              "total_ms": 0.000625
+              "total_ms": 0.000459
             },
             "supersede": {
               "count": 50,
-              "total_ms": 0.030329000000000012
+              "total_ms": 0.028498000000000016
             },
             "suspects": {
               "count": 1,
-              "total_ms": 0.000334
+              "total_ms": 0.00029099999999999997
             }
           },
           "failed": [
@@ -4200,59 +4135,59 @@
             "tokens_per_query": 2934.0
           },
           "cost": {
-            "inscribe_ms": 0.0003147493887530549,
-            "lineage_ms": 0.00009667999999999998,
-            "link_ms": 0.00002736792452830195,
-            "purge_ms": 0.003907512195121952,
-            "recall_ms": 0.4231087490664671,
-            "recall_path_ms": 0.41784695312500014,
-            "release_ms": 0.004572452380952381,
-            "settle_ms": 0.0003125,
+            "inscribe_ms": 0.0003060171149144236,
+            "lineage_ms": 0.00016828000000000004,
+            "link_ms": 0.000026413207547169873,
+            "purge_ms": 0.0036248780487804877,
+            "recall_ms": 0.434535771097835,
+            "recall_path_ms": 0.4263287812499999,
+            "release_ms": 0.004081333333333333,
+            "settle_ms": 0.00025,
             "standing_tokens": 2997.0,
-            "supersede_ms": 0.0005782800000000001,
-            "suspects_ms": 0.000375,
+            "supersede_ms": 0.0005483400000000002,
+            "suspects_ms": 0.00045900000000000004,
             "tokens_per_query": 2934.0
           },
           "timing": {
             "inscribe": {
               "count": 818,
-              "total_ms": 0.2574649999999989
+              "total_ms": 0.2503219999999985
             },
             "lineage": {
               "count": 25,
-              "total_ms": 0.0024169999999999994
+              "total_ms": 0.004207000000000001
             },
             "link": {
               "count": 530,
-              "total_ms": 0.014505000000000033
+              "total_ms": 0.013999000000000032
             },
             "purge": {
               "count": 41,
-              "total_ms": 0.16020800000000002
+              "total_ms": 0.14862
             },
             "recall": {
               "count": 2678,
-              "total_ms": 1133.085229999999
+              "total_ms": 1163.6867950000021
             },
             "recall_path": {
               "count": 64,
-              "total_ms": 26.74220500000001
+              "total_ms": 27.285041999999994
             },
             "release": {
               "count": 42,
-              "total_ms": 0.19204300000000002
+              "total_ms": 0.17141599999999999
             },
             "settle": {
               "count": 2,
-              "total_ms": 0.000625
+              "total_ms": 0.0005
             },
             "supersede": {
               "count": 50,
-              "total_ms": 0.02891400000000001
+              "total_ms": 0.02741700000000001
             },
             "suspects": {
               "count": 1,
-              "total_ms": 0.000375
+              "total_ms": 0.00045900000000000004
             }
           },
           "failed": [
@@ -6762,59 +6697,59 @@
             "tokens_per_query": 133749.0
           },
           "cost": {
-            "inscribe_ms": 0.0003596760391198036,
-            "lineage_ms": 0.00041332000000000006,
-            "link_ms": 0.000028062264150943452,
-            "purge_ms": 0.0038628292682926827,
-            "recall_ms": 0.2070725108289773,
-            "recall_path_ms": 0.255117140625,
-            "release_ms": 0.004711380952380953,
-            "settle_ms": 0.000167,
+            "inscribe_ms": 0.0005666466992665017,
+            "lineage_ms": 0.00021504000000000016,
+            "link_ms": 0.00002846226415094345,
+            "purge_ms": 0.0031635365853658554,
+            "recall_ms": 0.28316206086631873,
+            "recall_path_ms": 0.27222981249999995,
+            "release_ms": 0.004016880952380953,
+            "settle_ms": 0.00043750000000000006,
             "standing_tokens": 141514.0,
-            "supersede_ms": 0.0006115600000000003,
-            "suspects_ms": 0.00045900000000000004,
+            "supersede_ms": 0.0005983200000000004,
+            "suspects_ms": 0.00275,
             "tokens_per_query": 133749.0
           },
           "timing": {
             "inscribe": {
               "count": 818,
-              "total_ms": 0.29421499999999934
+              "total_ms": 0.46351699999999835
             },
             "lineage": {
               "count": 25,
-              "total_ms": 0.010333000000000002
+              "total_ms": 0.005376000000000004
             },
             "link": {
               "count": 530,
-              "total_ms": 0.01487300000000003
+              "total_ms": 0.015085000000000029
             },
             "purge": {
               "count": 41,
-              "total_ms": 0.158376
+              "total_ms": 0.12970500000000007
             },
             "recall": {
               "count": 2678,
-              "total_ms": 554.5401840000012
+              "total_ms": 758.3079990000016
             },
             "recall_path": {
               "count": 64,
-              "total_ms": 16.327497
+              "total_ms": 17.422707999999997
             },
             "release": {
               "count": 42,
-              "total_ms": 0.19787800000000003
+              "total_ms": 0.16870900000000003
             },
             "settle": {
               "count": 2,
-              "total_ms": 0.000334
+              "total_ms": 0.0008750000000000001
             },
             "supersede": {
               "count": 50,
-              "total_ms": 0.030578000000000015
+              "total_ms": 0.02991600000000002
             },
             "suspects": {
               "count": 1,
-              "total_ms": 0.00045900000000000004
+              "total_ms": 0.00275
             }
           },
           "failed": [
@@ -7339,59 +7274,59 @@
             "tokens_per_query": 2407.7441860465115
           },
           "cost": {
-            "inscribe_ms": 0.0012339926650366856,
-            "lineage_ms": 0.00010659999999999998,
-            "link_ms": 0.000027116981132075526,
-            "purge_ms": 0.0027825365853658556,
-            "recall_ms": 0.005555597460791712,
-            "recall_path_ms": 0.005154281250000001,
-            "release_ms": 0.002852166666666668,
-            "settle_ms": 0.0000835,
+            "inscribe_ms": 0.0008860085574572136,
+            "lineage_ms": 0.00006843999999999999,
+            "link_ms": 0.00006667924528301892,
+            "purge_ms": 0.00278958536585366,
+            "recall_ms": 0.0072139817027633045,
+            "recall_path_ms": 0.0053925625,
+            "release_ms": 0.002917714285714288,
+            "settle_ms": 0.00020850000000000003,
             "standing_tokens": 0.0,
-            "supersede_ms": 0.0005875000000000003,
-            "suspects_ms": 0.000417,
+            "supersede_ms": 0.0011290800000000004,
+            "suspects_ms": 0.0007080000000000001,
             "tokens_per_query": 2407.7441860465115
           },
           "timing": {
             "inscribe": {
               "count": 818,
-              "total_ms": 1.009406000000009
+              "total_ms": 0.7247550000000007
             },
             "lineage": {
               "count": 25,
-              "total_ms": 0.0026649999999999994
+              "total_ms": 0.0017109999999999998
             },
             "link": {
               "count": 530,
-              "total_ms": 0.014372000000000029
+              "total_ms": 0.035340000000000024
             },
             "purge": {
               "count": 41,
-              "total_ms": 0.11408400000000007
+              "total_ms": 0.11437300000000006
             },
             "recall": {
               "count": 2678,
-              "total_ms": 14.877890000000205
+              "total_ms": 19.31904300000013
             },
             "recall_path": {
               "count": 64,
-              "total_ms": 0.32987400000000006
+              "total_ms": 0.345124
             },
             "release": {
               "count": 42,
-              "total_ms": 0.11979100000000006
+              "total_ms": 0.12254400000000008
             },
             "settle": {
               "count": 2,
-              "total_ms": 0.000167
+              "total_ms": 0.00041700000000000005
             },
             "supersede": {
               "count": 50,
-              "total_ms": 0.029375000000000016
+              "total_ms": 0.05645400000000002
             },
             "suspects": {
               "count": 1,
-              "total_ms": 0.000417
+              "total_ms": 0.0007080000000000001
             }
           },
           "failed": [
@@ -10188,59 +10123,59 @@
             "tokens_per_query": 140.37403100775194
           },
           "cost": {
-            "inscribe_ms": 0.07987082640586794,
-            "lineage_ms": 0.00010664000000000002,
-            "link_ms": 0.000026569811320754776,
-            "purge_ms": 0.009212243902439021,
-            "recall_ms": 5.246507953323376,
-            "recall_path_ms": 5.390324203124999,
-            "release_ms": 0.01118054761904762,
-            "settle_ms": 125.2770625,
+            "inscribe_ms": 0.08424684352078242,
+            "lineage_ms": 0.0005899200000000001,
+            "link_ms": 0.000029798113207547223,
+            "purge_ms": 0.02823068292682926,
+            "recall_ms": 5.468171795369684,
+            "recall_path_ms": 5.738604765624999,
+            "release_ms": 0.025578404761904767,
+            "settle_ms": 130.3993125,
             "standing_tokens": 0.0,
-            "supersede_ms": 0.024334119999999994,
-            "suspects_ms": 0.010458,
+            "supersede_ms": 0.025788279999999997,
+            "suspects_ms": 0.00975,
             "tokens_per_query": 140.37403100775194
           },
           "timing": {
             "inscribe": {
               "count": 818,
-              "total_ms": 65.33433599999998
+              "total_ms": 68.91391800000002
             },
             "lineage": {
               "count": 25,
-              "total_ms": 0.0026660000000000004
+              "total_ms": 0.014748
             },
             "link": {
               "count": 530,
-              "total_ms": 0.014082000000000032
+              "total_ms": 0.01579300000000003
             },
             "purge": {
               "count": 41,
-              "total_ms": 0.37770199999999987
+              "total_ms": 1.1574579999999997
             },
             "recall": {
               "count": 2678,
-              "total_ms": 14050.148299
+              "total_ms": 14643.764068000013
             },
             "recall_path": {
               "count": 64,
-              "total_ms": 344.98074899999995
+              "total_ms": 367.27070499999996
             },
             "release": {
               "count": 42,
-              "total_ms": 0.46958300000000003
+              "total_ms": 1.0742930000000002
             },
             "settle": {
               "count": 2,
-              "total_ms": 250.554125
+              "total_ms": 260.798625
             },
             "supersede": {
               "count": 50,
-              "total_ms": 1.2167059999999996
+              "total_ms": 1.2894139999999998
             },
             "suspects": {
               "count": 1,
-              "total_ms": 0.010458
+              "total_ms": 0.00975
             }
           },
           "failed": [

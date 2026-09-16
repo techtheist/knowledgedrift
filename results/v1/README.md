@@ -24,6 +24,11 @@ world was re-run as the check).
 
 ### `reference-arms/` — the six in-process arms
 
+`500-seed1-engram-0.9.6.{json,log}` is the engram arm alone on the v1
+500 world with Engram Alpha 0.9.6 (2026-09-16), the version the v2 tables
+quote — 86% success, score 518, against the 0.9.5-era 85% / 511 in
+`500-seed1.json`; the v1 tables are not re-quoted for it.
+
 `cargo run --release --features fastembed -- <flags> --json <file>`;
 the `.log` beside each receipt is the terminal report.
 

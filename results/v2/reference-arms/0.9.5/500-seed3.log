@@ -1,21 +1,22 @@
-    Finished `release` profile [optimized] target(s) in 0.52s
-     Running `target/release/knowledgedrift --v2 --sizes 500 --seed 3 --arms engram,rag,grep,curated,whole,chance,tfidf --json /private/tmp/claude-501/-Users-techtheist-IdeaProjects-engram/fb3d9cbc-9dd7-4f7a-a7d6-e2f86d44cacf/scratchpad/ladder/500-seed3.json`
+   Compiling knowledgedrift v1.0.0 (/Users/techtheist/IdeaProjects/knowledgedrift)
+    Finished `release` profile [optimized] target(s) in 8.75s
+     Running `target/release/knowledgedrift --v2 --sizes 500 --seed 3 --arms engram,rag,grep,curated,whole,chance,tfidf --json results/v2/reference-arms/500-seed3.json`
 knowledgedrift 1.0.0 — embedder bge-small-en-v1.5, reranker jina-reranker-v1-turbo-en, nli deberta-v3-small-tasksource-nli, seed 3, pollution 10% (stale)
 edition 2: additive score = families (800) + signal (100) + tokens (100)
 world 500: 641 notes, 530 edges, 4315 ops, 3112 probes
-  engram: 3071 tasks, success 0.721, 656s
-    settle: auto-tune left the defaults; weak line 0.879; sweep queued 0
-  rag: 3071 tasks, success 0.519, 41s
+  engram: 3071 tasks, success 0.697, 826s
+    settle: auto-tune left the defaults; weak line 0.894; sweep queued 0
+  rag: 3071 tasks, success 0.519, 66s
   grep: 3071 tasks, success 0.415, 3s
   curated: 3071 tasks, success 0.081, 1s
   whole: 3071 tasks, success 0.698, 1s
   chance: 3071 tasks, success 0.035, 0s
-  tfidf: 3071 tasks, success 0.427, 15s
+  tfidf: 3071 tasks, success 0.427, 18s
     settle: token differencing nominated 199 pairs
 
 == 500 tested facts, 641 notes, v2 ==
   arm       posed attempted passed  success   of att. composite     S  mult   score  standing    tok/q
-  engram     3071      3071   2215      72%       72%     0.882  0.66   6.6     813      3942      242
+  engram     3071      3071   2140      70%       70%     0.789  0.66   6.6     739      3880      242
   rag        3071      2772   1595      52%       58%     0.444  0.12   1.2     374         0     2261
   grep       3071      2772   1274      41%       46%     0.400  0.15   1.5     332         0     2691
   curated    3071      2647    248       8%        9%     0.150  0.03   0.3     120      2998     2952
@@ -23,21 +24,21 @@ world 500: 641 notes, 530 edges, 4315 ops, 3112 probes
   chance     3071      2772    107       3%        4%     0.133  0.11   1.1     117         0     2262
   tfidf      3071      3004   1312      43%       44%     0.556  0.80   8.0     586         0      144
   arm      families   signal  tokens   score    billed
-  engram        705       37      71     813       439
+  engram        631       37      71     739       436
   rag           355        9      10     374      2262
   grep          320        9       4     332      2691
   curated       120        0       1     120      2952
   whole         387        0       0     387    134995
   chance        106        0      10     117      2263
   tfidf         445       41     100     586       145
-  engram   success  72% = 2215 passed of 3071 posed (attempted 3071/3071,  72% of those passed)   composite 0.882   S 0.66 ×6.6   score 813   standing 3942 tok   242 tok/query
-           v2 score 813 = families 705 + signal 37 + tokens 71 (billed 439 tok/query)
-    retrieval      2063   62%  r@1 0.52  r@5 0.63  lexical_r@5 1.00  paraphrase_r@5 0.99  oblique_r@5 0.52  crossed_r@5 0.02  path_r@5 1.00  path_cover 0.99  stale_above 0.19  hedge 0.38  noise 0.48
+  engram   success  70% = 2140 passed of 3071 posed (attempted 3071/3071,  70% of those passed)   composite 0.789   S 0.66 ×6.6   score 739   standing 3880 tok   242 tok/query
+           v2 score 739 = families 631 + signal 37 + tokens 71 (billed 436 tok/query)
+    retrieval      2063   62%  r@1 0.52  r@5 0.63  lexical_r@5 1.00  paraphrase_r@5 0.99  oblique_r@5 0.52  crossed_r@5 0.02  path_r@5 1.00  path_cover 0.99  stale_above 0.19  hedge 0.39  noise 0.48
     abstention      238   99%  fp 0.01  phantom_fp 0.00  natural_fp 0.02  answered 1.00  declined 0.99  separation 0.69
     currency        100   88%  head_r@1 0.72  head_r@5 0.84  pollution 0.00  lineage 1.00
-    contradiction   166   68%  t1_recall 0.75  t2_recall 0.54  t3_recall 0.04  t2_false_alarm 0.02  t3_false_alarm 0.05  queued 0.50  flagged 0.45  absorbed 0.03
-    drift            66   91%  noticed 0.91  flagged 0.71
-    deletion        125  100%  released_gone 1.00  purged_gone 1.00  trace 1.00  marker_leak 1.00  resurrection_warned 1.00  purged_rewrite_warned 0.00
+    contradiction   166   46%  t1_recall 0.00  t2_recall 0.12  t3_recall 0.04  t2_false_alarm 0.00  t3_false_alarm 0.00  queued 0.10  flagged 0.05  absorbed 0.03
+    drift            66   45%  noticed 0.45  flagged 0.26
+    deletion        125   93%  released_gone 1.00  purged_gone 1.00  trace 1.00  marker_leak 1.00  resurrection_warned 0.79  purged_rewrite_warned 0.00
     rationale       188   97%  direct_r@5 0.01  assisted_r@5 0.97  structure_only 0.96
     temporal        125  100%  in_window_r@5 1.00  leak 0.00
   rag      success  52% = 1595 passed of 3071 posed (attempted 2772/3071,  58% of those passed)   composite 0.444   S 0.12 ×1.2   score 374   standing 0 tok   2261 tok/query
@@ -101,4 +102,4 @@ world 500: 641 notes, 530 edges, 4315 ops, 3112 probes
     rationale       188    0%  direct_r@5 0.00  assisted_r@5 0.00  structure_only 0.00
     temporal        125  100%  in_window_r@5 1.00  leak 0.00
 
-wrote /private/tmp/claude-501/-Users-techtheist-IdeaProjects-engram/fb3d9cbc-9dd7-4f7a-a7d6-e2f86d44cacf/scratchpad/ladder/500-seed3.json
+wrote results/v2/reference-arms/500-seed3.json
