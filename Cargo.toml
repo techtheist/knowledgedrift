@@ -15,7 +15,7 @@ anyhow = "1"
 # The reference in-process arms (the engram engine and the flat baselines
 # built on its embedder trait) — optional, so grading a transcript and
 # exporting worlds need no model stack at all.
-engram-core = { git = "https://github.com/techtheist/engram", rev = "3f029d4cae42f8137be14fded9762346fb2dd410", optional = true }
+engram-core = { git = "https://github.com/techtheist/engram", rev = "2c760e91071fe69e6f0783b55ff5d1d26a0794f0", optional = true }
 
 [features]
 default = []
