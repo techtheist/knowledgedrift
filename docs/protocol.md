@@ -14,7 +14,7 @@ native API; the harness never reaches around them.
 | `endorse(key, by)` | someone vouches for the note on one rung of the authority ladder: `retrieval` (it was delivered and used), `assistant` (confirmed still true), `user` (the owner approved it), `supervisor` (pinned above every other signal); a rung may repeat | nothing (`endorse_*: false`) |
 | `settle()` | a session boundary: calibration, sweeps, consolidation | nothing |
 | `recall(query, k, window?)` | top-k, optionally scoped to a capture-time window | rank, filter by date if it has one |
-| `recall_path(path, k)` | (v2) the path-shaped read: what a caller about to touch `path` should see — an edit hook's channel, a code-ref index | hand the path to `recall` as a query (the default) |
+| `recall_path(path, k)` | the path-shaped read: what a caller about to touch `path` should see — an edit hook's channel, a code-ref index | hand the path to `recall` as a query (the default) |
 | `suspects()` | every disagreement the system wants a person to judge | `None` (`suspects: false`) |
 | `lineage(key)` | the supersession history reachable from a note | `None` |
 | `standing_tokens()` | what the system costs every session before a question is asked | 0 (a file: its size) |
@@ -63,18 +63,18 @@ them (`docs/scoring.md`).
 
 ## The wire format
 
-`--export DIR` writes one script per size; the v1 scripts are under
-`worlds/v1/`:
+`--export DIR` writes one script per size; the shipped scripts are under
+`worlds/v2/`:
 
 ```json
-{ "spec": { "size": 100, "seed": 1, "k": 10, "pollution": 0.1, "chains": 5, "chain_len": 3, "...": "..." },
+{ "spec": { "size": 100, "seed": 1, "k": 10, "pollution": 0.1, "chains": 5, "chain_len": 3, "edition": 2, "...": "..." },
   "digest": "3f0c…",
   "ops": [
     { "op": "inscribe", "record": { "key": "f0000", "kind": "Decision", "title": "...", "body": "...", "code_refs": [], "created_at": 1782000000, "open": false }, "mode": "import" },
     { "op": "link", "from": "f0003", "to": "f0011", "verb": "because" },
     { "op": "supersede", "old": "f0100", "new": { "key": "f0101", "...": "..." } },
     { "op": "settle" },
-    { "op": "recall", "id": "R1", "query": "Vanor lease broker retry budget", "k": 10 },
+    { "op": "recall", "id": "R1", "query": "amber harbor lease broker retry budget", "k": 10 },
     { "op": "recall", "id": "R77", "query": "...", "k": 10, "window": { "after": 1781000000, "before": 1781900000 } },
     { "op": "recall_path", "id": "P1", "path": "src/lease_broker/state.rs", "k": 10 },
     { "op": "inscribe", "id": "W1", "record": { "key": "c0a", "...": "..." }, "mode": "write" },
@@ -84,7 +84,7 @@ them (`docs/scoring.md`).
     { "op": "lineage", "id": "L1", "key": "f0102" }
   ],
   "probes": [
-    { "id": "R1", "family": "retrieval", "expect": "gold", "gold": "f0000", "phrasing": "lexical", "stale": "s-f0000" },
+    { "id": "R1", "family": "retrieval", "expect": "gold", "gold": "f0000", "phrasing": "lexical", "stale": "s-f0000", "answer": "3 attempts" },
     { "id": "P1", "family": "retrieval", "expect": "bound", "path": "src/lease_broker/state.rs", "gold": ["f0000", "f0140"], "answers": ["retry budget of 3", "..."] },
     { "id": "C0", "family": "contradiction", "expect": "case", "gold": "f0000", "planted": ["c0a"], "witness": "c0a", "tier": 1, "shape": "value", "positive": true },
     { "id": "R412", "family": "authority", "expect": "ranked", "winner": "a3a", "losers": ["a3b", "f0011"], "order": false, "layer": 2, "scenario": "approve_vs_confirm", "needs": ["endorse_user"] }
@@ -95,8 +95,8 @@ The operation order is load-bearing and the same in every world:
 
 1. import the world (notes, links, stale siblings, supersession chains);
 2. settle — a session boundary;
-3. probe retrieval (on v2, every file the code refs name is also read by
-   path), abstention, currency, rationale, temporal on the untouched world,
+3. probe retrieval (every file the code refs name is also read by path),
+   abstention, currency, rationale, temporal on the untouched world,
    so no family's plantings crowd another's questions;
 4. plant the contradiction cases as assistant-style writes;
 5. settle, then ask for the suspect queue (contradiction + drift);

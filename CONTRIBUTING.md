@@ -1,13 +1,14 @@
 # Contributing
 
 Two kinds of pull request are expected: **an adapter** for a memory system,
-and **a result** for a system on the v1 worlds. Anything else — a new
-family, a generator change, a scoring change — belongs to **v2**, which is
-open on the `v2` branch (`--v2`, `worlds/v2/`, `results/v2/`,
-`docs/scoring.md`); open an issue first. (Opt-in variants that leave the plain worlds' digests
+and **a result** for a system on the shipped worlds (`worlds/v2/`).
+Anything else — a new family, a generator change, a scoring change — is a
+new edition of the benchmark, with its own worlds and its own tables; open
+an issue first. (Opt-in variants that leave the plain worlds' digests
 untouched — the pollution shapes, the `--authority` family — are how a
-family is added inside v1: the variant world is frozen beside the others
-and reported in its own table, never folded into the leaderboard row.)
+family is added inside an edition: the variant world is frozen beside the
+others and reported in its own table, never folded into the leaderboard
+row.)
 
 ## Submitting an adapter
 
@@ -41,14 +42,14 @@ submission. It states:
 
 Rules the runner enforces and a review checks:
 
-- **Same embedder where possible.** The v1 tables embed with
+- **Same embedder where possible.** The tables embed with
   `BAAI/bge-small-en-v1.5` everywhere, so a difference in a table is a
   difference in mechanism. If your system cannot take an external embedder,
   say which one it used and expect the review to read your retrieval
   columns against `rag` with that in mind.
 - **No LLM in the loop.** The benchmark is judge-free and offline. An
   adapter may not call a language model during replay; a system whose
-  memory layer is inseparable from one is out of scope for v1.
+  memory layer is inseparable from one is out of scope.
 - **Keys are yours to map.** The harness addresses notes by its own key;
   the adapter keeps the key → native id map and never resolves a target by
   searching for it.
@@ -65,7 +66,7 @@ Rules the runner enforces and a review checks:
 
 ## Submitting a result
 
-A result is a directory `results/v1/<system>-<version>/` containing:
+A result is a directory `results/v2/<system>-<version>/` containing:
 
 - the graded receipts, one per world: `<size>-seed<N>.json` as written by
   `knowledgedrift --grade … --json` (the transcript itself is not
@@ -79,10 +80,10 @@ A result is a directory `results/v1/<system>-<version>/` containing:
 
 To be quoted in the leaderboard a result needs **the official ladder**:
 500 and 1500 tested facts on seed 1, and **three seeds at 500** (seeds 1, 2
-and 3, all shipped under `worlds/v1/`). A single-seed result is accepted as
+and 3, all shipped under `worlds/v2/`). A single-seed result is accepted as
 preliminary and labelled so. Any receipt is regraded by the reviewer from
 the repository's grader before it is merged; a receipt whose script digest
-is not one of the v1 digests is not a v1 result.
+is not one of the shipped worlds' digests is not a result.
 
 The leaderboard row states the system **and its version**, the
 capabilities it declared, success with its three-seed spread, composite,
@@ -98,7 +99,7 @@ alone is not a description.
   filter, is corrected before merge.
 - The notes file explains every N/A and every shim.
 - The numbers are reproducible: the reviewer replays at least the 100
-  world (`worlds/v1/knowledgedrift-100-seed1.json`) with the submitted
+  world (`worlds/v2/knowledgedrift-100-seed1-v2.json`) with the submitted
   adapter and expects the graded families to match.
 - Nothing in the adapter reads the probes. The runner does not expose
   them; an adapter that opens the script file itself is refused.
@@ -106,7 +107,7 @@ alone is not a description.
 ## Developing the harness
 
 ```sh
-cargo test                          # the grader, the generator, the golden v1 digests — no models
+cargo test                          # the grader, the generator, the golden world digests — no models
 cargo test --features arms          # + the in-process arms on fake models
 cargo clippy --all-targets --features arms
 cargo fmt --check
@@ -121,6 +122,6 @@ uncommitted `.cargo/config.toml`:
 engram-core = { path = "../engram/crates/engram-core" }
 ```
 
-`worlds/v1/*.json` are frozen. If a generator change alters any of their
-digests, `the_v1_worlds_regenerate_from_this_crate` fails, and that is the
-signal that the change is a v2.
+`worlds/v2/*.json` are frozen. If a generator change alters any of their
+digests, `the_v2_worlds_regenerate_from_this_crate` fails, and that is the
+signal that the change is a new edition, not a fix.

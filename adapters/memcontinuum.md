@@ -27,9 +27,9 @@ git clone https://github.com/krakozavr/MemContinuum adapters/vendor/memcontinuum
 adapters/.venv-memcontinuum/bin/python3 -c "from fastembed import TextEmbedding; TextEmbedding('BAAI/bge-small-en-v1.5')"
 
 adapters/.venv-memcontinuum/bin/python3 adapters/run.py --adapter memcontinuum \
-    --script worlds/v1/knowledgedrift-500-seed1.json --out adapters/out/memcontinuum-500-seed1.json
+    --script worlds/v2/knowledgedrift-500-seed1-v2.json --out adapters/out/memcontinuum-500-seed1.json
 cargo run --release -- --grade adapters/out/memcontinuum-500-seed1.json \
-    --script worlds/v1/knowledgedrift-500-seed1.json --json adapters/out/memcontinuum-500-seed1-graded.json
+    --script worlds/v2/knowledgedrift-500-seed1-v2.json --json adapters/out/memcontinuum-500-seed1-graded.json
 ```
 
 `MEMCONTINUUM_SRC` points the adapter at another checkout;
@@ -52,7 +52,7 @@ passed explicitly (`adapters/out/memcontinuum-index.sqlite`).
 | op | what it becomes | dropped |
 |---|---|---|
 | `inscribe(record, mode)` | a topic file `topics/<kind>/<key>.md`: `id` = key, `title`, `area` = kind, `code_refs`, `tags: [kind]`, one link `L1` (`status: active`, `kind: adopted`, `ruling.text` = body, `ruling.authority: agent-inference`, `date` = capture day); the body renders the chain newest-first | `open` (Problems are rulings like any other); `mode` (no write-time checks exist) |
-| `link(from, to, verb)` | a typed edge on the link whose sentence it is, in the one reading the schema's seven `rel` values allow: `X because Y` → on Y `led_to X`; `R answers P` → on P `led_to R`; `X builds-on Y` → on Y `led_to X`; `X about Y` → on X `applies_to Y` (v2 adapter; the v1 receipts were taken with `link` mapped to nothing) | the verb's own name |
+| `link(from, to, verb)` | a typed edge on the link whose sentence it is, in the one reading the schema's seven `rel` values allow: `X because Y` → on Y `led_to X`; `R answers P` → on P `led_to R`; `X builds-on Y` → on Y `led_to X`; `X about Y` → on X `applies_to Y` (the revised adapter; its first version mapped `link` to nothing) | the verb's own name |
 | `supersede(old, new)` | the old link's lifecycle move `status: superseded` + `superseded_by`, a new link `L<n+1>` (`kind: reversed`, `reverses`, `reason_for_change: changed-mind`, the new body as its ruling), the topic's `title` and `current` updated (title changes are free per SCHEMA §7) | — |
 | `release(key, reason)` | the lifecycle move `status: historical` on the active link ("no longer applicable, nothing replaced it"); the reason appended to the topic's free body text | the trace: default search hides non-active rulings |
 | `purge(key)` | the topic file deleted; the next reindex drops its rows | — |
@@ -74,7 +74,7 @@ topic-row hit answers to its newest active link's key.
 
 | capability | value | why |
 |---|---|---|
-| `link` | **true** | typed edges are stored on links and delivered as a hit's neighbours (v2 adapter) |
+| `link` | **true** | typed edges are stored on links and delivered as a hit's neighbours |
 | `history` | **true** | the chain is the unit; `memidx chain` walks it |
 | `trace` | false | a `historical` ruling stays in the file but default search does not deliver it |
 | `suspects` | false | no disagreement detection |
@@ -114,13 +114,15 @@ topic-row hit answers to its newest active link's key.
 
 ## Numbers
 
-v1 (the adapter as first written — `link` mapped to nothing, `search`
-for every read): `results/v1/memcontinuum-0.2.0rc5/README.md`. v2 (this
-adapter: typed edges on `link`, edge-neighbours on every hit, `for-path`
-behind `recall_path`): `results/v2/memcontinuum-0.2.0rc5/README.md` —
-392 at 500 and 380 at 1500, rationale 100% (`structure_only` 0.95),
-`path_r@5` 1.00. The revision followed the author's review of the v1
-numbers: the agent's channel is the hook-injected `for-path` chain, not
-`search`; the v2 adapter measures that channel where the protocol has a
-place for it (the rationale walk, the path read) and leaves `search` as
-the answer to a question, which is the only thing a question can ask.
+`results/v2/memcontinuum-0.2.0rc5/README.md`: **392 at 500 and 380 at
+1500**, rationale 100% (`structure_only` 0.95), `path_r@5` 1.00 at
+`path_cover` 0.95 / 0.87, 852 billed tokens a query. The adapter as first
+written mapped `link` to nothing and answered every read with `search`;
+that version scored 295 and 287 with rationale 5%, and was revised after
+the author's review: the agent's channel is the hook-injected `for-path`
+chain, not `search`. This adapter measures that channel where the protocol
+has a place for it (the rationale walk, the path read) and leaves `search`
+as the answer to a question, which is the only thing a question can ask.
+What the revision did not move: `stale_above` 0.62 (its FTS5 channel
+prefers the sibling's shorter title), abstention 0%, no suspect queue, no
+clock, oblique 0.31, crossed 0.05.

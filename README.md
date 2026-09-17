@@ -30,8 +30,7 @@ embedder (`results/v2/`):
 | cognee 1.5.4 (no LLM: chunk store)                             | 43% | 240 | 8 | 16 | **263** | ~1,900 |
 | chance                                                         | 3% | 103 | 0 | 9 | **112** | ~2,300 |
 | a curated 3,000-token file                                     | 5% | 108 | 0 | 1 | **109** | ~2,960 |
-| [Reference System](https://github.com/techtheist/engram) 0.9.5      | 66% | 616 | 32 | 69 | 718 | ~460 |
-| **[Reference System](https://github.com/techtheist/engram) 0.9.6**  | **69%** | **700** | 32 | 69 | **801** | ~460 |
+| **[Reference System](https://github.com/techtheist/engram) 0.9.6**     | **69%** | **700** | 32 | 69 | **801** | ~460 |
 
 Three seeds at 500 tested facts, every family's pass rate, every column,
 and what the numbers mean: [`RESULTS.md`](RESULTS.md). Receipts and how
@@ -86,7 +85,7 @@ world (seeded, invented)  ──►  script (JSON: ops + probes + digest)
 1. **A world** is generated from a seed: a few hundred notes about an
    invented software project, with links, re-decided subjects, a polluted
    share of stale siblings, planted contradictions, deletions, code refs
-   and capture times. Subjects are three ordinary words (*amber harbor
+   and capture times. Subjects are a few ordinary words (*amber harbor
    lease broker*): nothing answerable from pretraining, and no single
    token names a note. The shipped worlds are frozen under `worlds/v2/`
    and regenerate byte for byte from this crate (a test checks their
@@ -229,8 +228,9 @@ An edition is frozen once its numbers are published: its worlds, the rules
 in `src/grade.rs` and the scoring are what every result in its tables was
 measured against. A change to any of them is a new edition with its own
 worlds and its own tables; results are never compared across editions.
-Earlier editions keep their worlds, receipts and readings under their own
-directories.
+This is the second edition (`worlds/v2/`, `results/v2/`); the first keeps
+its worlds, receipts and readings under `worlds/v1/` and `results/v1/` as
+an archive, and nothing in it is comparable with the tables above.
 
 ## Related
 

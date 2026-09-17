@@ -1,4 +1,11 @@
-# v1 results
+# v1 results (archived edition)
+
+**This is the first edition's archive.** The current edition is v2
+(`worlds/v2/`, `results/v2/`, the tables in the README and `RESULTS.md`);
+its worlds, rules and score differ, and nothing below is comparable with
+them. The directory is kept so every number the first edition published
+can still be read back to its receipt.
+
 
 Every graded receipt behind the tables in `RESULTS.md` and the README, and
 how each was produced. A receipt is what `knowledgedrift --json` (the
@@ -23,11 +30,6 @@ world was re-run as the check).
 ## Directories
 
 ### `reference-arms/` — the six in-process arms
-
-`500-seed1-engram-0.9.6.{json,log}` is the engram arm alone on the v1
-500 world with Engram Alpha 0.9.6 (2026-09-16), the version the v2 tables
-quote — 86% success, score 518, against the 0.9.5-era 85% / 511 in
-`500-seed1.json`; the v1 tables are not re-quoted for it.
 
 `cargo run --release --features fastembed -- <flags> --json <file>`;
 the `.log` beside each receipt is the terminal report.

@@ -17,11 +17,11 @@ python3 -m venv .venv-langmem                      # gitignored (.venv-*)
 # verified to load afterwards with HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1.
 
 .venv-langmem/bin/python3 run.py --adapter langmem \
-    --script ../worlds/v1/knowledgedrift-100-seed1.json --out out/langmem-100.json
+    --script ../worlds/v2/knowledgedrift-100-seed1-v2.json --out out/langmem-100.json
 
 cd ..   # repo root
 cargo run --release -- --grade adapters/out/langmem-100.json \
-    --script worlds/v1/knowledgedrift-100-seed1.json \
+    --script worlds/v2/knowledgedrift-100-seed1-v2.json \
     --json adapters/out/langmem-100-graded.json
 ```
 
@@ -137,69 +137,52 @@ window.
   adapter does not batch around the store — that is the store's cost model.
 - Nothing else: no re-ranking, no thresholds, no decline rule, no over-fetch.
 
-## Graded result — 100 world (`knowledgedrift-100-seed1.json`, digest `280739585b56cf43…`)
+## Results — 500 and 1500 tested facts, seed 1
 
-Transcript `out/langmem-100.json`, receipt `out/langmem-100-graded.json`.
-Replay wall-clock **7 s** (8.6 s including interpreter + model load), Apple
-silicon CPU.
-
-```
-== 100 tested facts, 125 notes ==
-  arm       posed attempted passed  success   of att. composite     S  mult   score  standing    tok/q
-  langmem     474       418    335      71%       80%     0.516  0.10   1.0      54         0     2439
-  langmem  success  71% = 335 passed of 474 posed (attempted 418/474,  80% of those passed)   composite 0.516   S 0.10 ×1.0   score 54   standing 0 tok   2439 tok/query
-    retrieval       300   90%  r@1 0.77  r@5 0.94  lexical_r@5 1.00  paraphrase_r@5 0.99  oblique_r@5 0.82  stale_above 0.37  hedge 0.00  noise 0.90
-    abstention       22    0%  fp 1.00  answered 1.00  declined 0.00  separation 0.89
-    currency         15  100%  head_r@1 0.93  head_r@5 1.00  pollution 0.00
-    contradiction     -  n/a — no suspect nomination
-    drift             -  n/a — no suspect nomination
-    deletion         16  100%  released_gone 1.00  purged_gone 1.00  resurrection_warned 0.00  purged_rewrite_warned 0.00
-    rationale        40   22%  direct_r@5 0.23  assisted_r@5 0.23  structure_only 0.00
-    temporal         25  100%  in_window_r@5 1.00  leak 0.00
-```
-
-Reading it: lexical retrieval is perfect because the text is stored verbatim
-and the query is its own words; `stale_above 0.37` is the price of a flat
-store — a polluted subject's stale sibling outranks the current note in 37% of
-those questions because nothing marks it stale. Abstention `fp 1.00`: the store
-never declines, every control question gets ten hits (`separation 0.89` says a
-threshold *could* be fitted on the scores; none is shipped). Currency is 100%
-because supersede physically deletes the retired generation; lineage is N/A
-for the same reason. Deletion is 100% gone with no trace and no warning — the
-victim is simply absent. Rationale 22% is pure vector luck: there are no edges,
-so `structure_only 0.00`. Temporal is 100% with zero leak — the native
-pre-filter.
-
-Per-op means (ms) from the transcript: inscribe 24.8 (one embedder call per
-put), supersede 31.7, recall 6.4, link/settle/release/purge/lineage/suspects
-≈ 0.
-
-## Wall-clock for the larger worlds
-
-**500 world — measured** (`knowledgedrift-500-seed1.json`, 3 593 ops):
-replay **55 s** (56 s wall), 2 348 replies. Per-op means grew with the
-store: inscribe 33.7 ms, supersede 45.5 ms, **recall 11.8 ms** (6.4 at 100 —
-`_filter_items` walks every item in Python and the cosine is over all of
-them, so recall is linear in store size). Graded for the record
-(`out/langmem-500.json`, `out/langmem-500-graded.json`):
+Receipts under `results/v2/langmem-0.0.30/` (`500-seed1.json`,
+`1500-seed1.json`, the `.log` beside each). One Apple-silicon laptop, CPU
+embedder, the three external chains replaying side by side so wall-clock is
+contended.
 
 ```
-== 500 tested facts, 630 notes ==
-  arm       posed attempted passed  success   of att. composite     S  mult   score  standing    tok/q
-  langmem    2346      2058   1477      63%       72%     0.469  0.11   1.1      51         0     2327
-  langmem  success  63% = 1477 passed of 2346 posed (attempted 2058/2346,  72% of those passed)   composite 0.469   S 0.11 ×1.1   score 51   standing 0 tok   2327 tok/query
-    retrieval      1500   80%  r@1 0.64  r@5 0.84  lexical_r@5 1.00  paraphrase_r@5 0.98  oblique_r@5 0.53  stale_above 0.38  hedge 0.00  noise 0.91
-    abstention      110    0%  fp 1.00  answered 1.00  declined 0.00  separation 0.79
-    currency         75   93%  head_r@1 0.77  head_r@5 0.93  pollution 0.00
+  arm       posed attempted passed  success   of att.  families  signal  tokens   score   billed
+  langmem    3042      2754   1600      53%       58%       359       8       9     376     2360
+    retrieval      2063   64%  r@1 0.51  r@5 0.67  lexical_r@5 1.00  paraphrase_r@5 0.99  oblique_r@5 0.51  crossed_r@5 0.17  path_r@5 0.67  path_cover 0.34  stale_above 0.27  hedge 0.00  noise 0.92
+    abstention      238    0%  fp 1.00  phantom_fp 1.00  natural_fp 1.00  answered 1.00  declined 0.00  separation 0.60
+    currency         75   91%  head_r@1 0.77  head_r@5 0.91  pollution 0.00
     contradiction     -  n/a — no suspect nomination
     drift             -  n/a — no suspect nomination
     deletion         83  100%  released_gone 1.00  purged_gone 1.00  resurrection_warned 0.00  purged_rewrite_warned 0.00
-    rationale       165    3%  direct_r@5 0.03  assisted_r@5 0.03  structure_only 0.00
-    temporal        125   99%  in_window_r@5 0.99  leak 0.00
+    rationale       170    4%  direct_r@5 0.04  assisted_r@5 0.04  structure_only 0.00
+    temporal        125  100%  in_window_r@5 1.00  leak 0.00
 ```
 
-**1500 world — measured** (`results/v1/langmem-0.0.30/1500-seed1.json`: 57% success, score 52; the estimate below, written before the run, held). Estimate: (10 816 ops: 2 528 inscribes, 150 supersedes,
-6 220 recalls, ~1 900 live items): recall ≈ 6 ms + ~0.011 ms/item × 1 900 ≈
-25 ms; 2 528 × 34 ms + 150 × 46 ms + 6 220 × 25 ms ≈ 250 s, so **about 4–5
-minutes** of replay. Nothing needs a GPU or a service; the store lives in
-process memory (1 900 × 384 floats is negligible).
+At 1500: **48% success, score 359** (families 340, signal 7, tokens 11,
+2,201 billed tokens a query); retrieval 57% (oblique 0.34, crossed 0.09,
+path 0.56 / 0.19), currency 80%, rationale 4%, temporal 99%.
+
+Reading it: LangMem is the in-process `rag` arm to the digit (376 and 359
+against 376 and 359) — a flat store given the same embedder is one system,
+and the three calls its tools make add nothing a vector top-k does not.
+Lexical retrieval is perfect because the text is stored verbatim and the
+query is its own words; the crossed question, which shares no content word
+with its note, is found 17% of the time. `stale_above 0.27` is the price of
+a flat store — a polluted subject's stale sibling outranks the current note
+in 27% of those questions because nothing marks it stale. Abstention
+`phantom_fp` and `natural_fp` 1.00: the store never declines, every control
+question gets ten hits (`separation 0.60` says a threshold would barely
+help; none is shipped). Currency 91% because supersede physically deletes
+the retired generation; lineage is N/A for the same reason. Deletion is
+100% gone with no trace and no warning — the victim is simply absent.
+Rationale 4% is pure vector luck: there are no edges, so `structure_only
+0.00`. Temporal is 100% with zero leak — the native pre-filter. The path
+read (0.67 / 0.34) embeds the path string and finds the component's notes,
+never the file.
+
+Per-op means (ms) from the 500 transcript: inscribe 50 (one embedder call
+per put), supersede 58, recall 22, the path read 13,
+link/settle/release/purge/lineage/suspects ≈ 0. Recall is linear in store
+size — `_filter_items` walks every item in Python and the cosine is over
+all of them — so the 1500 world replays in about five minutes of op time.
+Nothing needs a GPU or a service; the store lives in process memory
+(1,900 × 384 floats is negligible).

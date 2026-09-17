@@ -23,10 +23,10 @@ python3.14 -m venv .venv-mem0                    # gitignored
 
 # replay + grade (grader from the repo root)
 .venv-mem0/bin/python3 run.py --adapter mem0 \
-    --script ../worlds/v1/knowledgedrift-100-seed1.json --out out/mem0-100.json
+    --script ../worlds/v2/knowledgedrift-100-seed1-v2.json --out out/mem0-100.json
 cd .. && cargo run --release -- \
     --grade adapters/out/mem0-100.json \
-    --script worlds/v1/knowledgedrift-100-seed1.json \
+    --script worlds/v2/knowledgedrift-100-seed1-v2.json \
     --json adapters/out/mem0-100-graded.json
 ```
 
@@ -152,73 +152,63 @@ untouched), `HF_HUB_OFFLINE=1`, `TRANSFORMERS_OFFLINE=1`.
    needs ≥3.10 and every dependency had a 3.14 wheel, so no interpreter was
    installed for this.
 
-## Result at 100 — seed 1, k 10, pollution 10%
+## Results — 500 and 1500 tested facts, seed 1
 
-Transcript `out/mem0-100.json`, graded `out/mem0-100-graded.json` (+ `.log`),
-script digest `280739585b56cf43`. Wall-clock **22 s** for 725 ops on an
-Apple-silicon laptop, CPU embedder (≈5 s of that is model load).
+Receipts under `results/v2/mem0-2.0.20/` (`500-seed1.json`,
+`1500-seed1.json`, the `.log` beside each). One Apple-silicon laptop, CPU
+embedder, the three external chains replaying side by side so wall-clock is
+contended.
 
 ```
-== 100 tested facts, 125 notes ==
-  arm       posed attempted passed  success   of att. composite     S  mult   score  standing    tok/q
-  mem0        474       418    321      68%       77%     0.510  0.10   1.0      51         0     2565
-    retrieval       300   85%  r@1 0.70  r@5 0.89  lexical_r@5 1.00  paraphrase_r@5 1.00  oblique_r@5 0.68  stale_above 0.43  hedge 0.00  noise 0.90
-    abstention       22    0%  fp 1.00  answered 1.00  declined 0.00  separation 0.84
-    currency         15  100%  head_r@1 0.80  head_r@5 1.00  pollution 0.00
+  arm       posed attempted passed  success   of att.  families  signal  tokens   score   billed
+  mem0       3042      2754   1427      47%       52%       334       7       6     347     2567
+    retrieval      2063   56%  r@1 0.48  r@5 0.59  lexical_r@5 1.00  paraphrase_r@5 1.00  oblique_r@5 0.29  crossed_r@5 0.06  path_r@5 0.65  path_cover 0.33  stale_above 0.30  hedge 0.00  noise 0.93
+    abstention      238    0%  fp 1.00  phantom_fp 1.00  natural_fp 1.00  answered 1.00  declined 0.00  separation 0.59
+    currency         75   73%  head_r@1 0.72  head_r@5 0.73  pollution 0.00
     contradiction     -  n/a — no suspect nomination
     drift             -  n/a — no suspect nomination
-    deletion         16  100%  released_gone 1.00  purged_gone 1.00  resurrection_warned 0.00  purged_rewrite_warned 0.00
-    rationale        40   22%  direct_r@5 0.23  assisted_r@5 0.23  structure_only 0.00
-    temporal         25  100%  in_window_r@5 1.00  leak 0.00
+    deletion         83  100%  released_gone 1.00  purged_gone 1.00  resurrection_warned 0.00  purged_rewrite_warned 0.00
+    rationale       170    5%  direct_r@5 0.05  assisted_r@5 0.05  structure_only 0.00
+    temporal        125  100%  in_window_r@5 1.00  leak 0.00
 ```
 
-Per-op means from the transcript: inscribe 41 ms, supersede 42 ms,
-recall 22 ms, release/purge ~2 ms; link/settle/lineage/suspects are no-ops.
+At 1500: **44% success, score 348** (families 333, signal 6, tokens 8,
+2,438 billed tokens a query); retrieval 52% (oblique 0.18, crossed 0.03,
+path 0.61 / 0.18), currency 74%, rationale 7%, temporal 100%.
 
-Reading it, next to the in-process arms on the same script (`results/v1/`:
-rag 71% / 0.516 / 54, grep 62%, engram 92% / 0.947 / 601):
+Per-op means from the 500 transcript: inscribe 39 ms, supersede 45 ms,
+recall 42 ms, the path read 37 ms, release/purge ~2 ms;
+link/settle/lineage/suspects are no-ops. At 1500 recall grows to 87 ms —
+embedded Qdrant scans vectors in NumPy and the BM25 sparse query is a
+Python-side scan, so recall cost grows with the collection.
 
-- **Retrieval 85%** — lexical and paraphrase both 1.00, oblique 0.68.
-  Hybrid BM25 pays on the surface forms; the oblique questions are where
-  it runs out. `stale_above 0.43`: on polluted subjects the untouched stale
-  sibling outranks the gold 43% of the time — a flat store has no reason
-  to prefer one.
-- **Abstention 0%** — `fp 1.00`, as expected: Mem0 never declines and the
-  0.1 semantic threshold never bites. `separation 0.84` says its top score
-  does carry signal a caller could threshold on; Mem0 does not.
-- **Currency 100%** — `update()` in place means the retired generation is
-  gone, so no pollution; lineage is N/A (`history: false`).
+Reading it, next to the in-process arms on the same script (`rag` 376 at
+53%, `grep` 335 at 43%, the reference system 816 at 73%):
+
+- **Retrieval 56%** — lexical and paraphrase both 1.00, oblique 0.29,
+  crossed 0.06. Hybrid BM25 pays on the surface forms and costs on the
+  questions that share no words with the note: eight points under `rag`
+  on the same embedder. `stale_above 0.30`: on polluted subjects the
+  untouched stale sibling outranks the gold 30% of the time — a flat store
+  has no reason to prefer one.
+- **Abstention 0%** — `phantom_fp` and `natural_fp` 1.00, as expected:
+  Mem0 never declines and the 0.1 semantic threshold never bites.
+- **Currency 73%** — `update()` in place means the retired generation is
+  gone, so no pollution; the head misses on the oblique question. Lineage
+  is N/A (`history: false`).
 - **Deletion 100% on absence**, 0 on warnings — deleted is deleted, and a
   write-back is just another `add`.
-- **Rationale 22%** — no edges, so only rationale notes that are lexically
+- **Rationale 5%** — no edges, so only rationale notes that are lexically
   close to the question surface (`structure_only 0.00`).
 - **Temporal 100%** — the native range filter delivers the gold inside the
   window with zero leak.
-- **S 0.10, ×1.0** — whole notes, ten of them per question: the same
-  token bill as rag/grep (2,565 tok/query), so the composite carries
-  through unmultiplied.
-
-Single seed at 100; the three-seed ladder at 500 is in `results/v1/`.
-
-## The larger worlds
-
-Measured 500 and 1500 receipts (seed 1) and the 500 receipts for seeds 2
-and 3 are under `results/v1/` (`mem0-2.0.20/`); the estimate below was
-written before them and held.
-
-### Wall-clock estimate
-
-At the 100-world per-op means: 500 (3,593 ops, 630 notes) ≈ 85 s, 1500
-(10,816 ops, 1,883 notes) ≈ 250 s of op time, plus model load. Embedded
-Qdrant scans vectors in NumPy and the BM25 sparse query is a Python-side
-scan, so recall cost grows with the collection — budget 2–3 min for 500
-and 6–10 min for 1500. Transcripts are ~4.6 MB per 100 (whole notes ×
-10 hits × 418 recalls); expect ~25 MB and ~70 MB.
+- **Signal 7, tokens 6** — whole notes, ten of them per question: the
+  largest bill of the flat stores (2,567 tokens a query).
 
 ## Files
 
 - `mem0_adapter.py` — the adapter
 - `.venv-mem0/` — the venv (gitignored)
-- `out/mem0-*.json` — transcripts and graded files (scratch, gitignored; the graded receipts that count live in `results/v1/`)
+- `out/mem0-*.json` — transcripts and graded files (scratch, gitignored; the graded receipts that count live in `results/v2/`)
 - `out/mem0-smoke.json` — the 272-op smoke (first 40 recalls; the grader rightly refuses it at probe R41)
 - `out/mem0-store/`, `out/mem0-home/` — Mem0's embedded Qdrant + history.db, and its `MEM0_DIR` (config.json only); both scratch, gitignored

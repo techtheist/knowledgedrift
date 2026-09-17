@@ -1,6 +1,6 @@
-# cognee 1.5.4 — v2 receipts
+# cognee 1.5.4 — receipts
 
-the cognify pipeline without its LLM task, `CHUNKS` search (`adapters/cognee.md`), the v1 adapter unchanged, replayed on `worlds/v2/knowledgedrift-{500,1500}-seed1-v2.json`
+the cognify pipeline without its LLM task, `CHUNKS` search (`adapters/cognee.md`), the adapter as merged, replayed on `worlds/v2/knowledgedrift-{500,1500}-seed1-v2.json`
 (2026-09-15, one Apple-silicon laptop, CPU, the three external chains
 running side by side so wall-clock is contended). Files `500-seed1.json`
 and `1500-seed1.json` are what `knowledgedrift --grade … --json` wrote;

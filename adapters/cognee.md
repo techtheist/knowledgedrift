@@ -29,10 +29,10 @@ python3.14 -m venv .venv-cognee                     # gitignored
 # replay + grade (from the repository root)
 cd ..
 adapters/.venv-cognee/bin/python3 adapters/run.py --adapter cognee \
-    --script worlds/v1/knowledgedrift-100-seed1.json --out adapters/out/cognee-100.json
+    --script worlds/v2/knowledgedrift-100-seed1-v2.json --out adapters/out/cognee-100.json
 cargo run --release -- \
     --grade adapters/out/cognee-100.json \
-    --script worlds/v1/knowledgedrift-100-seed1.json \
+    --script worlds/v2/knowledgedrift-100-seed1-v2.json \
     --json adapters/out/cognee-100-graded.json
 ```
 
@@ -90,7 +90,7 @@ its cosine distance.
 | `purge(key)` | the same `delete_data` | identical to release |
 | `endorse(key, by)` | nothing, returns False | no rung (see below) |
 | `settle()` | the lazy index pass, if anything was added | returns `None` |
-| `recall(query, k, window)` | `search(query, query_type=SearchType.CHUNKS, datasets=["knowledgedrift"], top_k=k, only_context=True, verbose=True)` | cognee's chunk retriever: one LanceDB cosine search over `DocumentChunk_text`; hit `text` = the chunk's text (the whole note — every v1 note is one chunk), `score` = the negated cosine distance (cognee's `ScoredResult.score` is a distance, lower is better; the grader wants higher = better), `key` from the chunk's `belongs_to_set`; the window is **ignored** (`temporal: false`) |
+| `recall(query, k, window)` | `search(query, query_type=SearchType.CHUNKS, datasets=["knowledgedrift"], top_k=k, only_context=True, verbose=True)` | cognee's chunk retriever: one LanceDB cosine search over `DocumentChunk_text`; hit `text` = the chunk's text (the whole note — every note is one chunk), `score` = the negated cosine distance (cognee's `ScoredResult.score` is a distance, lower is better; the grader wants higher = better), `key` from the chunk's `belongs_to_set`; the window is **ignored** (`temporal: false`) |
 | `suspects()` | — | `None` |
 | `lineage(key)` | — | `None` |
 | `standing_tokens()` | — | 0 |
@@ -149,14 +149,14 @@ its cosine distance.
 5. **Chunk sizing uses cognee's tiktoken fallback.** cognee resolves the
    fastembed model's own tokenizer through `transformers`, which is not
    installed (cognee's `huggingface` extra); it logs a warning and counts
-   with tiktoken instead. Every v1 note is well under the 512-token budget
+   with tiktoken instead. Every note is well under the 512-token budget
    so every note is one chunk either way — the hit is the whole note, as
    with the other flat stores.
 6. **Incremental loading is cognee's.** A pass processes only the Data
    rows without a completed `cognify_pipeline` status; a deleted-then-re-
    added id is a new row. Between write→read boundaries the store is
    stale, which is why the pass runs before every recall that follows a
-   write — a v1 world has a few hundred such boundaries, and the deletion
+   write — a world has a few hundred such boundaries, and the deletion
    phase alone is one per case.
 7. **The release reason is dropped** (no field, no marker); release and
    purge are the same `delete_data`.
@@ -171,59 +171,61 @@ its cosine distance.
     pins `onnxruntime>=1.24.1` on 3.14); no interpreter was installed for
     this.
 
-## Result at 100 — seed 1, k 10, pollution 10%
+## Results — 500 and 1500 tested facts, seed 1
 
-Transcript `out/cognee-100.json`, graded `out/cognee-100-graded.json`,
-script digest `280739585b56cf43`. Wall-clock **71 s** for 725 ops on an
-Apple-silicon laptop, CPU embedder.
+Receipts under `results/v2/cognee-1.5.4/` (`500-seed1.json`,
+`1500-seed1.json`, the `.log` beside each). One Apple-silicon laptop, CPU
+embedder, the three external chains replaying side by side so wall-clock is
+contended.
 
 ```
-== 100 tested facts, 125 notes ==
-  arm       posed attempted passed  success   of att. composite     S  mult   score  standing    tok/q
-  cognee      474       393    305      64%       78%     0.386  0.11   1.1      42         0     2112
-    retrieval       300   89%  r@1 0.77  r@5 0.92  lexical_r@5 1.00  paraphrase_r@5 0.99  oblique_r@5 0.78  stale_above 0.37  hedge 0.00  noise 0.90
-    abstention       22    0%  fp 1.00  answered 1.00  declined 0.00  separation 0.88
-    currency         15  100%  head_r@1 0.93  head_r@5 1.00  pollution 0.00
+  arm       posed attempted passed  success   of att.  families  signal  tokens   score   billed
+  cognee     3042      2629   1455      48%       55%       259       8      14     281     2053
+    retrieval      2063   63%  r@1 0.50  r@5 0.66  lexical_r@5 0.99  paraphrase_r@5 0.99  oblique_r@5 0.48  crossed_r@5 0.17  path_r@5 0.62  path_cover 0.32  stale_above 0.26  hedge 0.00  noise 0.92
+    abstention      238    0%  fp 1.00  phantom_fp 1.00  natural_fp 1.00  answered 1.00  declined 0.00  separation 0.59
+    currency         75   92%  head_r@1 0.77  head_r@5 0.92  pollution 0.00
     contradiction     -  n/a — no suspect nomination
     drift             -  n/a — no suspect nomination
-    deletion         16  100%  released_gone 1.00  purged_gone 1.00  resurrection_warned 0.00  purged_rewrite_warned 0.00
-    rationale        40   20%  direct_r@5 0.20  assisted_r@5 0.20  structure_only 0.00
+    deletion         83  100%  released_gone 1.00  purged_gone 1.00  resurrection_warned 0.00  purged_rewrite_warned 0.00
+    rationale       170    4%  direct_r@5 0.04  assisted_r@5 0.04  structure_only 0.00
     temporal          -  n/a — no capture-time scoping
 ```
 
-Per-op means from the transcript: inscribe 67 ms, supersede 129 ms,
-release/purge ~300 ms (cognee's delete walks the graph and the vector
-rows), recall 69 ms including the index passes it triggers (the two
-`settle` calls, which absorbed the bulk imports, took 10 s each);
-link/lineage/suspects are no-ops.
+At 1500: **43% success, score 263** (families 240, signal 8, tokens 16,
+1,934 billed tokens a query); retrieval 56% (oblique 0.29, crossed 0.09,
+path 0.47 / 0.18), currency 80%, rationale 3%.
 
-Reading it, next to the in-process arms on the same script (`results/v1/`:
-rag 71% / 0.516 / 54, grep 62%, engram 92% / 0.947 / 601):
+Per-op means from the 500 transcript: inscribe 119 ms, supersede 306 ms,
+release/purge ~1.6 s (cognee's delete walks the graph and the vector
+rows), recall 193 ms, the path read 120 ms; the two `settle` calls, which
+absorb the bulk imports into the index, took 109 s each (654 s each at
+1500). link/lineage/suspects are no-ops.
 
-- **Retrieval 89%** — r@5 0.92, oblique 0.78: cognee's chunk retriever is
-  a cosine top-k over the same embedder, so it lands where `rag` does.
-  `stale_above 0.37`: a flat store has no reason to prefer the truth over
-  its untouched stale sibling.
-- **Abstention 0%** — `fp 1.00`: search never declines. `separation 0.88`
-  says the distance carries a signal a caller could threshold on; cognee
-  does not.
-- **Currency 100%** — delete + add means the retired generation is gone;
+Reading it, next to the in-process arms on the same script (`rag` 376 at
+53%, `grep` 335 at 43%, the reference system 816 at 73%):
+
+- **Retrieval 63%** — cognee's chunk retriever is a cosine top-k over the
+  same embedder, so it lands where `rag` does (64%): lexical and paraphrase
+  perfect, oblique 0.48, crossed 0.17. `stale_above 0.26`: a flat store has
+  no reason to prefer the truth over its untouched stale sibling. The path
+  read (0.62 / 0.32) finds the component's notes, never the file.
+- **Abstention 0%** — `phantom_fp` and `natural_fp` 1.00: search never
+  declines. `separation 0.59` says the distance carries little a caller
+  could threshold on.
+- **Currency 92%** — delete + add means the retired generation is gone;
   lineage is N/A (`history: false`).
 - **Deletion 100% on absence**, 0 on warnings — deleted is deleted.
-- **Rationale 20%** — no edges (they would come from the LLM), so only
+- **Rationale 4%** — no edges (they would come from the LLM), so only
   rationale notes lexically close to the question surface.
 - **Temporal N/A** — the one family the other flat stores attempt and
-  cognee cannot: its vector search has no time filter, so the 25 tasks
+  cognee cannot: its vector search has no time filter, so the 125 tasks
   count as failed in the headline, which is most of the gap to `rag`.
-- **S 0.11, ×1.1** — whole notes, ten per question: the same bill as
-  `rag` (~2,100 tokens per query).
-
-Single seed at 100; the three-seed ladder at 500 and the 1500 rung are in
-`results/v1/cognee-1.5.4/`.
+- **Signal 8, tokens 14** — whole notes, ten per question: the same bill
+  as `rag` (~2,000 tokens per query).
 
 ## Files
 
 - `cognee_adapter.py` — the adapter
 - `.venv-cognee/` — the venv (gitignored)
-- `out/cognee-*.json` — transcripts and graded files (scratch, gitignored; the graded receipts that count live in `results/v1/`)
+- `out/cognee-*.json` — transcripts and graded files (scratch, gitignored; the graded receipts that count live in `results/v2/`)
 - `out/cognee-store*/` — cognee's data files, SQLite, LanceDB and LadybugDB per run (scratch, gitignored)

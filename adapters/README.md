@@ -6,17 +6,17 @@ replay the exported script, hand the transcript to the Rust grader.
 All paths below are relative to the repository root.
 
 ```sh
-# 1. the v1 worlds are in worlds/v1/ (they regenerate byte-identical with
-#    `cargo run -- --sizes 100,500,1500 --export worlds/v1`)
+# 1. the worlds are in worlds/v2/ (they regenerate byte-identical with
+#    `cargo run -- --v2 --sizes 100,500,1500 --export worlds/v2`)
 
 # 2. replay through an adapter (each has its own venv — see its section)
 adapters/.venv-langmem/bin/python3 adapters/run.py \
-    --adapter langmem --script worlds/v1/knowledgedrift-500-seed1.json \
+    --adapter langmem --script worlds/v2/knowledgedrift-500-seed1-v2.json \
     --out adapters/out/langmem-500.json
 
 # 3. grade
 cargo run --release -- --grade adapters/out/langmem-500.json \
-    --script worlds/v1/knowledgedrift-500-seed1.json \
+    --script worlds/v2/knowledgedrift-500-seed1-v2.json \
     --json adapters/out/langmem-500-graded.json
 
 # 4. table rows for a results README
