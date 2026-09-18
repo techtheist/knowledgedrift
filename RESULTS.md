@@ -9,11 +9,12 @@ support.
 **Environment.** One Apple-silicon laptop, CPU only, 2026-09-16;
 `BAAI/bge-small-en-v1.5` for every embedding arm; the reference system
 (Engram Alpha 0.9.6, arm `engram`) with `jina-reranker-v1-turbo-en` and
-`deberta-v3-small-tasksource-nli`. Eleven systems: the reference system,
+`deberta-v3-small-tasksource-nli`. Twelve systems: the reference system,
 six in-process baselines (`tfidf`, `whole`, `rag`, `grep`, `curated`,
-`chance`) and four external adapters (MemContinuum, LangMem, Mem0, cognee)
-replaying the exported scripts through their own APIs. External systems
-ran one seed; the in-process arms ran three at 500.
+`chance`) and five external adapters (MemContinuum, Supermemory, LangMem,
+Mem0, cognee) replaying the exported scripts through their own APIs —
+Supermemory local 0.0.8 added 2026-09-18 on the same laptop. External
+systems ran one seed; the in-process arms ran three at 500.
 
 ## In one paragraph
 
@@ -30,7 +31,10 @@ answering in a title, and a family column that says exactly what a title
 cannot do. The three flat stores given the same vectors are one system —
 LangMem is `rag` to the digit at both sizes — and the one external system
 with a structural channel, MemContinuum, is the only one whose rationale
-family is not a rounding error.
+family is not a rounding error. Supermemory, run without its language
+model, is the same vector store with two things the others lack — a
+similarity floor and a version chain — and they are worth five to nine
+points.
 
 ## The ladder: 1,500 tested facts (seed 1)
 
@@ -46,6 +50,7 @@ deletion, 522 rationale, 375 temporal.
 | tfidf | 43% | 3,886 / 8,808 | 442 | 37 | 100 | **580** | 158 |
 | whole file | 71% | 6,429 / 7,775 | 390 | 0 | 0 | **390** | 404,164 |
 | MemContinuum | 44% | 3,984 / 7,850 | 326 | 7 | 47 | **380** | 844 |
+| Supermemory | 48% | 4,329 / 8,225 | 345 | 8 | 12 | **364** | 2,195 |
 | rag | 48% | 4,283 / 8,150 | 340 | 7 | 11 | **359** | 2,208 |
 | LangMem | 48% | 4,281 / 8,150 | 340 | 7 | 11 | **359** | 2,201 |
 | Mem0 | 44% | 4,001 / 8,150 | 333 | 6 | 8 | **348** | 2,438 |
@@ -63,6 +68,7 @@ does not have, and is scored zero in the headline):
 | tfidf | 45% | 0% | 67% | 58% | 73% | 100% | 0% | 100% |
 | whole file | 90% | 0% | 100% | n/a | n/a | 100% | 100% | n/a |
 | MemContinuum | 49% | 0% | 77% | n/a | n/a | 100% | 100% | n/a |
+| Supermemory | 56% | 1% | 85% | n/a | n/a | 100% | 4% | 99% |
 | rag | 57% | 0% | 80% | n/a | n/a | 100% | 4% | 99% |
 | LangMem | 57% | 0% | 80% | n/a | n/a | 100% | 4% | 99% |
 | Mem0 | 52% | 0% | 74% | n/a | n/a | 100% | 7% | 100% |
@@ -78,6 +84,7 @@ does not have, and is scored zero in the headline):
 | engram | 0.02 | 0.32 | 1.00 | 0.98 | 0.17 | 0.01 | 0.02 | 0.35 | 0.85 |
 | tfidf | 0.00 | 0.01 | 0.08 | 0.03 | 0.63 | 1.00 | 1.00 | 0.00 | 0.42 |
 | MemContinuum | 0.02 | 0.14 | 1.00 | 0.87 | 0.58 | 1.00 | 1.00 | 0.00 | – |
+| Supermemory | 0.08 | 0.35 | 0.53 | 0.14 | 0.32 | 0.98 | 1.00 | 0.00 | – |
 | rag | 0.09 | 0.34 | 0.56 | 0.18 | 0.28 | 1.00 | 1.00 | 0.00 | – |
 | LangMem | 0.09 | 0.34 | 0.56 | 0.19 | 0.28 | 1.00 | 1.00 | 0.00 | – |
 | Mem0 | 0.03 | 0.18 | 0.61 | 0.18 | 0.29 | 1.00 | 1.00 | 0.00 | – |
@@ -110,6 +117,7 @@ their three-seed spread is not yet measured):
 | system | success | families (800) | signal (100) | tokens (100) | **score** | billed tok/query |
 |---|---|---|---|---|---|---|
 | MemContinuum | 48% | 337 | 9 | 46 | **392** | 852 |
+| Supermemory | 52% | 363 | 9 | 12 | **385** | 2,157 |
 | LangMem | 53% | 359 | 8 | 9 | **376** | 2,360 |
 | Mem0 | 47% | 334 | 7 | 6 | **347** | 2,567 |
 | cognee | 48% | 259 | 8 | 14 | **281** | 2,053 |
@@ -123,6 +131,7 @@ external systems):
 | tfidf | 46% (44–48) | 0% | 69% | 59% | 65% (60–73) | 100% | 0% | 100% |
 | whole file | 90% (87–94) | 0% | 100% | n/a | n/a | 100% | 100% | n/a |
 | MemContinuum | 55% | 0% | 82% | n/a | n/a | 100% | 100% | n/a |
+| Supermemory | 62% | 2% | 96% | n/a | n/a | 100% | 4% | 100% |
 | LangMem | 64% | 0% | 91% | n/a | n/a | 100% | 4% | 100% |
 | rag | 65% (64–66) | 0% | 89% (87–91) | n/a | n/a | 100% | 4% (3–5) | 100% |
 | Mem0 | 56% | 0% | 73% | n/a | n/a | 100% | 5% | 100% |
@@ -154,6 +163,32 @@ the stale sibling above the truth on about a quarter of polluted
 questions, and cannot say why anything was decided (rationale 3–7%). The
 difference between them is a clock (cognee has none: temporal N/A) and
 the length of the text they show.
+
+**Supermemory without its model is a vector store with a floor and a
+memory of its versions.** Its direct-memory route (no extraction, no
+`updates` / `extends` / `derives` resolved by an LLM — none of what the
+product is sold on is measured here) lands at 385 / 364, nine and five
+points over `rag`. Two mechanisms separate it from the other flat stores,
+and both are small. The search drops every candidate under a default
+similarity of 0.6: that declines 4% of phantoms at 500 and 2% at 1500 and
+not one natural null (`natural_fp` 1.00 — the words of a natural null are
+all in memory, so its similarity clears any floor), empties 2–4% of all
+recalls and shortens another 7–17%. The family points come out even —
+the retrieval the floor costs is the abstention it earns (363 and 345
+with it or without) — and the shorter replies are worth three to five
+token points: switched off, the score is *lower* (378 / 361) and the row
+is `rag` within two points. One more thing in its search is its own: it
+reads dates out of the question, with no model involved — a question
+containing "yesterday's" comes back empty at any threshold, which here
+is 8 and 20 oblique and crossed questions about a note whose predicate
+is *serves yesterday's answers*. And an update is a new version, not an
+overwrite: every lineage walk reaches every retired generation (`lineage`
+1.00, 25 and 75 walks — the only external system besides MemContinuum
+that attempts them) and no retired generation is ever delivered
+(`pollution` 0.00). What it does not have without the model is what the
+flat stores do not have either: no suspect queue, no edges a caller can
+write (rationale 4%), no warning when a forgotten note comes back — the
+forget keeps its reason, and nothing reads it (`adapters/supermemory.md`).
 
 **The reference system's lead is not recall.** At 1500 its retrieval
 family is 57%, level with `rag`; its `crossed_r@5` is 0.02 against
@@ -203,8 +238,9 @@ points).
 engram's code-ref match, grep's substring match over the note files,
 MemContinuum's `for-path` — answers every file and covers 0.87–1.00 of
 what is bound. A vector store handed a path embeds the string and finds
-the *component's* notes: one bound note in the top five for 0.47–0.68 of
-files, never the file (cover 0.18–0.36). A title index barely sees it
+the *component's* notes: one bound note in the top five for 0.43–0.68 of
+files, never the file (cover 0.14–0.36; Supermemory's floor empties some
+of these reads outright — a path is not similar to much). A title index barely sees it
 (0.08–0.44). The read is 63–64 of 3,042–9,008 tasks, so it moves no
 headline by more than a point; it is a column.
 
@@ -219,11 +255,13 @@ headline by more than a point; it is a column.
   three-seed range (813–818) is partly that refit, not only the seeds,
   and the abstention column (99%, `natural_fp` 0.00–0.02) sits on that
   line. Every other arm reproduces to the digit.
-- **Contended wall-clock.** Every receipt was taken with three chains
-  running side by side on one laptop; the timing columns say nothing
-  about any system's speed.
+- **Contended wall-clock.** Every receipt but Supermemory's was taken
+  with three chains running side by side on one laptop (Supermemory's ran
+  alone, two days later); the timing columns say nothing about any
+  system's speed.
 - **One embedder, one register.** Every embedding arm uses the same
-  384-dimensional model, and every world is one corpus register
+  384-dimensional model (Supermemory's local provider loads its int8
+  export, as fastembed-python would; the others run fp32), and every world is one corpus register
   (software-project notes with few-word subjects). A system tuned for
   another embedder or another register is not measured here.
 - **Adapters are the adapter author's reading of a system.** Each maps

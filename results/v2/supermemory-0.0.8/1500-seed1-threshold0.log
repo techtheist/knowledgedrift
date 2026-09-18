@@ -1,0 +1,16 @@
+== 1500 tested facts, 1883 notes, v2 ==
+  arm       posed attempted passed  success   of att. composite     S  mult   score  standing    tok/q
+  supermemory   9008      8225   4345      48%       53%     0.431  0.11   1.1     361         0     2321
+  arm      families   signal  tokens   score    billed
+  supermemory      345        7       9     361      2321
+  supermemory success  48% = 4345 passed of 9008 posed (attempted 8225/9008,  53% of those passed)   composite 0.431   S 0.11 ×1.1   score 361   standing 0 tok   2321 tok/query
+           v2 score 361 = families 345 + signal 7 + tokens 9 (billed 2321 tok/query)
+    retrieval      6064   57%  r@1 0.47  r@5 0.60  lexical_r@5 0.99  paraphrase_r@5 0.97  oblique_r@5 0.35  crossed_r@5 0.09  path_r@5 0.59  path_cover 0.19  stale_above 0.32  hedge 0.00  noise 0.93
+    abstention      714    0%  fp 1.00  phantom_fp 1.00  natural_fp 1.00  answered 1.00  declined 0.00  separation 0.61
+    currency        300   85%  head_r@1 0.70  head_r@5 0.80  pollution 0.00  lineage 1.00
+    contradiction     -  n/a — no suspect nomination
+    drift             -  n/a — no suspect nomination
+    deletion        250  100%  released_gone 1.00  purged_gone 1.00  resurrection_warned 0.00  purged_rewrite_warned 0.00
+    rationale       522    4%  direct_r@5 0.04  assisted_r@5 0.04  structure_only 0.00
+    temporal        375   99%  in_window_r@5 0.99  leak 0.00
+wrote results/v2/supermemory-0.0.8/1500-seed1-threshold0.json

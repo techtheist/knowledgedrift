@@ -23,6 +23,7 @@ embedder (`results/v2/`):
 | TF-IDF over titles, one snippet per answer (`tfidf`)           | 43% | 442 | 37 | 100 | **580** | ~160 |
 | the whole file in context                                      | 71% | 390 | 0 | 0 | **390** | ~404,000 |
 | MemContinuum 0.2.0rc5 (topics + `for-path` chains)             | 44% | 326 | 7 | 47 | **380** | ~840 |
+| Supermemory local 0.0.8 (no LLM: direct memories, versioned)   | 48% | 345 | 8 | 12 | **364** | ~2,200 |
 | vector top-k (`rag`)                                           | 48% | 340 | 7 | 11 | **359** | ~2,200 |
 | LangMem 0.0.30 (store + semantic index)                        | 48% | 340 | 7 | 11 | **359** | ~2,200 |
 | Mem0 2.0.20 (`infer=False`)                                    | 44% | 333 | 6 | 8 | **348** | ~2,400 |
@@ -215,7 +216,7 @@ more, showing less, and showing the right thing.
 worlds/v2/         the frozen worlds (100/500/1500 seed 1; 500 seeds 2, 3)
 src/               protocol, script, world generator (vendored corpus), runner, grader, report
 src/arms/          the in-process arms (--features arms | fastembed)
-adapters/          the Python protocol mirror, the runner, and the Mem0, LangMem, MemContinuum and cognee adapters
+adapters/          the Python protocol mirror, the runner, and the Mem0, LangMem, MemContinuum, cognee and Supermemory adapters
 results/v2/        every graded receipt behind the tables, and how each was produced
 docs/              protocol, families, scoring
 RESULTS.md         what the numbers say

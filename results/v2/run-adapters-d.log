@@ -1,0 +1,29 @@
+=== supermemory 500-seed1 start 2026-09-18T16:50:23Z
+  4250/4286 ops
+wrote adapters/out/supermemory-500-seed1-v2.json (3041 replies, 104s)
+=== supermemory 500-seed1 end 2026-09-18T16:52:07Z
+  arm       posed attempted passed  success   of att. composite     S  mult   score  standing    tok/q
+  supermemory success  52% = 1590 passed of 3042 posed (attempted 2779/3042,  57% of those passed)   composite 0.454   S 0.13 ×1.3   score 385   standing 0 tok   2157 tok/query
+           v2 score 385 = families 363 + signal 9 + tokens 12 (billed 2157 tok/query)
+=== supermemory 1500-seed1 start 2026-09-18T16:52:08Z
+  12500/12737 ops
+wrote adapters/out/supermemory-1500-seed1-v2.json (9012 replies, 334s)
+=== supermemory 1500-seed1 end 2026-09-18T16:57:42Z
+  arm       posed attempted passed  success   of att. composite     S  mult   score  standing    tok/q
+  supermemory success  48% = 4329 passed of 9008 posed (attempted 8225/9008,  53% of those passed)   composite 0.431   S 0.12 ×1.2   score 364   standing 0 tok   2194 tok/query
+           v2 score 364 = families 345 + signal 8 + tokens 12 (billed 2195 tok/query)
+=== supermemory 500-seed1-threshold0 start 2026-09-18T16:57:43Z
+  4250/4286 ops
+wrote adapters/out/supermemory-500-seed1-threshold0-v2.json (3041 replies, 139s)
+=== supermemory 500-seed1-threshold0 end 2026-09-18T17:00:02Z
+  arm       posed attempted passed  success   of att. composite     S  mult   score  standing    tok/q
+  supermemory success  53% = 1622 passed of 3042 posed (attempted 2779/3042,  58% of those passed)   composite 0.454   S 0.11 ×1.1   score 378   standing 0 tok   2452 tok/query
+           v2 score 378 = families 363 + signal 8 + tokens 7 (billed 2452 tok/query)
+=== supermemory 1500-seed1-threshold0 start 2026-09-18T17:00:03Z
+  12500/12737 ops
+wrote adapters/out/supermemory-1500-seed1-threshold0-v2.json (9012 replies, 386s)
+=== supermemory 1500-seed1-threshold0 end 2026-09-18T17:06:29Z
+  arm       posed attempted passed  success   of att. composite     S  mult   score  standing    tok/q
+  supermemory success  48% = 4345 passed of 9008 posed (attempted 8225/9008,  53% of those passed)   composite 0.431   S 0.11 ×1.1   score 361   standing 0 tok   2321 tok/query
+           v2 score 361 = families 345 + signal 7 + tokens 9 (billed 2321 tok/query)
+=== CHAIN D DONE
