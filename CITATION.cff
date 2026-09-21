@@ -1,7 +1,7 @@
 cff-version: 1.2.0
 message: "If you use KnowledgeDrift, please cite this repository."
-title: "KnowledgeDrift: an offline, judge-free benchmark for AI memory in software development"
-version: "1.0.0"
+title: "KnowledgeDrift v2: an offline, judge-free benchmark for AI memory in software development"
+version: "2.0.0"
 date-released: 2026-09-14
 license: MIT
 repository-code: "https://github.com/techtheist/knowledgedrift"
