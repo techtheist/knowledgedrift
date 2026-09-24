@@ -40,6 +40,10 @@ OPTIONS:
                           fastembed) [default: engram,rag,grep,curated,whole,chance]
     --no-rerank           drop the cross-encoder from the engram arm (a
                           diagnostic, not a product option)
+    --nli-dir DIR         load the engram arm's contradiction judge from DIR
+                          (a three-label NLI export or a Laya directory)
+                          instead of the default tasksource model; the
+                          receipt names the directory
     --json PATH           write the receipt
     --export DIR          write each world's script as JSON (for external
                           adapters) and exit; the v1 worlds are already
@@ -134,6 +138,10 @@ fn cli() -> anyhow::Result<()> {
             "--v2" => cfg.edition = 2,
             "--arms" => arms = value()?.split(',').map(|s| s.trim().to_string()).collect(),
             "--no-rerank" => no_rerank = true,
+            #[cfg(feature = "arms")]
+            "--nli-dir" => {
+                let _ = knowledgedrift::arms::NLI_DIR.set(value()?.into());
+            }
             "--json" => json_out = Some(value()?),
             "--export" => export = Some(value()?),
             "--grade" => grade_path = Some(value()?),

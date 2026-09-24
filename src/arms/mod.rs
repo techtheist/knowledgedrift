@@ -44,14 +44,33 @@ pub fn reranker() -> (Option<Box<dyn Reranker>>, String) {
     (None, "none".to_string())
 }
 
+/// The directory `--nli-dir` names, when a run swaps the reference system's
+/// judge for another export it can load (a three-label NLI or a Laya
+/// directory). Unset, the shipped default loads.
+pub static NLI_DIR: std::sync::OnceLock<std::path::PathBuf> = std::sync::OnceLock::new();
+
 /// The logic layer, and the name of whatever actually loaded — real under
 /// `--features fastembed`, the deterministic fake otherwise.
 pub fn nli() -> (Box<dyn Nli>, String) {
     #[cfg(feature = "fastembed")]
     {
-        match engram_core::FastNli::new() {
-            Ok(n) => return (Box::new(n), engram_core::nli::NLI_MODEL_NAME.to_string()),
-            Err(err) => eprintln!("! real NLI unavailable ({err}); falling back to fake"),
+        if let Some(dir) = NLI_DIR.get() {
+            let name = dir
+                .file_name()
+                .map(|n| n.to_string_lossy().into_owned())
+                .unwrap_or_else(|| dir.display().to_string());
+            match engram_core::nli::load_dir(dir) {
+                Ok(n) => return (n, name),
+                Err(err) => eprintln!(
+                    "! NLI at {} unavailable ({err}); falling back to fake",
+                    dir.display()
+                ),
+            }
+        } else {
+            match engram_core::FastNli::new() {
+                Ok(n) => return (Box::new(n), engram_core::nli::NLI_MODEL_NAME.to_string()),
+                Err(err) => eprintln!("! real NLI unavailable ({err}); falling back to fake"),
+            }
         }
     }
     (Box::new(engram_core::FakeNli), "fake".to_string())

@@ -673,8 +673,8 @@ dependencies = [
 
 [[package]]
 name = "engram-core"
-version = "0.9.6"
-source = "git+https://github.com/techtheist/engram?rev=2c760e91071fe69e6f0783b55ff5d1d26a0794f0#2c760e91071fe69e6f0783b55ff5d1d26a0794f0"
+version = "0.9.9"
+source = "git+https://github.com/techtheist/engram?rev=ffbcd1a57ff8d021481e53832968c0fa0cdae26b#ffbcd1a57ff8d021481e53832968c0fa0cdae26b"
 dependencies = [
  "base64 0.22.1",
  "chacha20poly1305",
