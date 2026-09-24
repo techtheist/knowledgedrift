@@ -1,0 +1,23 @@
+knowledgedrift 1.0.0 — embedder bge-small-en-v1.5, reranker jina-reranker-v1-turbo-en, nli deberta-v3-small-tasksource-nli, seed 1, pollution 10% (stale)
+edition 2: additive score = families (800) + signal (100) + tokens (100)
+world 1500: 1883 notes, 1590 edges, 12737 ops, 9133 probes
+  engram: 9008 tasks, success 0.685, 2769s
+    settle: auto-tune left the defaults; weak line 0.857; sweep queued 5
+
+== 1500 tested facts, 1883 notes, v2 ==
+  arm       posed attempted passed  success   of att. composite     S  mult   score  standing    tok/q
+  engram     9008      9008   6170      68%       68%     0.873  0.62   6.2     800      3915      263
+  arm      families   signal  tokens   score    billed
+  engram        698       32      69     800       459
+  engram   success  68% = 6170 passed of 9008 posed (attempted 9008/9008,  68% of those passed)   composite 0.873   S 0.62 ×6.2   score 800   standing 3915 tok   263 tok/query
+           v2 score 800 = families 698 + signal 32 + tokens 69 (billed 459 tok/query)
+    retrieval      6064   57%  r@1 0.50  r@5 0.58  lexical_r@5 1.00  paraphrase_r@5 0.99  oblique_r@5 0.33  crossed_r@5 0.02  path_r@5 1.00  path_cover 0.98  stale_above 0.17  hedge 0.35  noise 0.56
+    abstention      714   97%  fp 0.03  phantom_fp 0.01  natural_fp 0.05  answered 1.00  declined 0.97  separation 0.69
+    currency        300   81%  head_r@1 0.71  head_r@5 0.75  pollution 0.00  lineage 1.00
+    contradiction   500   70%  t1_recall 0.85  t2_recall 0.52  t3_recall 0.08  t2_false_alarm 0.00  t3_false_alarm 0.06  queued 0.51  flagged 0.48  absorbed 0.02
+    drift           158   93%  noticed 0.93  flagged 0.75
+    deletion        375  100%  released_gone 1.00  purged_gone 1.00  trace 1.00  marker_leak 1.00  resurrection_warned 1.00  purged_rewrite_warned 0.02
+    rationale       522   99%  direct_r@5 0.00  assisted_r@5 0.99  structure_only 0.99
+    temporal        375  100%  in_window_r@5 1.00  leak 0.00
+
+wrote results/v2/reference-arms/engram-0.9.9/1500-seed1.json

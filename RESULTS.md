@@ -6,10 +6,13 @@ this file says what the numbers mean and what they do not. Every figure is
 quoted from a named receipt; nothing is rounded past what three seeds
 support.
 
-**Environment.** One Apple-silicon laptop, CPU only, 2026-09-16;
+**Environment.** One Apple-silicon laptop, CPU only, 2026-09-16 (the
+baselines) and 2026-09-24 (the reference system);
 `BAAI/bge-small-en-v1.5` for every embedding arm; the reference system
-(Engram Alpha 0.9.6, arm `engram`) with `jina-reranker-v1-turbo-en` and
-`deberta-v3-small-tasksource-nli`. Twelve systems: the reference system,
+(Engram Alpha 0.9.9, arm `engram`) with `jina-reranker-v1-turbo-en` and
+`deberta-v3-small-tasksource-nli`, its shipped default judge. The same
+system with the Laya int4 judge swapped in is a separate reading below,
+not a row of the ladder. Twelve systems: the reference system,
 six in-process baselines (`tfidf`, `whole`, `rag`, `grep`, `curated`,
 `chance`) and five external adapters (MemContinuum, Supermemory, LangMem,
 Mem0, cognee) replaying the exported scripts through their own APIs —
@@ -18,10 +21,10 @@ systems ran one seed; the in-process arms ran three at 500.
 
 ## In one paragraph
 
-A memory that knows what it knows leads by 221 points at 1,500 tested
-facts and 235 at 500, and the distance is not recall. The reference
+A memory that knows what it knows leads by 220 points at 1,500 tested
+facts and 234 at 500, and the distance is not recall. The reference
 system's retrieval family is *under* the vector store's (57% against 57%
-at 1500, 63% against 65% at 500): what it earns is abstention (99%
+at 1500, 63% against 65% at 500): what it earns is abstention (97–99%
 where every flat store answers every question it should not), a suspect
 queue that notices planted contradictions (70%) and silent drift (91–93%),
 a resurrection warning when a deleted note comes back (100%), rationale
@@ -46,7 +49,7 @@ deletion, 522 rationale, 375 temporal.
 
 | system | success | passed / attempted | families (800) | signal (100) | tokens (100) | **score** | billed tok/query |
 |---|---|---|---|---|---|---|---|
-| **Reference System 0.9.6** | 69% | 6,177 / 9,008 | 700 | 32 | 69 | **801** | 457 |
+| **Reference System 0.9.9** | 68% | 6,170 / 9,008 | 698 | 32 | 69 | **800** | 459 |
 | tfidf | 43% | 3,886 / 8,808 | 442 | 37 | 100 | **580** | 158 |
 | whole file | 71% | 6,429 / 7,775 | 390 | 0 | 0 | **390** | 404,164 |
 | MemContinuum | 44% | 3,984 / 7,850 | 326 | 7 | 47 | **380** | 844 |
@@ -64,7 +67,7 @@ does not have, and is scored zero in the headline):
 
 | system | retrieval | abstention | currency | contradiction | drift | deletion | rationale | temporal |
 |---|---|---|---|---|---|---|---|---|
-| Reference System 0.9.6 | 57% | 99% | 81% | 70% | 93% | 100% | 99% | 100% |
+| Reference System 0.9.9 | 57% | 97% | 81% | 70% | 93% | 100% | 99% | 100% |
 | tfidf | 45% | 0% | 67% | 58% | 73% | 100% | 0% | 100% |
 | whole file | 90% | 0% | 100% | n/a | n/a | 100% | 100% | n/a |
 | MemContinuum | 49% | 0% | 77% | n/a | n/a | 100% | 100% | n/a |
@@ -81,7 +84,7 @@ does not have, and is scored zero in the headline):
 
 | system | crossed_r@5 | oblique_r@5 | path_r@5 | path_cover | stale_above | phantom_fp | natural_fp | hedge | t1_recall |
 |---|---|---|---|---|---|---|---|---|---|
-| engram | 0.02 | 0.32 | 1.00 | 0.98 | 0.17 | 0.01 | 0.02 | 0.35 | 0.85 |
+| engram | 0.02 | 0.33 | 1.00 | 0.98 | 0.17 | 0.01 | 0.05 | 0.35 | 0.85 |
 | tfidf | 0.00 | 0.01 | 0.08 | 0.03 | 0.63 | 1.00 | 1.00 | 0.00 | 0.42 |
 | MemContinuum | 0.02 | 0.14 | 1.00 | 0.87 | 0.58 | 1.00 | 1.00 | 0.00 | – |
 | Supermemory | 0.08 | 0.35 | 0.53 | 0.14 | 0.32 | 0.98 | 1.00 | 0.00 | – |
@@ -103,7 +106,7 @@ every run (816 / 818 / 813 on the three seeds).
 
 | arm | success | families (800) | signal (100) | tokens (100) | **score** |
 |---|---|---|---|---|---|
-| **engram** | **73% (72–73)** | **709 (705–711)** | 36 (35–37) | 71 (70–71) | **816 (813–818)** |
+| **engram** | **73% (72–73)** | **709 (705–711)** | 36 (36–37) | 71 (70–71) | **815 (813–818)** |
 | tfidf | 44% (43–46) | 439 (433–445) | 42 (41–44) | 100 | **581 (574–586)** |
 | whole file | 72% (70–75) | 390 (387–394) | 0 | 0 | **390 (387–394)** |
 | rag | 53% (52–55) | 358 (355–360) | 8 (8–9) | 9 (7–10) | **375 (374–376)** |
@@ -141,8 +144,8 @@ external systems):
 | chance | 1% | 0% | 0% | n/a | n/a | 100% | 1% (0–3) | 5% (3–6) |
 
 **Columns by seed** (seed 1 / 2 / 3): engram `crossed_r@5` 0.02 / 0.04 /
-0.02, `hedge` 0.39 / 0.40 / 0.38, `stale_above` 0.15 / 0.22 / 0.19,
-`natural_fp` 0.02 / 0.00 / 0.02, `phantom_fp` 0.01 / 0.00 / 0.00, tier-1
+0.02, `hedge` 0.39 / 0.41 / 0.39, `stale_above` 0.15 / 0.23 / 0.19,
+`natural_fp` 0.03 / 0.00 / 0.02, `phantom_fp` 0.01 / 0.00 / 0.00, tier-1
 contradiction recall 0.83 / 0.79 / 0.75, tier-2
 0.56 / 0.58 / 0.54, tier-3 0.12 / 0.04 / 0.04, tier-3 false alarm 0.05 on
 every seed, drift noticed 0.91 on every seed, `resurrection_warned` 1.00 /
@@ -151,6 +154,68 @@ tfidf `crossed_r@5` 0.00 / 0.00 / 0.01, `stale_above` 0.70 / 0.71 / 0.71,
 `natural_fp` and `phantom_fp` 1.00 on every seed, tier-1 recall 0.38 on
 every seed, `path_r@5` 0.21 / 0.44 / 0.32. rag `path_r@5` 0.68 / 0.66 /
 0.60 at `path_cover` 0.34–0.36; grep 1.00 at 0.97–0.99.
+
+## The reference system re-measured, and its judge swapped
+
+The reference row is Engram Alpha 0.9.9 (engram-core `ffbcd1a`), rerun
+2026-09-24 on the same worlds with the engram arm alone
+(`results/v2/reference-arms/engram-0.9.9/`); the baselines do not load
+the reference system's engine and keep their receipts. Against the 0.9.6
+receipts it replaces, the score is 816 / 818 / 813 at 500 on both
+releases, and 800 against 801 at 1500. The contradiction and drift
+columns agree to the second decimal on every world. The one visible
+move is at 1500: abstention 97% against 99% (`natural_fp` 0.05 against
+0.02). That is the decline line refitting (0.857 this run, 0.904 on the
+0.9.6 run), the two-point wobble the threats below already name.
+
+0.9.9's contradiction work does not reach this bench, and should not be
+expected to. A confident contradiction now travels along the graph's
+inheriting edges: whatever builds on, needs, or holds because of the
+contradicted note is queued as a suspect with the hint `inherited`. The
+contradiction family grades planted *pairs*. A propagated suspect is
+neither a planted pair nor one of the `historical` / `synonym` traps
+the false-alarm columns watch, so it is neither credited nor charged
+(`sweep queued` in the settle line moves by nothing on the default
+judge).
+
+**Laya int4 as the judge** (`engram-0.9.9-laya-int4/`, three seeds at
+500). 0.9.9 can load a second kind of contradiction judge: Laya, a
+typed-decision encoder asked the XNLI question zero-shot, exported to int4
+(`techtheist/laya-onnx`, `en/model_int4.onnx`). The run is the same
+arm with `--nli-dir` pointing at that export; nothing else changed.
+
+| engram judge | success | families (800) | signal | tokens | **score** | contradiction | drift |
+|---|---|---|---|---|---|---|---|
+| tasksource (default) | 73% (72–73) | 709 (705–711) | 36 (36–37) | 71 (70–71) | **815 (813–818)** | 70% (68–72) | 91% |
+| Laya int4 | 73% (72–73) | 713 (709–719) | 36 (35–37) | 71 (70–71) | **820 (817–827)** | 72% (70–72) | 93% (91–97) |
+
+By seed (1 / 2 / 3), tasksource then Laya:
+
+| column | tasksource | Laya int4 |
+|---|---|---|
+| score | 816 / 818 / 813 | 817 / 827 / 817 |
+| tier-1 recall | 0.83 / 0.79 / 0.75 | 0.92 / 0.92 / 1.00 |
+| tier-2 recall | 0.56 / 0.58 / 0.54 | 0.54 / 0.50 / 0.44 |
+| tier-3 recall | 0.12 / 0.04 / 0.04 | 0.17 / 0.21 / 0.17 |
+| tier-2 false alarm | 0.00 / 0.02 / 0.02 | 0.02 / 0.02 / 0.04 |
+| tier-3 false alarm (`historical`) | 0.05 / 0.05 / 0.05 | 0.05 / 0.00 / 0.00 |
+| drift flagged | 0.71 / 0.81 / 0.71 | 0.82 / 0.97 / 0.91 |
+| sweep queued at settle | 0 / 1 / 0 | 8 / 13 / 12 |
+
+Every other family and column is unchanged. The judge touches only
+contradiction and drift. Laya is the stronger reader of a flipped value
+or unit and of a reworded clause: tier-1 and tier-3 recall both rise. It
+is the weaker reader of the middle tier, where tier-2 recall falls and
+its false alarm creeps up. On the whole it gains four to nine points on
+two seeds and one on the third. That is inside the reference system's
+own refit wobble on one seed and outside it on the mean, so it reads as
+a small real gain and not a new standing. It costs time on the write
+path: 0.66–0.72 s of inscribe per world note against 0.18 s, and the arm
+took 26–27 minutes per world against 15 (both chains ran side by side).
+The shipped default stays tasksource. On real project prose, measured in
+the reference system's own repository, Laya raised more false alarms
+(28% against 19%), and it is several times slower; Laya is offered
+there as an opt-in judge. The 1500 rung with Laya is not yet run.
 
 ## What the numbers say
 
@@ -194,10 +259,10 @@ forget keeps its reason, and nothing reads it (`adapters/supermemory.md`).
 family is 57%, level with `rag`; its `crossed_r@5` is 0.02 against
 `rag`'s 0.09 (a question sharing no content word with its note is where
 the keyword channel and the reranker vote have nothing to hold); and its
-calibrated "not in memory" line hedges on 35–39% of answerable questions,
+calibrated "not in memory" line hedges on 35–41% of answerable questions,
 which the signal score counts as zero — the signal score is 32–36 where
 the retrieval focus alone would give about 60. The lead is the families
-the flat stores score zero on: abstention 99%, contradiction 70% (tier-1
+the flat stores score zero on: abstention 97–99%, contradiction 70% (tier-1
 recall 0.75–0.85, tier-2 0.52–0.58, tier-3 0.04–0.12, and a 0.05–0.06
 false alarm on the `historical` trap), drift 91–93%, rationale 98–99%
 through its edges, deletion 100% with a resurrection warning on every
@@ -253,12 +318,14 @@ headline by more than a point; it is a column.
 - **The reference system moves by two points between identical runs.**
   Its decline line is fitted per run on graph-vocabulary probes; the
   three-seed range (813–818) is partly that refit, not only the seeds,
-  and the abstention column (99%, `natural_fp` 0.00–0.02) sits on that
-  line. Every other arm reproduces to the digit.
+  and the abstention column (97–100%, `natural_fp` 0.00–0.05) sits on that
+  line: the 1500 rung lost two abstention points between 0.9.6 and 0.9.9
+  with nothing but the refit between them. Every other arm reproduces to the digit.
 - **Contended wall-clock.** Every receipt but Supermemory's was taken
-  with three chains running side by side on one laptop (Supermemory's ran
-  alone, two days later); the timing columns say nothing about any
-  system's speed.
+  with other chains running side by side on one laptop (three for the
+  baselines and adapters; two, the default and the Laya judge, for the
+  0.9.9 reference runs; Supermemory's ran alone); the timing columns say
+  nothing about any system's speed.
 - **One embedder, one register.** Every embedding arm uses the same
   384-dimensional model (Supermemory's local provider loads its int8
   export, as fastembed-python would; the others run fp32), and every world is one corpus register
@@ -271,7 +338,8 @@ headline by more than a point; it is a column.
 
 ## Not yet run
 
-Seeds 2 and 3 at 500 for the external systems; the 100 rung; the
+Seeds 2 and 3 at 500 for the external systems; the reference system
+with the Laya judge at 1500; the 100 rung; the
 authority world; a path read on a directory rather than a file, and a
 path that binds no note; a second corpus register; systems with a
 language model in the loop, once a judge-free way to hold the model fixed

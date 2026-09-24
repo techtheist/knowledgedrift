@@ -1,0 +1,23 @@
+knowledgedrift 1.0.0 — embedder bge-small-en-v1.5, reranker jina-reranker-v1-turbo-en, nli laya-en-int4, seed 3, pollution 10% (stale)
+edition 2: additive score = families (800) + signal (100) + tokens (100)
+world 500: 641 notes, 530 edges, 4315 ops, 3112 probes
+  engram: 3071 tasks, success 0.723, 1600s
+    settle: auto-tune left the defaults; weak line 0.894; sweep queued 12
+
+== 500 tested facts, 641 notes, v2 ==
+  arm       posed attempted passed  success   of att. composite     S  mult   score  standing    tok/q
+  engram     3071      3071   2219      72%       72%     0.886  0.66   6.6     817      3879      242
+  arm      families   signal  tokens   score    billed
+  engram        709       37      71     817       436
+  engram   success  72% = 2219 passed of 3071 posed (attempted 3071/3071,  72% of those passed)   composite 0.886   S 0.66 ×6.6   score 817   standing 3879 tok   242 tok/query
+           v2 score 817 = families 709 + signal 37 + tokens 71 (billed 436 tok/query)
+    retrieval      2063   62%  r@1 0.52  r@5 0.63  lexical_r@5 1.00  paraphrase_r@5 0.99  oblique_r@5 0.52  crossed_r@5 0.02  path_r@5 1.00  path_cover 0.99  stale_above 0.19  hedge 0.39  noise 0.48
+    abstention      238   99%  fp 0.01  phantom_fp 0.00  natural_fp 0.02  answered 1.00  declined 0.99  separation 0.69
+    currency        100   88%  head_r@1 0.72  head_r@5 0.84  pollution 0.00  lineage 1.00
+    contradiction   166   70%  t1_recall 1.00  t2_recall 0.44  t3_recall 0.17  t2_false_alarm 0.04  t3_false_alarm 0.00  queued 0.52  flagged 0.48  absorbed 0.01
+    drift            66   92%  noticed 0.92  flagged 0.91
+    deletion        125  100%  released_gone 1.00  purged_gone 1.00  trace 1.00  marker_leak 1.00  resurrection_warned 1.00  purged_rewrite_warned 0.00
+    rationale       188   97%  direct_r@5 0.01  assisted_r@5 0.97  structure_only 0.96
+    temporal        125  100%  in_window_r@5 1.00  leak 0.00
+
+wrote results/v2/reference-arms/engram-0.9.9-laya-int4/500-seed3.json

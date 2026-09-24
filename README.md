@@ -31,7 +31,7 @@ embedder (`results/v2/`):
 | cognee 1.5.4 (no LLM: chunk store)                             | 43% | 240 | 8 | 16 | **263** | ~1,900 |
 | chance                                                         | 3% | 103 | 0 | 9 | **112** | ~2,300 |
 | a curated 3,000-token file                                     | 5% | 108 | 0 | 1 | **109** | ~2,960 |
-| **[Reference System](https://github.com/techtheist/engram) 0.9.6**     | **69%** | **700** | 32 | 69 | **801** | ~460 |
+| **[Reference System](https://github.com/techtheist/engram) 0.9.9**     | **68%** | **698** | 32 | 69 | **800** | ~460 |
 
 Three seeds at 500 tested facts, every family's pass rate, every column,
 and what the numbers mean: [`RESULTS.md`](RESULTS.md). Receipts and how
