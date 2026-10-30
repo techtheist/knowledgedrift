@@ -8,3 +8,7 @@ __pycache__/
 adapters/.venv-*
 adapters/out/
 adapters/vendor/
+
+# Engram local graph (personal)
+.engram/
+.mcp.json
